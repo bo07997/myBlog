@@ -3,8 +3,8 @@ layout: post
 title:  "my first blog"
 date:   2017-9-12 16:00:23
 comments: false
-categories:工具使用
-tag:工具使用
+categories: 工具使用
+tag: 工具使用
 description: 本文记录了github page搭建博客的全过程，从github page项目的创建，到使用，下载jekyll（jekyll是一个简单的免费的Blog生成工具，类似WordPress。但是和WordPress又有很大的不同，原因是jekyll只是一个生成静态网页的工具，不需要数据库
 ---
 * content

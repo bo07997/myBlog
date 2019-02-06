@@ -3,8 +3,8 @@ layout: post
 title:  "关于python引用和copy的问题"
 date:   2018-01-03 17:55:23
 comments: false
-tags:
-  - python
+categories:python
+tag:python
 description: 本文主要在一次开发过程中遇到的关于python引用和队列复制的问题，并且提出一些解决方案                                                         
 ---
 * content

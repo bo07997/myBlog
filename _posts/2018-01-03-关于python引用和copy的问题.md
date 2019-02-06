@@ -44,17 +44,17 @@ Python 存储变量的方法跟其他 OOP 语言不同。它与其说是把值�
 
 怎么用上边的道理来解释这个诡异的不同呢？
 首次把 [1, 2, 3] 看成一个物品。a = [1, 2, 3] 就相当于给这个物品上贴上 a 这个标签。而 b = a 就是给这个物品又贴上了一个 b 的标签。
-![](https://bo07997.github.io/dianbo/images/Blog/python1/1.png)
+![](https://bo07997.github.io/myBlog/styles/images/Blog/python1/1.png)
 **第一种情况：**
 a = [4, 5, 6] 就相当于把 a 标签从 [1 ,2, 3] 上撕下来，贴到了 [4, 5, 6] 上。
 
 在这个过程中，[1, 2, 3] 这个物品并没有消失。 b 自始至终都好好的贴在 [1, 2, 3] 上，既然这个 reference 也没有改变过。 b 的值自然不变。
-![](https://bo07997.github.io/dianbo/images/Blog/python1/2.png)
+![](https://bo07997.github.io/myBlog/styles/images/Blog/python1/2.png)
 
 **第二种情况：**
 a[0], a[1], a[2] = 4, 5, 6 则是直接改变了 [1, 2, 3] 这个物品本身。把它内部的每一部分都重新改装了一下。内部改装完毕后，[1, 2, 3] 本身变成了 [4, 5, 6]。
 而在此过程当中，a 和 b 都没有动，他们还贴在那个物品上。因此自然 a b 的值都变成了 [4, 5, 6]。
-![](https://bo07997.github.io/dianbo/images/Blog/python1/3.png)
+![](https://bo07997.github.io/myBlog/styles/images/Blog/python1/3.png)
 
 ## 2.关于copy和deepcopy
 

@@ -7,6 +7,8 @@ tags:
   - netty
 description: 主要介绍netty的Channel配置参数,方便查阅                                                        
 ---
+* content
+{:toc}
 ### introduction
 
 主要介绍netty的Channel配置参数,方便查阅
@@ -65,9 +67,9 @@ ALLOW_HALF_CLOSURE
 {% highlight js %}
 
 SO_RCVBUF
-  已说明，需要注意的是：当设置值超过64KB时，需要在绑定到本地端口前设置。该值设置的是由ServerSocketChannel使用accept接受的SocketChannel的接收缓冲区。
+  已说明，需要注意的是：当设置值超过64KB时，需要在绑定到本地端口前设置。该值设置的是由ServerSocketChannel使用accept接受的SocketChannel的接收缓冲区。
 SO_REUSEADDR
-  已说明
+  已说明
 SO_BACKLOG
   Socket参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，Windows为200，其他为128。
 
@@ -86,13 +88,13 @@ SO_SNDBUF:已说明
 SO_REUSEADDR:已说明
 
 IP_MULTICAST_LOOP_DISABLED:
-  对应IP参数IP_MULTICAST_LOOP，设置本地回环接口的多播功能。由于IP_MULTICAST_LOOP返回True表示关闭，所以Netty加上后缀_DISABLED防止歧义。
+  对应IP参数IP_MULTICAST_LOOP，设置本地回环接口的多播功能。由于IP_MULTICAST_LOOP返回True表示关闭，所以Netty加上后缀_DISABLED防止歧义。
 
 IP_MULTICAST_ADDR:
-  对应IP参数IP_MULTICAST_IF，设置对应地址的网卡为多播模式。
+  对应IP参数IP_MULTICAST_IF，设置对应地址的网卡为多播模式。
 
 IP_MULTICAST_IF:
-  对应IP参数IP_MULTICAST_IF2，同上但支持IPV6。
+  对应IP参数IP_MULTICAST_IF2，同上但支持IPV6。
 
 IP_MULTICAST_TTL:
   IP参数，多播数据报的time-to-live即存活跳数。

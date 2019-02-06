@@ -24,17 +24,17 @@ description: 本文记录了github page搭建博客的全过程，从github page
 ## 1.github page的创建
 - 1.在github创建一个新的repository
 
-![](https://bo07997.github.io/dianbo/images/Blog/firstBlog/1.jpg)  
+![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/1.jpg)  
 
 - 2.repository的命名按如下图规范username.github.io
 
-![](https://bo07997.github.io/dianbo/images/Blog/firstBlog/2.jpg)  
+![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/2.jpg)  
 
 - 3.去到项目下的setting查看github page是否开启(默认开启)
 
-![](https://bo07997.github.io/dianbo/images/Blog/firstBlog/3.jpg)  
+![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/3.jpg)  
 
-![](https://bo07997.github.io/dianbo/images/Blog/firstBlog/4.jpg)  
+![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/4.jpg)  
 
 ## 2.安装 Jekyll
 
@@ -74,7 +74,7 @@ gem install jekyll
 
 ## 3.提交博客，访问username.github.io
 
-![](https://bo07997.github.io/dianbo/images/Blog/firstBlog/5.jpg)  
+![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/5.jpg)  
 
 ## 待续..
 

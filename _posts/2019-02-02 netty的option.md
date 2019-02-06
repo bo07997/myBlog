@@ -3,8 +3,8 @@ layout: post
 title:  "netty参数配置"
 date:   2019-02-02 14:27:23
 comments: false
-categories:netty
-tags:netty
+categories: netty
+tags: netty
 description: 主要介绍netty的Channel配置参数,方便查阅                                                        
 ---
 * content

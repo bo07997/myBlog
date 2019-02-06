@@ -3,8 +3,8 @@ layout: post
 title:  "openResty开发2 Nginx请求处理阶段"
 date:   2017-11-30 10:00:23
 comments: false
-categories:Nginx
-tag:Nginx
+categories: Nginx
+tag: Nginx
 description: 本文主要记录Nginx处理请求的11个阶段，主要是为了后面使用lua代码插入Nginx这些阶段做准备                                                      
 ---
 * content

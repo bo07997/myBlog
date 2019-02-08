@@ -3,8 +3,8 @@ layout: post
 title:  "IDEA快捷使用test"
 date:   2019-02-02 14:27:23
 comments: false
-categories: netty
-tag: netty
+categories: 工具使用
+tag: 工具使用
 description: 为了加快开发速度，学习IDEA的快捷操作绝对是一本万利的事情                                                        
 ---
 * content

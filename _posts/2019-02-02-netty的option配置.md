@@ -120,7 +120,7 @@ description: 主要介绍netty的Channel配置参数,方便查阅
 
 **SO_BROADCAST:** Socket参数，设置广播模式。
 
-**SO_RCVBUF: **已说明
+**SO_RCVBUF:**已说明
 
 **SO_SNDBUF:**已说明
 

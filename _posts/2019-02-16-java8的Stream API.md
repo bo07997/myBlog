@@ -98,31 +98,31 @@ Stream 就如同一个迭代器（Iterator），单向，不可往复，数据�
  
  2. Collection.stream()
    
-   Collection.parallelStream()
+(1).Collection.parallelStream()
    
-   Arrays.stream(T array) or Stream.of()
+(2).Arrays.stream(T array) or Stream.of()
   
-  从 BufferedReader
+(3).从 BufferedReader
    
-   java.io.BufferedReader.lines()
+(4).java.io.BufferedReader.lines()
   
  3. 静态工厂
  
- java.util.stream.IntStream.range()
+ (1).java.util.stream.IntStream.range()
  
- java.nio.file.Files.walk()
+ (2).java.nio.file.Files.walk()
  
  4. 其它
  
- Random.ints()
+ (1).Random.ints()
  
- BitSet.stream()
+ (2).BitSet.stream()
  
- Pattern.splitAsStream(java.lang.CharSequence)
+ (3).Pattern.splitAsStream(java.lang.CharSequence)
  
- JarFile.stream()
+ (4).JarFile.stream()
  
- 流的操作类型分为两种：
+流的操作类型分为两种：
 
 **Intermediate：**一个流可以后面跟随零个或多个 intermediate 操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的（lazy），就是说，仅仅调用到这类方法，并没有真正开始流的遍历。
 
@@ -205,7 +205,7 @@ String str = stream.collect(Collectors.joining()).toString();
 
 接下来，当把一个数据结构包装成 Stream 后，就要开始对里面的元素进行各类操作了。常见的操作可以归类如下。
 
-1. **Intermediate：**
+1.**Intermediate：**
 
 map (mapToInt, flatMap 等)、 filter、 distinct、 sorted、 peek、 limit、 skip、 parallel、 sequential、 unordered
 
@@ -217,7 +217,7 @@ forEach、 forEachOrdered、 toArray、 reduce、 collect、 min、 max、 count
 
 anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 limit
 
-我们下面看一下 Stream 的比较典型用法。
+**我们下面看一下 Stream 的比较典型用法。**
 
 **map/flatMap**
 
@@ -260,7 +260,7 @@ flatMap((childList) -> childList.stream());
 
 flatMap 把 input Stream 中的层级结构扁平化，就是将最底层元素抽出来放到一起，最终 output 的新 Stream 里面已经没有 List 了，都是直接的数字。
 
-**ilter**
+**filter**
 
 filter 对原始 Stream 进行某项测试，通过测试的元素被留下来生成一个新 Stream。
 

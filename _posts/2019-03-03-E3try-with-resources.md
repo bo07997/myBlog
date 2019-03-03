@@ -31,7 +31,7 @@ static String firstLineOfFile(String path) throws IOException {
 ```
 
 这可能看起来并不坏，但是当添加第二个资源时，情况会变得更糟：
-```
+```java
 // try-finally is ugly when used with more than one resource!
 static void copy(String src, String dst) throws IOException {
     InputStream in = new FileInputStream(src);
@@ -52,7 +52,7 @@ static void copy(String src, String dst) throws IOException {
 ```
 即使是用`try-finally`语句关闭资源的正确代码，如前面两个代码示例所示，也有一个微妙的缺陷------**异常屏蔽**:
 
-```
+```java
 
 /**
  * 异常屏蔽测试
@@ -68,7 +68,7 @@ public class Connection implements AutoCloseable {
 }
 ```
 
-```
+```java
 public class TryWithResource {
     public static void main(String[] args) {
         try {
@@ -95,7 +95,7 @@ public class TryWithResource {
 
 运行之后我们发现：
 
-```
+```java
 basic.exception.MyException: close
 	at basic.exception.Connection.close(Connection.java:10)
 	at basic.exception.TryWithResource.test(TryWithResource.java:82)
@@ -105,7 +105,7 @@ basic.exception.MyException: close
 
 好的，问题来了，由于我们一次只能抛出一个异常，所以在最上层看到的是最后一个抛出的异常——也就是`close`方法抛出的`MyException`，而`sendData`抛出的`Exception`被忽略了。这就是所谓的异常屏蔽。由于异常信息的丢失，异常屏蔽可能会导致某些`bug`变得极其难以发现，程序员们不得不加班加点地找bug，如此毒瘤，怎能不除！幸好，为了解决这个问题，从Java 1.7开始，大佬们为`Throwable`类新增了`addSuppressed`方法，支持将一个异常附加到另一个异常身上，从而避免异常屏蔽。那么被屏蔽的异常信息会通过怎样的格式输出呢？我们再运行一遍刚才用`try-with-resource`包裹的`main`方法：
 
-```
+```java
 java.lang.Exception: send data
 
 	at basic.exception.Connection.sendData(Connection.java:5)

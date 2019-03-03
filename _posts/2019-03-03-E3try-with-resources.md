@@ -31,7 +31,7 @@ static String firstLineOfFile(String path) throws IOException {
 ```
 
 这可能看起来并不坏，但是当添加第二个资源时，情况会变得更糟：
-
+```
 // try-finally is ugly when used with more than one resource!
 static void copy(String src, String dst) throws IOException {
     InputStream in = new FileInputStream(src);
@@ -49,7 +49,7 @@ static void copy(String src, String dst) throws IOException {
         in.close();
     }
 }
-
+```
 即使是用try-finally语句关闭资源的正确代码，如前面两个代码示例所示，也有一个微妙的缺陷------**异常屏蔽**:
 
 ```

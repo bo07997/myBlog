@@ -15,10 +15,10 @@ description: 《Effective Java, Third Edition》一书英文版已经出版，�
 
 ## 条目9：使用try-with-resources语句替代try-finally语句
 
-Java类库中包含许多必须通过调用close方法手动关闭的资源。 比如`InputStream，OutputStream`和`java.sql.Connection`。 客户经常忽视关闭资源，其性能结果可想而知。 尽管这些资源中有很多使用finalizer机制作为安全网，但finalizer机制却不能很好地工作（条目 8）。
+Java类库中包含许多必须通过调用close方法手动关闭的资源。 比如`InputStream，OutputStream`和`java.sql.Connection`。 客户经常忽视关闭资源，其性能结果可想而知。 尽管这些资源中有很多使用`finalizer`机制作为安全网，但finalizer机制却不能很好地工作（条目 8）。
 从以往来看，`try-finally`语句是保证资源正确关闭的最佳方式，即使是在程序抛出异常或返回的情况下：
 
-```
+```java
 // try-finally - No longer the best way to close resources!
 static String firstLineOfFile(String path) throws IOException {
     BufferedReader br = new BufferedReader(new FileReader(path));

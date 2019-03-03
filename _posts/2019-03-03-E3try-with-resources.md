@@ -57,7 +57,7 @@ static void copy(String src, String dst) throws IOException {
 /**
  * 异常屏蔽测试
  */
-public class `Connection` implements AutoCloseable {
+public class Connection implements AutoCloseable {
     public void sendData() throws Exception {
         throw new Exception("send data");
     }

@@ -34,7 +34,7 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
  
  清单 1. Java 7 的排序、取值实现
  
- ```
+ ```java
  List<Transaction> groceryTransactions = new Arraylist<>();
 for(Transaction t: transactions){
  if(t.getType() == Transaction.GROCERY){
@@ -56,7 +56,7 @@ for(Transaction t: groceryTransactions){
 
 清单 2. Java 8 的排序、取值实现
 
-```
+```java
  List<Integer> transactionsIds = transactions.parallelStream().
  filter(t -> t.getType() == Transaction.GROCERY).
  sorted(comparing(Transaction::getValue).reversed()).
@@ -140,7 +140,7 @@ for(Transaction t: groceryTransactions){
 
 清单 3. 一个流操作的示例
 
-```
+```java
 int sum = widgets.stream()
 .filter(w -> w.getColor() == RED)
  .mapToInt(w -> w.getWeight())
@@ -159,7 +159,7 @@ stream() 获取当前小物件的 source，filter 和 mapToInt 为 intermediate 
 
 清单 4. 构造流的几种常见方法
 
-```
+```java
 // 1. Individual values
 Stream stream = Stream.of("a", "b", "c");
 // 2. Arrays
@@ -179,7 +179,7 @@ Java 8 中还没有提供其它数值型 Stream，因为这将导致扩增的内
 
 清单 5. 数值流的构造
 
-```
+```java
 IntStream.of(new int[]{1, 2, 3}).forEach(System.out::println);
 IntStream.range(1, 3).forEach(System.out::println);
 IntStream.rangeClosed(1, 3).forEach(System.out::println);
@@ -187,7 +187,7 @@ IntStream.rangeClosed(1, 3).forEach(System.out::println);
 
 清单 6. 流转换为其它数据结构
 
-```
+```java
 // 1. Array
 String[] strArray1 = stream.toArray(String[]::new);
 // 2. Collection
@@ -225,7 +225,7 @@ anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 limit
 
 清单 7. 转换大写
 
-```
+```java
 List<String> output = wordList.stream().
 map(String::toUpperCase).
 collect(Collectors.toList());
@@ -235,7 +235,7 @@ collect(Collectors.toList());
 
 清单 8. 平方数
 
-```
+```java
 List<Integer> nums = Arrays.asList(1, 2, 3, 4);
 List<Integer> squareNums = nums.stream().
 map(n -> n * n).
@@ -248,7 +248,7 @@ collect(Collectors.toList());
 
 清单 9. 一对多
 
-```
+```java
 Stream<List<Integer>> inputStream = Stream.of(
  Arrays.asList(1),
  Arrays.asList(2, 3),
@@ -266,7 +266,7 @@ filter 对原始 Stream 进行某项测试，通过测试的元素被留下来�
 
 清单 10. 留下偶数
 
-```
+```java
 Integer[] sixNums = {1, 2, 3, 4, 5, 6};
 Integer[] evens =
 Stream.of(sixNums).filter(n -> n%2 == 0).toArray(Integer[]::new);
@@ -276,7 +276,7 @@ Stream.of(sixNums).filter(n -> n%2 == 0).toArray(Integer[]::new);
 
 清单 11. 把单词挑出来
 
-```
+```java
 List<String> output = reader.lines().
  flatMap(line -> Stream.of(line.split(REGEXP))).
  filter(word -> word.length() > 0).
@@ -291,7 +291,7 @@ forEach 方法接收一个 Lambda 表达式，然后在 Stream 的每一个元�
 
 清单 12. 打印姓名（forEach 和 pre-java8 的对比）
 
-```
+```java
 // Java 8
 roster.stream()
  .filter(p -> p.getGender() == Person.Sex.MALE)
@@ -310,7 +310,7 @@ for (Person p : roster) {
 
 另外一点需要注意，forEach 是 terminal 操作，因此它执行后，Stream 的元素就被“消费”掉了，你无法对一个 Stream 进行两次 terminal 运算。下面的代码是错误的：
 
-```
+```java
 stream.forEach(element -> doOneThing(element));
 stream.forEach(element -> doAnotherThing(element));
 ```
@@ -319,7 +319,7 @@ stream.forEach(element -> doAnotherThing(element));
 
 清单 13. peek 对每个元素执行操作并返回一个新的 Stream
 
-```
+```java
 Stream.of("one", "two", "three", "four")
  .filter(e -> e.length() > 3)
  .peek(e -> System.out.println("Filtered value: " + e))
@@ -338,7 +338,7 @@ forEach 不能修改自己包含的本地变量值，也不能用 break/return �
 
 清单 14. Optional 的两个用例
 
-```
+```java
 String strA = " abcd ", strB = null;
 print(strA);
 print("");
@@ -378,7 +378,7 @@ Integer sum = integers.reduce(0, Integer::sum);
 
 清单 15. reduce 的用例
 
-```
+```java
 // 字符串连接，concat = "ABCD"
 String concat = Stream.of("A", "B", "C", "D").reduce("", String::concat); 
 // 求最小值，minValue = -3.0
@@ -401,7 +401,7 @@ limit 返回 Stream 的前面 n 个元素；skip 则是扔掉前 n 个元素（�
 
 清单 16. limit 和 skip 对运行次数的影响
 
-```
+```java
 public void testLimitAndSkip() {
  List<Person> persons = new ArrayList();
  for (int i = 1; i <= 10000; i++) {
@@ -428,7 +428,7 @@ private class Person {
 
 输出结果为：
 
-```
+```java
 name1
 name2
 name3
@@ -448,7 +448,7 @@ name10
 
 清单 17. limit 和 skip 对 sorted 后的运行次数无影响
 
-```
+```java
 List<Person> persons = new ArrayList();
  for (int i = 1; i <= 5; i++) {
  Person person = new Person(i, "name" + i);
@@ -461,7 +461,7 @@ System.out.println(personList2);
 
 上面的示例对清单 13 做了微调，首先对 5 个元素的 Stream 排序，然后进行 limit 操作。输出结果为：
 
-```
+```java
 name2
 name1
 name3
@@ -483,7 +483,7 @@ name4
 
 清单 18. 优化：排序前进行 limit 和 skip
 
-```
+```java
 List<Person> persons = new ArrayList();
  for (int i = 1; i <= 5; i++) {
  Person person = new Person(i, "name" + i);
@@ -495,7 +495,7 @@ System.out.println(personList2);
 
 结果会简单很多：
 
-```
+```java
 name2
 name1
 [stream.StreamDW$Person@6ce253f1, stream.StreamDW$Person@53d8d10a]
@@ -509,7 +509,7 @@ min 和 max 的功能也可以通过对 Stream 元素先排序，再 findFirst �
 
 清单 19. 找出最长一行的长度
 
-```
+```java
 BufferedReader br = new BufferedReader(new FileReader("c:\\SUService.log"));
 int longest = br.lines().
  mapToInt(String::length).
@@ -523,7 +523,7 @@ System.out.println(longest);
 
 清单 20. 找出全文的单词，转小写，并排序
 
-```
+```java
 List<String> words = br.lines().
  flatMap(line -> Stream.of(line.split(" "))).
  filter(word -> word.length() > 0).
@@ -549,7 +549,7 @@ Stream 有三个 match 方法，从语义上说：
 
 清单 21. 使用 Match
 
-```
+```java
 List<Person> persons = new ArrayList();
 persons.add(new Person(1, "name" + 1, 10));
 persons.add(new Person(2, "name" + 2, 21));
@@ -566,7 +566,7 @@ System.out.println("Any child? " + isThereAnyChild);
 
 输出结果：
 
-```
+```java
 All are adult? false
 Any child? true
 ```

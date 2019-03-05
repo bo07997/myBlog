@@ -16,8 +16,8 @@ tag: jekyll
 诫子书				{#zhugeliang}
 ------------------------
 
-![诫子书]({{ '/`styles`/`images`/`jiezishu`.`jpg'` 
- `prepend`: `site`.baseurl  }})
+![诫子书]({{ '/styles/images/jiezishu.jpg' 
+ prepend: site.baseurl  }})
 
 
 [诸葛亮](#)

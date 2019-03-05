@@ -9,7 +9,7 @@ description: 主要介绍netty的Channel配置参数,方便查阅
 ---
 * content
 {:toc}
-### `introduction`
+### introduction
 
 主要介绍`netty`的`Channel`配置参数,方便查阅
 

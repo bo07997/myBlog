@@ -9,12 +9,12 @@ description: 本文记录了github page搭建博客的全过程，从github page
 ---
 * content
 {:toc}
-## `introduction`
+## introduction
 
 本文记录了`github` `page`搭建博客的全过程，从`github` `page`项目的创建，到使用，下载`jekyll`（`jekyll`是一个简单的免费的`Blog`生成工具，类似`WordPress`。但是和`WordPress`又有很大的不同，
 原因是`jekyll`只是一个生成静态网页的工具，不需要数据库支持。），选用模板，最后配置上传生成博客。
 
-## 1.`github` `page`的优势	
+## 1.github `page`的优势	
 
 
 优点:
@@ -25,7 +25,7 @@ description: 本文记录了github page搭建博客的全过程，从github page
 * 版本控制。
 * 可以使用自己的域名。
 
-## 2.`github` `page`的创建	
+## 2.github `page`的创建	
 
 
 - 1.在github创建一个新的repository
@@ -36,7 +36,7 @@ description: 本文记录了github page搭建博客的全过程，从github page
 
 ![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/2.jpg)  
 
-- 3.去到项目下的setting查看github page是否开启(默认开启)
+- 3.去到项目下的`setting`查看github page是否开启(默认开启)
 
 ![](https://bo07997.github.io/myBlog/styles/images/Blog/firstBlog/3.jpg)  
 

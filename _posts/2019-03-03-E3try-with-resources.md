@@ -9,7 +9,7 @@ description: 《Effective Java, Third Edition》一书英文版已经出版，�
 ---
 * content
 {:toc}
-### `introduction`
+### introduction
 
 《`Effective` `Java`, `Third` `Edition`》的学习
 

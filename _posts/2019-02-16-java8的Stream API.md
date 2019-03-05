@@ -9,8 +9,8 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
 ---
 * content
 {:toc}
-### `introduction`
-入职看到一段`Java` `Stream` `API`代码，趁着这个机会回顾一下`java`8的`Stream` API的使用。
+### introduction
+入职看到一段`Java` `Stream` `API`代码，趁着这个机会回顾一下`java`8的`Stream` `API`的使用。
 
 
 ### 1. 为什么需要 `Stream`

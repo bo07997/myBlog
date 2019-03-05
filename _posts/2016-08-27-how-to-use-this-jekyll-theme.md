@@ -10,15 +10,15 @@ tag: 教程
 {:toc}
 
 
-致谢							{#`Thanks`}
+致谢							{#Thanks}
 ====================================
 + 感谢[`Less`官网](`http`://`lesscss`.`cn`/)的样式，本`Jekyll`框架的样式都是基于`Less`官网的样式直接拷贝过来的。只是重构了`JS`，并且加入了`Jekyll`语法而已。
 + 感谢[`Github`](`https`://`github`.`com`/)提供的代码维护和发布平台
 + 感谢[`Jekyll`](`https`://`jekyllrb`.`com`/)团队做出如此优秀的产品
-+ 感谢[`Solar`](`https`://`github`.`com`/`mattvh`/`solar-theme`-`jekyll`)的原作者[`Matt` `Harzewski`](`http`://`www`.`webmaster-source`.com/)，在`2014.11`-`2016.09`的两年间，我的博客选用了此样式模版
++ 感谢[`Solar`](`https`://`github`.`com`/`mattvh`/`solar-theme`-`jekyll`)的原作者[`Matt` `Harzewski`](`http`://`www`.`webmaster-source`.`com`/)，在`2014.11`-`2016.09`的两年间，我的博客选用了此样式模版
 
 
-使用							{#`How-to`-use}
+使用							{#How-to-use}
 ====================================
 
 下载							{#Download}
@@ -42,7 +42,7 @@ name: 博客名称
 email: 邮箱地址
 author: 作者名
 url: 个人网站
-### `baseurl`修改为项目名，如果项目是'***.`github`.`io'`，则设置为空''
+### baseurl修改为项目名，如果项目是'***.`github`.`io'`，则设置为空''
 `baseurl`: "/`LessOrMore`"
 `resume`_`site`: 个人简历网站
 `github`: `github`地址
@@ -93,7 +93,7 @@ jekyll server
 打开浏览器并输入URL`http://localhost:4000/`,回车。
 
 
-为什么重复造轮子					{#`why`}
+为什么重复造轮子					{#why}
 ====================================
 
 很明显，我在重复造轮子。在13年接触到`GIT`，14年末接触到`Jekyll`，然后搭建了自己的博客，当时是选用了[`JekyllThemes`](`http`://`jekyllthemes`.`org`/)上的[`Solar`](`https`://`github`.`com`/`mattvh`/`solar-theme`-`jekyll`)主题，一直到现在。不过中间一直感觉页面风格还是偏暗，阅读不方便。并且有一些小的细节做的不是很好。在页面的跨平台浏览上有一些瑕疵。并且不区分一级标题和二级标题，导致没有重点强调。诸如此类，用了2年，用的越多，越发吃力，中间就一直在寻找新的能够让我一眼认定的主题。
@@ -102,7 +102,7 @@ jekyll server
 
 重复造了轮子，但是这个是迄今为止自己觉得最适合我的博客的轮子，所以是值得的！
 
-关于作者						{#`about-author`}
+关于作者						{#about-author}
 ====================================
 
 热爱开源，热爱折腾的`Java`程序猿。更多个人信息和联系方式可以参照[我的简介](`http`://`www`.`hifreud`.`com`/`Resume`.`io`/)。

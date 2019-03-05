@@ -17,7 +17,7 @@ tag: jekyll
 ------------------------
 
 ![诫子书]({{ '/`styles`/`images`/`jiezishu`.`jpg'` 
- `prepend`: `site`.`baseurl`  }})
+ `prepend`: `site`.baseurl  }})
 
 
 [诸葛亮](#)

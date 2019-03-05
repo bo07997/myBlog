@@ -52,9 +52,9 @@ description: 主要介绍netty的Channel配置参数,方便查阅
 
   `Netty`参数，消息大小估算器，默认为`DefaultMessageSizeEstimator`.`DEFAULT`。估算`ByteBuf`、`ByteBufHolder`和`FileRegion`的大小，其中`ByteBuf`和`ByteBufHolder`为实际大小，`FileRegion`估算值为0。该值估算的字节数在计算水位时使用，`FileRegion`为0可知`FileRegion`不影响高低水位。
 
-**`SINGLE`_`EVENTEXECUTOR`_`PER`_`GROUP`**
+**SINGLE_EVENTEXECUTOR_PER_GROUP**
 
-  `Netty`参数，单线程执行`ChannelPipeline`中的事件，默认值为`True`。该值控制执行`ChannelPipeline`中执行`ChannelHandler`的线程。如果为`Trye`，整个`pipeline`由一个线程执行，这样不需要进行线程切换以及线程同步，是`Netty`4的推荐做法；如果为`False`，`ChannelHandler`中的处理过程会由`Group`中的不同线程执行。
+  Netty参数，单线程执行ChannelPipeline中的事件，默认值为True。该值控制执行ChannelPipeline中执行ChannelHandler的线程。如果为Trye，整个pipeline由一个线程执行，这样不需要进行线程切换以及线程同步，是Netty4的推荐做法；如果为False，ChannelHandler中的处理过程会由Group中的不同线程执行。
 
 
 
@@ -84,33 +84,33 @@ description: 主要介绍netty的Channel配置参数,方便查阅
 
 **`SO`_`LINGER`**
 
-  `Socket`参数，关闭`Socket`的延迟时间，默认值为-1，表示禁用该功能。-1表示`socket`.`close`()方法立即返回，但`OS`底层会将发送缓冲区全部发送到对端。0表示`socket`.`close`()方法立即返回，`OS`放弃发送缓冲区的数据直接向对端发送`RST`包，对端收到复位错误。非0整数值表示调用`socket`.`close`()方法的线程被阻塞直到延迟时间到或发送缓冲区中的数据发送完毕，若超时，则对端会收到复位错误。
+  `Socket`参数，关闭`Socket`的延迟时间，默认值为-1，表示禁用该功能。-1表示`socket`.`close`()方法立即返回，但`OS`底层会将发送缓冲区全部发送到对端。0表示socket.close()方法立即返回，OS放弃发送缓冲区的数据直接向对端发送RST包，对端收到复位错误。非0整数值表示调用socket.close()方法的线程被阻塞直到延迟时间到或发送缓冲区中的数据发送完毕，若超时，则对端会收到复位错误。
 
-**`IP`_`TOS`**
+**IP_TOS**
 
-  `IP`参数，设置`IP`头部的`Type-of`-`Service`字段，用于描述`IP`包的优先级和`QoS`选项。
+  IP参数，设置IP头部的Type-of-Service字段，用于描述IP包的优先级和QoS选项。
 
-**`ALLOW`_`HALF`_`CLOSURE`**
+**ALLOW_HALF_CLOSURE**
 
-  `Netty`参数，一个连接的远端关闭时本地端是否关闭，默认值为`False`。值为`False`时，连接自动关闭；为`True`时，触发`ChannelInboundHandler`的`userEventTriggered`()方法，事件为`ChannelInputShutdownEvent`。
-
-
-
-### (3).`ServerSocketChannel`参数
+  Netty参数，一个连接的远端关闭时本地端是否关闭，默认值为False。值为False时，连接自动关闭；为True时，触发ChannelInboundHandler的userEventTriggered()方法，事件为ChannelInputShutdownEvent。
 
 
 
-**`SO`_`RCVBUF`**
+### (3).ServerSocketChannel参数
 
-  已说明，需要注意的是：当设置值超过64`KB`时，需要在绑定到本地端口前设置。该值设置的是由`ServerSocketChannel`使用`accept`接受的`SocketChannel`的接收缓冲区。
+
+
+**SO_RCVBUF**
+
+  已说明，需要注意的是：当设置值超过64KB时，需要在绑定到本地端口前设置。该值设置的是由ServerSocketChannel使用accept接受的SocketChannel的接收缓冲区。
   
-**`SO`_`REUSEADDR`**
+**SO_REUSEADDR**
 
   已说明
   
-**`SO`_`BACKLOG`**
+**SO_BACKLOG**
 
-  `Socket`参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，`Windows`为200，其他为128。
+  Socket参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，Windows为200，其他为128。
 
 
 

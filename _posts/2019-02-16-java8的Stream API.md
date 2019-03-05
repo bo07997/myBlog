@@ -10,7 +10,7 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
 * content
 {:toc}
 ### `introduction`
-入职看到一段`Java` `Stream` `API`代码，趁着这个机会回顾一下`java`8的`Stream` `API`的使用。
+入职看到一段`Java` `Stream` `API`代码，趁着这个机会回顾一下`java`8的`Stream` API的使用。
 
 
 ### 1. 为什么需要 `Stream`
@@ -22,7 +22,7 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
 `Lambda` 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，
 并发模式能够充分利用多核处理器的优势，使用 `fork`/`join` 并行方式来拆分任务和加速处理过程。
 通常编写并行代码很难而且容易出错, 但使用 `Stream` `API` 无需编写一行多线程的代码，就可以很方便地
-写出高性能的并发程序。所以说，`Java` 8 中首次出现的 `java`.`util`.`stream` 是一个函数式语言+多核时代综合影响的产物。
+写出高性能的并发程序。所以说，Java 8 中首次出现的 java.util.stream 是一个函数式语言+多核时代综合影响的产物。
 
 #### 什么是聚合操作
 
@@ -30,7 +30,7 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
  2. 最昂贵的在售商品。
  3. 取十个数据样本作为首页推荐。
  
- 但在当今这个数据大爆炸的时代，在数据来源多样化、数据海量化的今天，很多时候不得不脱离 `RDBMS`，或者以底层返回的数据为基础进行更上层的数据统计。而 `Java` 的集合 `API` 中，仅仅有极少量的辅助型方法，更多的时候是程序员需要用 `Iterator` 来遍历集合，完成相关的聚合应用逻辑。这是一种远不够高效、笨拙的方法。在 `Java` 7 中，如果要发现 type 为 grocery 的所有交易，然后返回以交易值降序排序好的交易 ID 集合，我们需要这样写：
+ 但在当今这个数据大爆炸的时代，在数据来源多样化、数据海量化的今天，很多时候不得不脱离 `RDBMS`，或者以底层返回的数据为基础进行更上层的数据统计。而 `Java` 的集合 `API` 中，仅仅有极少量的辅助型方法，更多的时候是程序员需要用 `Iterator` 来遍历集合，完成相关的聚合应用逻辑。这是一种远不够高效、笨拙的方法。在 `Java` 7 中，如果要发现 `type` 为 grocery 的所有交易，然后返回以交易值降序排序好的交易 ID 集合，我们需要这样写：
  
  清单 1. Java 7 的排序、取值实现
  
@@ -64,7 +64,7 @@ for(Transaction t: groceryTransactions){
  collect(toList());
 ```
 
-### `Stream` 总览
+### Stream 总览
 
 #### 什么是流
 
@@ -75,18 +75,18 @@ for(Transaction t: groceryTransactions){
 而和迭代器又不同的是，`Stream` 可以并行化操作，迭代器只能命令式地、串行化操作。顾名思义，当使用串行方式去遍历时，每个 `item` 读完后再读下一个 `item`。而使用并行去遍历时，数据会被分成多个段，其中每一个都在不同的线程中处理，然后将结果一起输出。`Stream` 的并行操作依赖于 `Java`7 中引入的 `Fork`/`Join` 框架（`JSR`166`y`）来拆分任务和加速处理过程。`Java` 的并行 `API` 演变历程基本如下：
 
  1.1.0-1.4 中的 `java`.`lang`.`Thread`
- 2.5.0 中的 `java`.`util`.`concurrent`
- 3.6.0 中的 `Phasers` 等
- 4.7.0 中的 `Fork`/`Join` 框架
- 5.8.0 中的 `Lambda`
+ 2.5.0 中的 java.util.concurrent
+ 3.6.0 中的 Phasers 等
+ 4.7.0 中的 Fork/Join 框架
+ 5.8.0 中的 Lambda
  
- `Stream` 的另外一大特点是，数据源本身可以是无限的。
+ Stream 的另外一大特点是，数据源本身可以是无限的。
  
  #### 流的构成
  
  当我们使用一个流的时候，通常包括三个基本步骤：
  
- 获取一个数据源（source）→ 数据转换→执行操作获取想要的结果，每次转换原有 Stream 对象不改变，返回一个新的 Stream 对象（可以有多次转换），这就允许对其操作可以像链条一样排列，变成一个管道，如下图所示。
+ 获取一个数据源（`source`）→ 数据转换→执行操作获取想要的结果，每次转换原有 Stream 对象不改变，返回一个新的 Stream 对象（可以有多次转换），这就允许对其操作可以像链条一样排列，变成一个管道，如下图所示。
  
  图 1. 流管道 (Stream Pipeline) 的构成
  
@@ -130,7 +130,7 @@ for(Transaction t: groceryTransactions){
 
 在对于一个 `Stream` 进行多次转换操作 (`Intermediate` 操作)，每次都对 `Stream` 的每个元素进行转换，而且是执行多次，这样时间复杂度就是 `N`（转换次数）个 `for` 循环里把所有操作都做掉的总和吗？其实不是这样的，转换操作都是 `lazy` 的，多个转换操作只会在 `Terminal` 操作的时候融合起来，一次循环完成。我们可以这样简单的理解，`Stream` 里有个操作函数的集合，每次转换操作就是把转换函数放入这个集合中，在 `Terminal` 操作的时候循环 `Stream` 对应的集合，然后对每个元素执行所有的函数。
 
-还有一种操作被称为 **short-circuiting**。用以指：
+还有一种操作被称为 **`short-circuiting`**。用以指：
 
 1. 对于一个 intermediate 操作，如果它接受的是一个无限大（infinite/unbounded）的 Stream，但返回一个有限的新 Stream。
 
@@ -199,7 +199,7 @@ Stack stack1 = stream.collect(Collectors.toCollection(Stack::new));
 String str = stream.collect(Collectors.joining()).toString();
 ```
 
-一个 `Stream` 只可以使用一次，上面的代码为了简洁而重复使用了数次
+一个 Stream 只可以使用一次，上面的代码为了简洁而重复使用了数次
 
 #### 流的操作
 
@@ -211,7 +211,7 @@ String str = stream.collect(Collectors.joining()).toString();
 
 2.**`Terminal`：**
 
-`forEach`、 `forEachOrdered`、 `toArray`、 `reduce`、 `collect`、 `min`、 `max`、 count、 anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 iterator
+`forEach`、 `forEachOrdered`、 `toArray`、 `reduce`、 `collect`、 `min`、 `max`、 `count`、 `anyMatch`、 allMatch、 noneMatch、 findFirst、 findAny、 iterator
 
 3.**Short-circuiting：**
 
@@ -442,7 +442,7 @@ name10
 [name4, name5, name6, name7, name8, name9, name10]
 ```
 
-这是一个有 10，000 个元素的 Stream，但在 short-circuiting 操作 limit 和 skip 的作用下，管道中 map 操作指定的 getName() 方法的执行次数为 limit 所限定的 10 次，而最终返回结果在跳过前 3 个元素后只有后面 7 个返回。
+这是一个有 10，000 个元素的 `Stream`，但在 short-circuiting 操作 limit 和 skip 的作用下，管道中 map 操作指定的 getName() 方法的执行次数为 limit 所限定的 10 次，而最终返回结果在跳过前 3 个元素后只有后面 7 个返回。
 
 有一种情况是 limit/skip 无法达到 short-circuiting 目的的，就是把它们放在 Stream 的排序操作后，原因跟 sorted 这个 intermediate 操作有关：此时系统并不知道 Stream 排序后的次序如何，所以 sorted 中的操作看上去就像完全没有被 limit 或者 skip 一样。
 
@@ -473,7 +473,7 @@ name4
 [stream.StreamDW$Person@816f27d, stream.StreamDW$Person@87aac27]
 ```
 
-即虽然最后的返回元素数量是 2，但整个管道中的 sorted 表达式执行次数没有像前面例子相应减少。
+即虽然最后的返回元素数量是 2，但整个管道中的 `sorted` 表达式执行次数没有像前面例子相应减少。
 
 最后有一点需要注意的是，对一个 parallel 的 Steam 管道来说，如果其元素是有序的，那么 limit 操作的成本会比较大，因为它的返回对象必须是前 n 个也有一样次序的元素。取而代之的策略是取消元素间的次序，或者不要用 parallel Stream。
 

@@ -83,7 +83,7 @@ gem update --system
 gem install jekyll
 {% endhighlight %} 
  
-注意:淘宝的源`https`://`ruby`.`taobao`.`org`/ 已经不能用了,必须用`https`://`rubygems`.`org`/  ,"`RubyGems` 镜像的管理工作以后将交由 `Ruby` `China` 负责"，不过这里也有很多坑，我试了很多次http://gems.ruby-china.org，https://gems.ruby-china.org才可以。
+注意:淘宝的源`https`://`ruby`.`taobao`.`org`/ 已经不能用了,必须用`https`://`rubygems`.`org`/  ,"`RubyGems` 镜像的管理工作以后将交由 Ruby China 负责"，不过这里也有很多坑，我试了很多次http://gems.ruby-china.org，https://gems.ruby-china.org才可以。
 
 ## 4.提交博客，访问username.github.io
 

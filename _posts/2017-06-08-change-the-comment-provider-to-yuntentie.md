@@ -43,7 +43,7 @@ tag: 教程
 ![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/01.png' 
  prepend: site.baseurl  }})
 
-初始化			{#init-yungentie}
+初始化			{#`init-yungentie`}
 ---------------------
 
 如果是第一次登录云跟帖会提示完善站点基本信息。
@@ -53,8 +53,8 @@ tag: 教程
 
 完成之后点击`获取代码`，选择合适的皮肤进行设置，本博客是蓝色，固定位置。
 
-![/`styles`/`images`/`yungentie`/01.`png`]({{ '/`styles`/`images`/`yungentie`/03.`png'` 
- `prepend`: site.baseurl  }})
+![/`styles`/`images`/`yungentie`/01.`png`]({{ '/`styles`/`images`/`yungentie`/03.png' 
+ prepend: site.baseurl  }})
 
 复制引入代码			{#import-yungentie}
 ---------------------

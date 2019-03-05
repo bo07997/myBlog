@@ -9,13 +9,13 @@ description: 《Effective Java, Third Edition》一书英文版已经出版，�
 ---
 * content
 {:toc}
-### `introduction`
+### introduction
 
-《`Effective` `Java`, `Third` `Edition`》的学习
+《Effective Java, Third Edition》的学习
 
-## 条目9：使用``try-with`-`resources``语句替代`try-finally`语句
+## 条目9：使用`try-with-resources`语句替代`try-finally`语句
 
-`Java`类库中包含许多必须通过调用`close`方法手动关闭的资源。 比如``InputStream`，`OutputStream``和``java`.`sql`.`Connection``。 客户经常忽视关闭资源，其性能结果可想而知。 尽管这些资源中有很多使用`finalizer`机制作为安全网，但`finalizer`机制却不能很好地工作（条目 8）。
+Java类库中包含许多必须通过调用close方法手动关闭的资源。 比如`InputStream，OutputStream`和`java.sql.Connection`。 客户经常忽视关闭资源，其性能结果可想而知。 尽管这些资源中有很多使用`finalizer`机制作为安全网，但finalizer机制却不能很好地工作（条目 8）。
 从以往来看，`try-finally`语句是保证资源正确关闭的最佳方式，即使是在程序抛出异常或返回的情况下：
 
 ```java
@@ -103,7 +103,7 @@ basic.exception.MyException: close
 	......
 ```
 
-好的，问题来了，由于我们一次只能抛出一个异常，所以在最上层看到的是最后一个抛出的异常——也就是`close`方法抛出的`MyException`，而`sendData`抛出的`Exception`被忽略了。这就是所谓的异常屏蔽。由于异常信息的丢失，异常屏蔽可能会导致某些`bug`变得极其难以发现，程序员们不得不加班加点地找`bug`，如此毒瘤，怎能不除！幸好，为了解决这个问题，从Java 1.7开始，大佬们为`Throwable`类新增了`addSuppressed`方法，支持将一个异常附加到另一个异常身上，从而避免异常屏蔽。那么被屏蔽的异常信息会通过怎样的格式输出呢？我们再运行一遍刚才用`try-with-resource`包裹的`main`方法：
+好的，问题来了，由于我们一次只能抛出一个异常，所以在最上层看到的是最后一个抛出的异常——也就是`close`方法抛出的`MyException`，而`sendData`抛出的`Exception`被忽略了。这就是所谓的异常屏蔽。由于异常信息的丢失，异常屏蔽可能会导致某些`bug`变得极其难以发现，程序员们不得不加班加点地找bug，如此毒瘤，怎能不除！幸好，为了解决这个问题，从Java 1.7开始，大佬们为`Throwable`类新增了`addSuppressed`方法，支持将一个异常附加到另一个异常身上，从而避免异常屏蔽。那么被屏蔽的异常信息会通过怎样的格式输出呢？我们再运行一遍刚才用`try-with-resource`包裹的`main`方法：
 
 ```java
 java.lang.Exception: send data
@@ -123,3 +123,10 @@ java.lang.Exception: send data
 
 
  
+
+
+
+
+
+
+

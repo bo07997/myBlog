@@ -9,152 +9,143 @@ description: 主要介绍netty的Channel配置参数,方便查阅
 ---
 * content
 {:toc}
-### introduction
+### `introduction`
 
-主要介绍netty的Channel配置参数,方便查阅
+主要介绍`netty`的`Channel`配置参数,方便查阅
 
 ### (1).通用参数
 
 
-**CONNECT_TIMEOUT_MILLIS :**
+**`CONNECT`_`TIMEOUT`_`MILLIS` :**
 
-  Netty参数，连接超时毫秒数，默认值30000毫秒即30秒。
+  `Netty`参数，连接超时毫秒数，默认值30000毫秒即30秒。
 
-**MAX_MESSAGES_PER_READ**
+**`MAX`_`MESSAGES`_`PER`_`READ`**
 
-  Netty参数，一次Loop读取的最大消息数，对于ServerChannel或者NioByteChannel，默认值为16，其他Channel默认值为1。默认值这样设置，是因为：ServerChannel需要接受足够多的连接，保证大吞吐量，NioByteChannel可以减少不必要的系统调用select。
+  `Netty`参数，一次`Loop`读取的最大消息数，对于`ServerChannel`或者`NioByteChannel`，默认值为16，其他`Channel`默认值为1。默认值这样设置，是因为：`ServerChannel`需要接受足够多的连接，保证大吞吐量，`NioByteChannel`可以减少不必要的系统调用`select`。
 
-**WRITE_SPIN_COUNT**
+**`WRITE`_`SPIN`_`COUNT`**
 
-  Netty参数，一个Loop写操作执行的最大次数，默认值为16。也就是说，对于大数据量的写操作至多进行16次，如果16次仍没有全部写完数据，此时会提交一个新的写任务给EventLoop，任务将在下次调度继续执行。这样，其他的写请求才能被响应不会因为单个大数据量写请求而耽误。
+  `Netty`参数，一个`Loop`写操作执行的最大次数，默认值为16。也就是说，对于大数据量的写操作至多进行16次，如果16次仍没有全部写完数据，此时会提交一个新的写任务给`EventLoop`，任务将在下次调度继续执行。这样，其他的写请求才能被响应不会因为单个大数据量写请求而耽误。
 
-**ALLOCATOR**
+**`ALLOCATOR`**
 
-  Netty参数，ByteBuf的分配器，默认值为ByteBufAllocator.DEFAULT，4.0版本为UnpooledByteBufAllocator，4.1版本为PooledByteBufAllocator。该值也可以使用系统参数io.netty.allocator.type配置，使用字符串值："unpooled"，"pooled"。
+  `Netty`参数，`ByteBuf`的分配器，默认值为`ByteBufAllocator`.`DEFAULT`，4.0版本为`UnpooledByteBufAllocator`，4.1版本为`PooledByteBufAllocator`。该值也可以使用系统参数`io`.`netty`.`allocator`.`type`配置，使用字符串值："`unpooled`"，"`pooled`"。
 
-**RCVBUF_ALLOCATOR**
+**`RCVBUF`_`ALLOCATOR`**
 
-  Netty参数，用于Channel分配接受Buffer的分配器，默认值为AdaptiveRecvByteBufAllocator.DEFAULT，是一个自适应的接受缓冲区分配器，能根据接受到的数据自动调节大小。可选值为FixedRecvByteBufAllocator，固定大小的接受缓冲区分配器。
+  `Netty`参数，用于`Channel`分配接受`Buffer`的分配器，默认值为`AdaptiveRecvByteBufAllocator`.`DEFAULT`，是一个自适应的接受缓冲区分配器，能根据接受到的数据自动调节大小。可选值为`FixedRecvByteBufAllocator`，固定大小的接受缓冲区分配器。
 
-**AUTO_READ**
+**`AUTO`_`READ`**
 
-  Netty参数，自动读取，默认值为True。Netty只在必要的时候才设置关心相应的I/O事件。对于读操作，需要调用channel.read()设置关心的I/O事件为OP_READ，这样若有数据到达才能读取以供用户处理。该值为True时，每次读操作完毕后会自动调用channel.read()，从而有数据到达便能读取；否则，需要用户手动调用channel.read()。需要注意的是：当调用config.setAutoRead(boolean)方法时，如果状态由false变为true，将会调用channel.read()方法读取数据；由true变为false，将调用config.autoReadCleared()方法终止数据读取。
+  `Netty`参数，自动读取，默认值为`True`。`Netty`只在必要的时候才设置关心相应的`I`/`O`事件。对于读操作，需要调用`channel`.`read`()设置关心的`I`/`O`事件为`OP`_`READ`，这样若有数据到达才能读取以供用户处理。该值为`True`时，每次读操作完毕后会自动调用`channel`.`read`()，从而有数据到达便能读取；否则，需要用户手动调用`channel`.`read`()。需要注意的是：当调用`config`.`setAutoRead`(`boolean`)方法时，如果状态由`false`变为`true`，将会调用`channel`.`read`()方法读取数据；由`true`变为`false`，将调用`config`.`autoReadCleared`()方法终止数据读取。
 
-**WRITE_BUFFER_HIGH_WATER_MARK**
+**`WRITE`_`BUFFER`_`HIGH`_`WATER`_`MARK`**
 
-  Netty参数，写高水位标记，默认值64KB。如果Netty的写缓冲区中的字节超过该值，Channel的isWritable()返回False。
+  `Netty`参数，写高水位标记，默认值64`KB`。如果`Netty`的写缓冲区中的字节超过该值，`Channel`的`isWritable`()返回`False`。
 
-**WRITE_BUFFER_LOW_WATER_MARK**
+**`WRITE`_`BUFFER`_`LOW`_`WATER`_`MARK`**
 
-  Netty参数，写低水位标记，默认值32KB。当Netty的写缓冲区中的字节超过高水位之后若下降到低水位，则Channel的isWritable()返回True。写高低水位标记使用户可以控制写入数据速度，从而实现流量控制。推荐做法是：每次调用channl.write(msg)方法首先调用channel.isWritable()判断是否可写。
+  `Netty`参数，写低水位标记，默认值32`KB`。当`Netty`的写缓冲区中的字节超过高水位之后若下降到低水位，则`Channel`的`isWritable`()返回`True`。写高低水位标记使用户可以控制写入数据速度，从而实现流量控制。推荐做法是：每次调用`channl`.`write`(`msg`)方法首先调用`channel`.`isWritable`()判断是否可写。
 
-**MESSAGE_SIZE_ESTIMATOR**
+**`MESSAGE`_`SIZE`_`ESTIMATOR`**
 
-  Netty参数，消息大小估算器，默认为DefaultMessageSizeEstimator.DEFAULT。估算ByteBuf、ByteBufHolder和FileRegion的大小，其中ByteBuf和ByteBufHolder为实际大小，FileRegion估算值为0。该值估算的字节数在计算水位时使用，FileRegion为0可知FileRegion不影响高低水位。
+  `Netty`参数，消息大小估算器，默认为`DefaultMessageSizeEstimator`.`DEFAULT`。估算`ByteBuf`、`ByteBufHolder`和`FileRegion`的大小，其中`ByteBuf`和`ByteBufHolder`为实际大小，`FileRegion`估算值为0。该值估算的字节数在计算水位时使用，`FileRegion`为0可知`FileRegion`不影响高低水位。
 
-**SINGLE_EVENTEXECUTOR_PER_GROUP**
+**`SINGLE`_`EVENTEXECUTOR`_`PER`_`GROUP`**
 
-  Netty参数，单线程执行ChannelPipeline中的事件，默认值为True。该值控制执行ChannelPipeline中执行ChannelHandler的线程。如果为Trye，整个pipeline由一个线程执行，这样不需要进行线程切换以及线程同步，是Netty4的推荐做法；如果为False，ChannelHandler中的处理过程会由Group中的不同线程执行。
-
-
-
-### (2).SocketChannel参数
+  `Netty`参数，单线程执行`ChannelPipeline`中的事件，默认值为`True`。该值控制执行`ChannelPipeline`中执行`ChannelHandler`的线程。如果为`Trye`，整个`pipeline`由一个线程执行，这样不需要进行线程切换以及线程同步，是`Netty`4的推荐做法；如果为`False`，`ChannelHandler`中的处理过程会由`Group`中的不同线程执行。
 
 
 
-**SO_RCVBUF**
-
-  Socket参数，TCP数据接收缓冲区大小。该缓冲区即TCP接收滑动窗口，linux操作系统可使用命令：cat /proc/sys/net/ipv4/tcp_rmem查询其大小。一般情况下，该值可由用户在任意时刻设置，但当设置值超过64KB时，需要在连接到远端之前设置。
-
-**SO_SNDBUF**
-
-  Socket参数，TCP数据发送缓冲区大小。该缓冲区即TCP发送滑动窗口，linux操作系统可使用命令：cat /proc/sys/net/ipv4/tcp_smem查询其大小。
-
-**TCP_NODELAY**
-
-  TCP参数，立即发送数据，默认值为Ture（Netty默认为True而操作系统默认为False）。该值设置Nagle算法的启用，改算法将小的碎片数据连接成更大的报文来最小化所发送的报文的数量，如果需要发送一些较小的报文，则需要禁用该算法。Netty默认禁用该算法，从而最小化报文传输延时。
-
-**SO_KEEPALIVE**
-
-  Socket参数，连接保活，默认值为False。启用该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，需要注意的是：默认的心跳间隔是7200s即2小时。Netty默认关闭该功能。
-
-**SO_REUSEADDR**
-
-  Socket参数，地址复用，默认值False。有四种情况可以使用：(1).当有一个有相同本地地址和端口的socket1处于TIME_WAIT状态时，而你希望启动的程序的socket2要占用该地址和端口，比如重启服务且保持先前端口。(2).有多块网卡或用IP Alias技术的机器在同一端口启动多个进程，但每个进程绑定的本地IP地址不能相同。(3).单个进程绑定相同的端口到多个socket上，但每个socket绑定的ip地址不同。(4).完全相同的地址和端口的重复绑定。但这只用于UDP的多播，不用于TCP。
-
-**SO_LINGER**
-
-  Socket参数，关闭Socket的延迟时间，默认值为-1，表示禁用该功能。-1表示socket.close()方法立即返回，但OS底层会将发送缓冲区全部发送到对端。0表示socket.close()方法立即返回，OS放弃发送缓冲区的数据直接向对端发送RST包，对端收到复位错误。非0整数值表示调用socket.close()方法的线程被阻塞直到延迟时间到或发送缓冲区中的数据发送完毕，若超时，则对端会收到复位错误。
-
-**IP_TOS**
-
-  IP参数，设置IP头部的Type-of-Service字段，用于描述IP包的优先级和QoS选项。
-
-**ALLOW_HALF_CLOSURE**
-
-  Netty参数，一个连接的远端关闭时本地端是否关闭，默认值为False。值为False时，连接自动关闭；为True时，触发ChannelInboundHandler的userEventTriggered()方法，事件为ChannelInputShutdownEvent。
+### (2).`SocketChannel`参数
 
 
 
-### (3).ServerSocketChannel参数
+**`SO`_`RCVBUF`**
+
+  `Socket`参数，`TCP`数据接收缓冲区大小。该缓冲区即`TCP`接收滑动窗口，`linux`操作系统可使用命令：`cat` /`proc`/`sys`/`net`/`ipv`4/`tcp`_`rmem`查询其大小。一般情况下，该值可由用户在任意时刻设置，但当设置值超过64`KB`时，需要在连接到远端之前设置。
+
+**`SO`_`SNDBUF`**
+
+  `Socket`参数，`TCP`数据发送缓冲区大小。该缓冲区即`TCP`发送滑动窗口，`linux`操作系统可使用命令：`cat` /`proc`/`sys`/`net`/`ipv`4/`tcp`_`smem`查询其大小。
+
+**`TCP`_`NODELAY`**
+
+  `TCP`参数，立即发送数据，默认值为`Ture`（`Netty`默认为`True`而操作系统默认为`False`）。该值设置`Nagle`算法的启用，改算法将小的碎片数据连接成更大的报文来最小化所发送的报文的数量，如果需要发送一些较小的报文，则需要禁用该算法。`Netty`默认禁用该算法，从而最小化报文传输延时。
+
+**`SO`_`KEEPALIVE`**
+
+  `Socket`参数，连接保活，默认值为`False`。启用该功能时，`TCP`会主动探测空闲连接的有效性。可以将此功能视为`TCP`的心跳机制，需要注意的是：默认的心跳间隔是7200`s`即2小时。`Netty`默认关闭该功能。
+
+**`SO`_`REUSEADDR`**
+
+  `Socket`参数，地址复用，默认值`False`。有四种情况可以使用：(1).当有一个有相同本地地址和端口的`socket`1处于`TIME`_`WAIT`状态时，而你希望启动的程序的`socket`2要占用该地址和端口，比如重启服务且保持先前端口。(2).有多块网卡或用`IP` `Alias`技术的机器在同一端口启动多个进程，但每个进程绑定的本地`IP`地址不能相同。(3).单个进程绑定相同的端口到多个`socket`上，但每个`socket`绑定的`ip`地址不同。(4).完全相同的地址和端口的重复绑定。但这只用于`UDP`的多播，不用于`TCP`。
+
+**`SO`_`LINGER`**
+
+  `Socket`参数，关闭`Socket`的延迟时间，默认值为-1，表示禁用该功能。-1表示`socket`.`close`()方法立即返回，但`OS`底层会将发送缓冲区全部发送到对端。0表示`socket`.`close`()方法立即返回，`OS`放弃发送缓冲区的数据直接向对端发送`RST`包，对端收到复位错误。非0整数值表示调用`socket`.`close`()方法的线程被阻塞直到延迟时间到或发送缓冲区中的数据发送完毕，若超时，则对端会收到复位错误。
+
+**`IP`_`TOS`**
+
+  `IP`参数，设置`IP`头部的`Type-of`-`Service`字段，用于描述`IP`包的优先级和`QoS`选项。
+
+**`ALLOW`_`HALF`_`CLOSURE`**
+
+  `Netty`参数，一个连接的远端关闭时本地端是否关闭，默认值为`False`。值为`False`时，连接自动关闭；为`True`时，触发`ChannelInboundHandler`的`userEventTriggered`()方法，事件为`ChannelInputShutdownEvent`。
 
 
 
-**SO_RCVBUF**
+### (3).`ServerSocketChannel`参数
 
-  已说明，需要注意的是：当设置值超过64KB时，需要在绑定到本地端口前设置。该值设置的是由ServerSocketChannel使用accept接受的SocketChannel的接收缓冲区。
+
+
+**`SO`_`RCVBUF`**
+
+  已说明，需要注意的是：当设置值超过64`KB`时，需要在绑定到本地端口前设置。该值设置的是由`ServerSocketChannel`使用`accept`接受的`SocketChannel`的接收缓冲区。
   
-**SO_REUSEADDR**
+**`SO`_`REUSEADDR`**
 
   已说明
   
-**SO_BACKLOG**
+**`SO`_`BACKLOG`**
 
-  Socket参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，Windows为200，其他为128。
-
-
-
-### (4).DatagramChannel参数
+  `Socket`参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，`Windows`为200，其他为128。
 
 
 
-**SO_BROADCAST:** Socket参数，设置广播模式。
+### (4).`DatagramChannel`参数
 
-**SO_RCVBUF:**已说明
 
-**SO_SNDBUF:**已说明
 
-**SO_REUSEADDR:**已说明
+**`SO`_`BROADCAST`:** `Socket`参数，设置广播模式。
 
-**IP_MULTICAST_LOOP_DISABLED:**
+**`SO`_`RCVBUF`:**已说明
 
-  对应IP参数IP_MULTICAST_LOOP，设置本地回环接口的多播功能。由于IP_MULTICAST_LOOP返回True表示关闭，所以Netty加上后缀_DISABLED防止歧义。
+**`SO`_`SNDBUF`:**已说明
 
-**IP_MULTICAST_ADDR:**
+**`SO`_`REUSEADDR`:**已说明
 
-  对应IP参数IP_MULTICAST_IF，设置对应地址的网卡为多播模式。
+**`IP`_`MULTICAST`_`LOOP`_`DISABLED`:**
 
-**IP_MULTICAST_IF:**
+  对应`IP`参数`IP`_`MULTICAST`_`LOOP`，设置本地回环接口的多播功能。由于`IP`_`MULTICAST`_`LOOP`返回`True`表示关闭，所以`Netty`加上后缀_`DISABLED`防止歧义。
 
-  对应IP参数IP_MULTICAST_IF2，同上但支持IPV6。
+**`IP`_`MULTICAST`_`ADDR`:**
 
-**IP_MULTICAST_TTL:**
+  对应`IP`参数`IP`_`MULTICAST`_`IF`，设置对应地址的网卡为多播模式。
 
-  IP参数，多播数据报的time-to-live即存活跳数。
+**`IP`_`MULTICAST`_`IF`:**
 
-**IP_TOS:**
+  对应`IP`参数`IP`_`MULTICAST`_`IF`2，同上但支持`IPV`6。
+
+**`IP`_`MULTICAST`_`TTL`:**
+
+  `IP`参数，多播数据报的`time-to`-`live`即存活跳数。
+
+**`IP`_`TOS`:**
 
   已说明
 
-**DATAGRAM_CHANNEL_ACTIVE_ON_REGISTRATION:**
+**`DATAGRAM`_`CHANNEL`_`ACTIVE`_`ON`_`REGISTRATION`:**
 
-  Netty参数，DatagramChannel注册的EventLoop即表示已激活。
-
-
-
-
-
-
-
-
-
+  `Netty`参数，`DatagramChannel`注册的`EventLoop`即表示已激活。

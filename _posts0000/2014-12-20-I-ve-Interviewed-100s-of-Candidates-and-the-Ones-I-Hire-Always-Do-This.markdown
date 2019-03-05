@@ -10,14 +10,14 @@ tag: interview
 {:toc}
 
 
-本文翻译自[`Linked` `In`](`https`://`www`.`linkedin`.`com`/)，作者`Minal` `Mehta`
+本文翻译自[Linked In](https://www.linkedin.com/)，作者Minal Mehta
 
-原文地址 [`I`’`ve` `Interviewed` 100`s` `of` `Candidates` `and` `the` `Ones` `I` `Hire` `Always` `Do` `This`](`http`://`www`.`linkedin`.`com`/`pulse`/20141002164029-1473578-`how-to`-`win-an`-`interview-before`-`it-starts`?`midToken`=`AQH`6`jyhMOpWb`0`g`&`trk`=`eml-b`2_`content`_`ecosystem`_`digest-recommended`_`articles-`74-`null`&`fromEmail`=`fromEmail`&`ut`=3`Sa`86`TzhqLj`6`s`1)
+原文地址 [I’ve Interviewed 100s of Candidates and the Ones I Hire Always Do This](http://www.linkedin.com/pulse/20141002164029-1473578-how-to-win-an-interview-before-it-starts?midToken=AQH6jyhMOpWb0g&trk=eml-b2_content_ecosystem_digest-recommended_articles-74-null&fromEmail=fromEmail&ut=3Sa86TzhqLj6s1)
 
 
 面试是很有压力的一件事，通常，你只有不到一个小时的时间来使面试官相信你是所有候选者中最合适那一个。这个面试官很有可能还会在当天面试其他的候选者并且还有其他的事情要做。那你如何才能够脱颖而出呢。
 
-充分的准备，知道哪些事情是想要让面试官知道的。			{#`prepare`}
+充分的准备，知道哪些事情是想要让面试官知道的。			{#prepare}
 ====================================
 
 通过上百个我做组织的面试者们，我发现最合适的那些面试者永远都是表达最清晰的。
@@ -30,16 +30,16 @@ tag: interview
 
 从你过往工作经历中找出你突出的贡献，那些你已经确定了你的能力和工作要求相交集的部分。并且，找出一些事情来证明你可以改善你不足的方面。通常，你想出来的这几件事件可以重新组装利用来彰显不同方面的能力。
 
-了解你的听众，组织你的回答语言。			{#`learn`}
+了解你的听众，组织你的回答语言。			{#learn}
 ====================================
 
-我推荐使用排序的组织来确保你的面试官可以理解你的表述。我是`STAR`方法的忠实粉丝：`Situation`处境（场景再现），`Task`任务（必须要做到的），`Action`行动（你实际做的），`Result`结果（发生了什么）
+我推荐使用排序的组织来确保你的面试官可以理解你的表述。我是STAR方法的忠实粉丝：Situation处境（场景再现），Task任务（必须要做到的），Action行动（你实际做的），Result结果（发生了什么）
 
 场景再现是最重要的，虽然你很清楚发生了什么，但是面试官不知道，花些时间来确保他们可以设身处地的知道当时的情况。如果你不这么做，剩下的故事将是对牛弹琴。
 
 我个人也一直将同样的方法用在各种面试中。“如果你处在一个特定的情境下，你会怎么做？” 花点时间去建立一个共享的空间，让面试官了解情况，然后你们才能一起来聊需要做什么。
 
-保持冷静，记住这次面试是双向的。			{#`keep-calm`}
+保持冷静，记住这次面试是双向的。			{#keep-calm}
 ====================================
 
 深呼吸然后记住这只是一次谈话，面试官给你一个评价是很重要的，但是同样重要的是你也要给面试官一个评价，并且确认这是你想要工作的地方。

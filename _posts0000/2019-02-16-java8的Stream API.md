@@ -9,20 +9,20 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
 ---
 * content
 {:toc}
-### `introduction`
-入职看到一段`Java` `Stream` `API`代码，趁着这个机会回顾一下`java`8的`Stream` `API`的使用。
+### introduction
+入职看到一段Java Stream API代码，趁着这个机会回顾一下java8的Stream API的使用。
 
 
-### 1. 为什么需要 `Stream`
+### 1. 为什么需要 Stream
 
-`Stream` 作为 `Java` 8 的一大亮点，它与 `java`.`io` 包里的 `InputStream` 和 `OutputStream` 是完全不同的概念。
-它也不同于 `StAX` 对 `XML` 解析的 `Stream`，也不是 `Amazon` `Kinesis` 对大数据实时处理的 `Stream`。`Java` 8 中
-的 `Stream` 是对集合（`Collection`）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操
-作（`aggregate` `operation`），或者大批量数据操作 (`bulk` `data` `operation`)。`Stream` `API` 借助于同样新出现的 
-`Lambda` 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，
-并发模式能够充分利用多核处理器的优势，使用 `fork`/`join` 并行方式来拆分任务和加速处理过程。
-通常编写并行代码很难而且容易出错, 但使用 `Stream` `API` 无需编写一行多线程的代码，就可以很方便地
-写出高性能的并发程序。所以说，`Java` 8 中首次出现的 `java`.`util`.`stream` 是一个函数式语言+多核时代综合影响的产物。
+Stream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念。
+它也不同于 StAX 对 XML 解析的 Stream，也不是 Amazon Kinesis 对大数据实时处理的 Stream。Java 8 中
+的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操
+作（aggregate operation），或者大批量数据操作 (bulk data operation)。Stream API 借助于同样新出现的 
+Lambda 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，
+并发模式能够充分利用多核处理器的优势，使用 fork/join 并行方式来拆分任务和加速处理过程。
+通常编写并行代码很难而且容易出错, 但使用 Stream API 无需编写一行多线程的代码，就可以很方便地
+写出高性能的并发程序。所以说，Java 8 中首次出现的 java.util.stream 是一个函数式语言+多核时代综合影响的产物。
 
 #### 什么是聚合操作
 
@@ -30,7 +30,7 @@ description: 入职看到一段Java Stream API代码，趁着这个机会回顾�
  2. 最昂贵的在售商品。
  3. 取十个数据样本作为首页推荐。
  
- 但在当今这个数据大爆炸的时代，在数据来源多样化、数据海量化的今天，很多时候不得不脱离 `RDBMS`，或者以底层返回的数据为基础进行更上层的数据统计。而 `Java` 的集合 `API` 中，仅仅有极少量的辅助型方法，更多的时候是程序员需要用 `Iterator` 来遍历集合，完成相关的聚合应用逻辑。这是一种远不够高效、笨拙的方法。在 `Java` 7 中，如果要发现 type 为 grocery 的所有交易，然后返回以交易值降序排序好的交易 ID 集合，我们需要这样写：
+ 但在当今这个数据大爆炸的时代，在数据来源多样化、数据海量化的今天，很多时候不得不脱离 RDBMS，或者以底层返回的数据为基础进行更上层的数据统计。而 Java 的集合 API 中，仅仅有极少量的辅助型方法，更多的时候是程序员需要用 Iterator 来遍历集合，完成相关的聚合应用逻辑。这是一种远不够高效、笨拙的方法。在 Java 7 中，如果要发现 type 为 grocery 的所有交易，然后返回以交易值降序排序好的交易 ID 集合，我们需要这样写：
  
  清单 1. Java 7 的排序、取值实现
  
@@ -64,23 +64,23 @@ for(Transaction t: groceryTransactions){
  collect(toList());
 ```
 
-### `Stream` 总览
+### Stream 总览
 
 #### 什么是流
 
-`Stream` 不是集合元素，它不是数据结构并不保存数据，它是有关算法和计算的，它更像一个高级版本的 `Iterator`。原始版本的 `Iterator`，用户只能显式地一个一个遍历元素并对其执行某些操作；高级版本的 `Stream`，用户只要给出需要对其包含的元素执行什么操作，比如 “过滤掉长度大于 10 的字符串”、“获取每个字符串的首字母”等，`Stream` 会隐式地在内部进行遍历，做出相应的数据转换。
+Stream 不是集合元素，它不是数据结构并不保存数据，它是有关算法和计算的，它更像一个高级版本的 Iterator。原始版本的 Iterator，用户只能显式地一个一个遍历元素并对其执行某些操作；高级版本的 Stream，用户只要给出需要对其包含的元素执行什么操作，比如 “过滤掉长度大于 10 的字符串”、“获取每个字符串的首字母”等，Stream 会隐式地在内部进行遍历，做出相应的数据转换。
 
-`Stream` 就如同一个迭代器（`Iterator`），单向，不可往复，数据只能遍历一次，遍历过一次后即用尽了，就好比流水从面前流过，一去不复返。
+Stream 就如同一个迭代器（Iterator），单向，不可往复，数据只能遍历一次，遍历过一次后即用尽了，就好比流水从面前流过，一去不复返。
 
-而和迭代器又不同的是，`Stream` 可以并行化操作，迭代器只能命令式地、串行化操作。顾名思义，当使用串行方式去遍历时，每个 `item` 读完后再读下一个 `item`。而使用并行去遍历时，数据会被分成多个段，其中每一个都在不同的线程中处理，然后将结果一起输出。`Stream` 的并行操作依赖于 `Java`7 中引入的 `Fork`/`Join` 框架（`JSR`166`y`）来拆分任务和加速处理过程。`Java` 的并行 `API` 演变历程基本如下：
+而和迭代器又不同的是，Stream 可以并行化操作，迭代器只能命令式地、串行化操作。顾名思义，当使用串行方式去遍历时，每个 item 读完后再读下一个 item。而使用并行去遍历时，数据会被分成多个段，其中每一个都在不同的线程中处理，然后将结果一起输出。Stream 的并行操作依赖于 Java7 中引入的 Fork/Join 框架（JSR166y）来拆分任务和加速处理过程。Java 的并行 API 演变历程基本如下：
 
- 1.1.0-1.4 中的 `java`.`lang`.`Thread`
- 2.5.0 中的 `java`.`util`.`concurrent`
- 3.6.0 中的 `Phasers` 等
- 4.7.0 中的 `Fork`/`Join` 框架
- 5.8.0 中的 `Lambda`
+ 1.1.0-1.4 中的 java.lang.Thread
+ 2.5.0 中的 java.util.concurrent
+ 3.6.0 中的 Phasers 等
+ 4.7.0 中的 Fork/Join 框架
+ 5.8.0 中的 Lambda
  
- `Stream` 的另外一大特点是，数据源本身可以是无限的。
+ Stream 的另外一大特点是，数据源本身可以是无限的。
  
  #### 流的构成
  
@@ -92,43 +92,43 @@ for(Transaction t: groceryTransactions){
  
  ![](https://bo07997.github.io/myBlog/styles/images/Blog/java/stream/1.jpg)
  
- 有多种方式生成 `Stream` `Source`：
+ 有多种方式生成 Stream Source：
  
- 1. 从 `Collection` 和数组
+ 1. 从 Collection 和数组
  
- 2. `Collection`.`stream`()
+ 2. Collection.stream()
    
-(1).`Collection`.`parallelStream`()
+(1).Collection.parallelStream()
    
-(2).`Arrays`.`stream`(`T` `array`) `or` `Stream`.`of`()
+(2).Arrays.stream(T array) or Stream.of()
   
-(3).从 `BufferedReader`
+(3).从 BufferedReader
    
-(4).`java`.`io`.`BufferedReader`.`lines`()
+(4).java.io.BufferedReader.lines()
   
  3. 静态工厂
  
- (1).`java`.`util`.`stream`.`IntStream`.`range`()
+ (1).java.util.stream.IntStream.range()
  
- (2).`java`.`nio`.`file`.`Files`.`walk`()
+ (2).java.nio.file.Files.walk()
  
  4. 其它
  
- (1).`Random`.`ints`()
+ (1).Random.ints()
  
- (2).`BitSet`.`stream`()
+ (2).BitSet.stream()
  
- (3).`Pattern`.`splitAsStream`(`java`.`lang`.`CharSequence`)
+ (3).Pattern.splitAsStream(java.lang.CharSequence)
  
- (4).`JarFile`.`stream`()
+ (4).JarFile.stream()
  
 流的操作类型分为两种：
 
-**`Intermediate`：**一个流可以后面跟随零个或多个 `intermediate` 操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的（`lazy`），就是说，仅仅调用到这类方法，并没有真正开始流的遍历。
+**Intermediate：**一个流可以后面跟随零个或多个 intermediate 操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的（lazy），就是说，仅仅调用到这类方法，并没有真正开始流的遍历。
 
-**`Terminal`：**一个流只能有一个 `terminal` 操作，当这个操作执行后，流就被使用“光”了，无法再被操作。所以这必定是流的最后一个操作。`Terminal` 操作的执行，才会真正开始流的遍历，并且会生成一个结果，或者一个 `side` `effect`。
+**Terminal：**一个流只能有一个 terminal 操作，当这个操作执行后，流就被使用“光”了，无法再被操作。所以这必定是流的最后一个操作。Terminal 操作的执行，才会真正开始流的遍历，并且会生成一个结果，或者一个 side effect。
 
-在对于一个 `Stream` 进行多次转换操作 (`Intermediate` 操作)，每次都对 `Stream` 的每个元素进行转换，而且是执行多次，这样时间复杂度就是 `N`（转换次数）个 `for` 循环里把所有操作都做掉的总和吗？其实不是这样的，转换操作都是 `lazy` 的，多个转换操作只会在 `Terminal` 操作的时候融合起来，一次循环完成。我们可以这样简单的理解，`Stream` 里有个操作函数的集合，每次转换操作就是把转换函数放入这个集合中，在 `Terminal` 操作的时候循环 `Stream` 对应的集合，然后对每个元素执行所有的函数。
+在对于一个 Stream 进行多次转换操作 (Intermediate 操作)，每次都对 Stream 的每个元素进行转换，而且是执行多次，这样时间复杂度就是 N（转换次数）个 for 循环里把所有操作都做掉的总和吗？其实不是这样的，转换操作都是 lazy 的，多个转换操作只会在 Terminal 操作的时候融合起来，一次循环完成。我们可以这样简单的理解，Stream 里有个操作函数的集合，每次转换操作就是把转换函数放入这个集合中，在 Terminal 操作的时候循环 Stream 对应的集合，然后对每个元素执行所有的函数。
 
 还有一种操作被称为 **short-circuiting**。用以指：
 
@@ -199,19 +199,19 @@ Stack stack1 = stream.collect(Collectors.toCollection(Stack::new));
 String str = stream.collect(Collectors.joining()).toString();
 ```
 
-一个 `Stream` 只可以使用一次，上面的代码为了简洁而重复使用了数次
+一个 Stream 只可以使用一次，上面的代码为了简洁而重复使用了数次
 
 #### 流的操作
 
-接下来，当把一个数据结构包装成 `Stream` 后，就要开始对里面的元素进行各类操作了。常见的操作可以归类如下。
+接下来，当把一个数据结构包装成 Stream 后，就要开始对里面的元素进行各类操作了。常见的操作可以归类如下。
 
-1.**`Intermediate`：**
+1.**Intermediate：**
 
-`map` (`mapToInt`, `flatMap` 等)、 `filter`、 `distinct`、 `sorted`、 `peek`、 `limit`、 `skip`、 `parallel`、 `sequential`、 `unordered`
+map (mapToInt, flatMap 等)、 filter、 distinct、 sorted、 peek、 limit、 skip、 parallel、 sequential、 unordered
 
-2.**`Terminal`：**
+2.**Terminal：**
 
-`forEach`、 `forEachOrdered`、 `toArray`、 `reduce`、 `collect`、 `min`、 `max`、 count、 anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 iterator
+forEach、 forEachOrdered、 toArray、 reduce、 collect、 min、 max、 count、 anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 iterator
 
 3.**Short-circuiting：**
 
@@ -304,7 +304,7 @@ for (Person p : roster) {
 }
 ```
 
-对一个人员集合遍历，找出男性并打印姓名。可以看出来，`forEach` 是为 `Lambda` 而设计的，保持了最紧凑的风格。而且 `Lambda` 表达式本身是可以重用的，非常方便。当需要为多核系统优化时，可以 parallelStream().forEach()，只是此时原有元素的次序没法保证，并行的情况下将改变串行时操作的行为，此时 forEach 本身的实现不需要调整，而 Java8 以前的 for 循环 code 可能需要加入额外的多线程逻辑。
+对一个人员集合遍历，找出男性并打印姓名。可以看出来，forEach 是为 Lambda 而设计的，保持了最紧凑的风格。而且 Lambda 表达式本身是可以重用的，非常方便。当需要为多核系统优化时，可以 parallelStream().forEach()，只是此时原有元素的次序没法保证，并行的情况下将改变串行时操作的行为，此时 forEach 本身的实现不需要调整，而 Java8 以前的 for 循环 code 可能需要加入额外的多线程逻辑。
 
 但一般认为，forEach 和常规 for 循环的差异不涉及到性能，它们仅仅是函数式风格与传统 Java 风格的差别。
 
@@ -362,11 +362,11 @@ return Optional.ofNullable(text).map(String::length).orElse(-1);
  };
 ```
 
-在更复杂的 `if` (`xx` != `null`) 的情况中，使用 `Optional` 代码的可读性更好，而且它提供的是编译时检查，能极大的降低 `NPE` 这种 `Runtime` `Exception` 对程序的影响，或者迫使程序员更早的在编码阶段处理空值问题，而不是留到运行时再发现和调试。
+在更复杂的 if (xx != null) 的情况中，使用 Optional 代码的可读性更好，而且它提供的是编译时检查，能极大的降低 NPE 这种 Runtime Exception 对程序的影响，或者迫使程序员更早的在编码阶段处理空值问题，而不是留到运行时再发现和调试。
 
-`Stream` 中的 `findAny`、`max`/`min`、`reduce` 等方法等返回 `Optional` 值。还有例如 `IntStream`.`average`() 返回 `OptionalDouble` 等等。
+Stream 中的 findAny、max/min、reduce 等方法等返回 Optional 值。还有例如 IntStream.average() 返回 OptionalDouble 等等。
 
-**`reduce`**
+**reduce**
 
 这个方法的主要作用是把 Stream 元素组合起来。它提供一个起始值（种子），然后依照运算规则（BinaryOperator），和前面 Stream 的第一个、第二个、第 n 个元素组合。从这个意义上说，字符串拼接、数值的 sum、min、max、average 都是特殊的 reduce。例如 Stream 的 sum 就相当于
 
@@ -575,32 +575,33 @@ Any child? true
 
 1.不是数据结构
 
-2.它没有内部存储，它只是用操作管道从 `source`（数据结构、数组、`generator` `function`、`IO` `channel`）抓取数据。
+2.它没有内部存储，它只是用操作管道从 source（数据结构、数组、generator function、IO channel）抓取数据。
 
-3.它也绝不修改自己所封装的底层数据结构的数据。例如 `Stream` 的 `filter` 操作会产生一个不包含被过滤元素的新 `Stream`，而不是从 `source` 删除那些元素。
+3.它也绝不修改自己所封装的底层数据结构的数据。例如 Stream 的 filter 操作会产生一个不包含被过滤元素的新 Stream，而不是从 source 删除那些元素。
 
-4.所有 `Stream` 的操作必须以 `lambda` 表达式为参数
+4.所有 Stream 的操作必须以 lambda 表达式为参数
 
 5.不支持索引访问
 
 6.你可以请求第一个元素，但无法请求第二个，第三个，或最后一个。不过请参阅下一项。
 
-7.很容易生成数组或者 `List`
+7.很容易生成数组或者 List
 
 8.惰性化
 
-9.很多 `Stream` 操作是向后延迟的，一直到它弄清楚了最后需要多少数据才会开始。
+9.很多 Stream 操作是向后延迟的，一直到它弄清楚了最后需要多少数据才会开始。
 
-10.`Intermediate` 操作永远是惰性化的。
+10.Intermediate 操作永远是惰性化的。
 
 11.并行能力
 
-12.当一个 `Stream` 是并行化的，就不需要再写多线程代码，所有对它的操作会自动并行进行的。
+12.当一个 Stream 是并行化的，就不需要再写多线程代码，所有对它的操作会自动并行进行的。
 
 13.可以是无限的
 
-14.集合有固定大小，`Stream` 则不必。`limit`(`n`) 和 `findFirst`() 这类的 `short-circuiting` 操作可以对无限的 `Stream` 进行运算并很快完成。
+14.集合有固定大小，Stream 则不必。limit(n) 和 findFirst() 这类的 short-circuiting 操作可以对无限的 Stream 进行运算并很快完成。
 
-转自 `https`://`www`.`ibm`.`com`/`developerworks`/`cn`/`java`/`j-lo`-`java`8`streamapi`/`index`.`html`
+转自 https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/index.html
 
 个人学习所用
+

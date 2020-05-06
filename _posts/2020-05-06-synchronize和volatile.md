@@ -1,3 +1,14 @@
+---
+layout: post
+title:  "synchronize和volatile"
+date:   2020-05-06 20:02:23
+comments: false
+categories: java
+tag: java
+description:synchronized和volatile的详细解剖,源自于马老师的md,加上自己的理解和查阅书籍整合而成。                                                      
+---
+* content
+{:toc}
 # 用户态与内核态
 
 JDK早期，synchronized 叫做重量级锁， 因为申请锁资源必须通过kernel, 系统调用
@@ -365,9 +376,9 @@ inflate方法：膨胀为重量级锁
 
 ## JDK8 markword实现表：
 
-![image-20200419213508934](C:\work\courses\公开课\面试题\你以为你真的懂Synchronized\lock_step.png)
+![image-20200419213508934](https://bo07997.github.io/myBlog/styles/images/Blog/synchronize/lock_step.png)
 
-![](C:\work\courses\公开课\面试题\你以为你真的懂Synchronized\markword-64.png)
+![](https://bo07997.github.io/myBlog/styles/images/Blog/synchronize/markword-64.png)
 
 **自旋锁什么时候升级为重量级锁？**
 

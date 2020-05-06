@@ -5,10 +5,11 @@ date:   2020-05-06 20:02:23
 comments: false
 categories: java
 tag: java
-description:synchronized和volatile的详细解剖,源自于马老师的md,加上自己的理解和查阅书籍整合而成。                                                      
+description: synchronized和volatile的详细解剖,源自于马老师的md,加上自己的理解和查阅书籍整合而成.....。                                                      
 ---
 * content
 {:toc}
+
 # 用户态与内核态
 
 JDK早期，synchronized 叫做重量级锁， 因为申请锁资源必须通过kernel, 系统调用

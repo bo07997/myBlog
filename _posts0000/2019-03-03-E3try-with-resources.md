@@ -30,6 +30,7 @@ static String firstLineOfFile(String path) throws IOException {
 }
 ```
 
+
 这可能看起来并不坏，但是当添加第二个资源时，情况会变得更糟：
 ```java
 // try-finally is ugly when used with more than one resource!

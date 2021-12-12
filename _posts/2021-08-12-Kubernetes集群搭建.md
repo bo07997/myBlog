@@ -13,12 +13,13 @@ description: Kubernetes集群搭建,比较简略。
 
 Kubernetes是 Google 开源的容器集群管理系统，基于 Docker 构建一个容器的调度服务，提供资源调度、均衡容灾、服务注册、动态扩缩容等功能套件。 Kubernetes 基于 ....
 
-##1 Kubernetes
-####1.1概述
+## 1 Kubernetes
+
+#### 1.1概述
 
 Kubernetes是 Google 开源的容器集群管理系统，基于 Docker 构建一个容器的调度服务，提供资源调度、均衡容灾、服务注册、动态扩缩容等功能套件。 Kubernetes 基于 docker 容器的云平台，简写成： k8s。
 
-####1.2 kubeadm、kubelet 和 kubectl
+#### 1.2 kubeadm、kubelet 和 kubectl
 
 kubeadm：用来初始化集群的指令。
 
@@ -26,13 +27,13 @@ kubelet：在集群中的每个节点上用来启动 Pod 和容器等。
 
 kubectl：用来与集群通信的命令行工具。
 
-##2.搭建
+## 2.搭建
 
-####2.1 搭建思路
+#### 2.1 搭建思路
 
 搭建过程本人不想写的过于具体,因为版本和系统安装方式有差异，越具体意味着局限性越大,所以只把过程大概需要做什么写出来,然后贴一些官方文档。
 
-####2.2 搭建步骤
+#### 2.2 搭建步骤
 
 (1) 安装docker 或者支持CRI的容器技术，例如cri-o，cri-containerd，rkt等等。
 
@@ -98,7 +99,7 @@ kubeadm join 10.17.2.52:6443 --token micm5r.0q4ziy8zweeazq9x \
 
 (8) 成功后我们在master节点执行kubectl get nodes,但是节点却显示Not Ready ,因为网络组建还没启动。
 
-####2.3 组建网络(calico)
+#### 2.3 组建网络(calico)
 
 Calico 简介
 
@@ -137,7 +138,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ![](https://bo07997.github.io/myBlog/styles/images/Blog/Kubernetes集群搭建/2.png)
 
 
-####2.4 常用命令及排查思路
+#### 2.4 常用命令及排查思路
 
 查看命令
 

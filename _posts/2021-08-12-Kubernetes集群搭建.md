@@ -11,7 +11,7 @@ description: Kubernetes集群搭建,比较简略。
 {:toc}
 #### introduction
 
-Kubernetes是 Google 开源的容器集群管理系统，基于 Docker 构建一个容器的调度服务，提供资源调度、均衡容灾、服务注册、动态扩缩容等功能套件。 Kubernetes 基于 ....
+Kubernetes是 Google 开源的容器集群管理系统，基于 Docker 构建一个容器的调度服务，提供资源调度、均衡容灾、服务注册、动态扩缩容等功能套件。 
 
 ## 1 Kubernetes
 

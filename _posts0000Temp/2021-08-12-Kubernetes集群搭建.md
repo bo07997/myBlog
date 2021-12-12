@@ -35,7 +35,7 @@ kubectl：用来与集群通信的命令行工具。
 
 #### 2.`2` 搭建步骤
 
-(`1`) 安装`docker` 或者支持`CRI`的容器技术，例如cri-o，cri-containerd，rkt等等。
+(1) 安装`docker` 或者支持`CRI`的容器技术，例如cri-o，cri-containerd，rkt等等。
 
 ```
     yum -y install docker-ce
@@ -53,7 +53,7 @@ kubectl：用来与集群通信的命令行工具。
       `3`.查看  `free`
 ```
 
-(`3`) 禁用SELinux
+(3) 禁用SELinux
 
  将 SELinux 设置为 permissive 模式（相当于将其禁用）
  
@@ -61,7 +61,7 @@ kubectl：用来与集群通信的命令行工具。
  sudo setenforce 0 sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 ```
 
-(`4`)安装`kubeadm`,`kubelet`,`kubectl`不同操作系统可以参见`https`://`kubernetes`.`io`/`zh`/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+(4)安装`kubeadm`,`kubelet`,`kubectl`不同操作系统可以参见`https`://`kubernetes`.`io`/`zh`/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
 ```
 sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
@@ -99,7 +99,7 @@ kubeadm join 10.17.2.52:6443 --token micm5r.0q4ziy8zweeazq9x \
 
 (8) 成功后我们在master节点执行kubectl get nodes,但是节点却显示Not Ready ,因为网络组建还没启动。
 
-#### 2.`3` 组建网络(`calico`)
+#### 2.3 组建网络(calico)
 
 `Calico` 简介
 
@@ -138,7 +138,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ![](https://bo07997.github.io/myBlog/styles/images/Blog/Kubernetes集群搭建/2.png)
 
 
-#### 2.`4` 常用命令及排查思路
+#### 2.4 常用命令及排查思路
 
 查看命令
 

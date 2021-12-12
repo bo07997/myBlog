@@ -12,7 +12,7 @@ description: synchronized和volatile的详细解剖,源自于马老师的md,加�
 
 # 用户态与内核态
 
-JDK早期，synchronized 叫做重量级锁， 因为申请锁资源必须通过kernel, 系统调用
+`JDK`早期，`synchronized` 叫做重量级锁， 因为申请锁资源必须通过`kernel`, 系统调用
 
 ```assembly
 ;hello.asm
@@ -44,15 +44,15 @@ _start:
 
 
 
-Compare And Swap (Compare And Exchange) / 自旋 / 自旋锁 / 无锁 （无重量锁）
+`Compare` `And` `Swap` (`Compare` `And` `Exchange`) / 自旋 / 自旋锁 / 无锁 （无重量锁）
 
 因为经常配合循环操作，直到完成为止，所以泛指一类操作
 
-cas(v, a, b) ，变量v，期待值a, 修改值b
+`cas`(`v`, `a`, `b`) ，变量`v`，期待值`a`, 修改值`b`
 
-ABA问题，你的女朋友在离开你的这段儿时间经历了别的人，自旋就是你空转等待，一直等到她接纳你为止
+`ABA`问题，你的女朋友在离开你的这段儿时间经历了别的人，自旋就是你空转等待，一直等到她接纳你为止
 
-解决办法（版本号 AtomicStampedReference），基础类型简单值不需要版本号
+解决办法（版本号 `AtomicStampedReference`），基础类型简单值不需要版本号
 
 # Unsafe
 
@@ -112,7 +112,7 @@ public class T02_TestUnsafe {
 }
 ```
 
-jdk8u: unsafe.cpp:
+`jdk`8`u`: `unsafe`.cpp:
 
 cmpxchg = compare and exchange
 
@@ -125,7 +125,7 @@ UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSwapInt(JNIEnv *env, jobject unsafe, job
 UNSAFE_END
 ```
 
-jdk8u: atomic_linux_x86.inline.hpp **93行**
+`jdk`8`u`: `atomic`_`linux`_`x`86.inline.hpp **93行**
 
 is_MP = Multi Processor  
 
@@ -151,7 +151,9 @@ jdk8u: os.hpp is_MP()
     // the bootstrap routine for the stub generator needs to check
     // the processor count directly and leave the bootstrap routine
     // in place until called after initialization has ocurred.
-    return (_processor_count != 1) || AssumeMP;
+    return (_processor_count != 1) 
+
+ AssumeMP;
   }
 ```
 
@@ -201,22 +203,34 @@ jdk8u: markOop.hpp
 //
 //  32 bits:
 //  --------
-//             hash:25 ------------>| age:4    biased_lock:1 lock:2 (normal object)
-//             JavaThread*:23 epoch:2 age:4    biased_lock:1 lock:2 (biased object)
-//             size:32 ------------------------------------------>| (CMS free block)
-//             PromotedObject*:29 ---------->| promo_bits:3 ----->| (CMS promoted object)
+//             hash:25 ------------>
+ `age`:4    `biased`_`lock`:1 `lock`:2 (`normal` `object`)
+//             `JavaThread`*:23 `epoch`:2 `age`:4    biased_lock:1 lock:2 (biased object)
+//             size:32 ------------------------------------------>
+ (CMS free block)
+//             PromotedObject*:29 ---------->
+ promo_bits:3 ----->
+ (CMS promoted object)
 //
 //  64 bits:
 //  --------
-//  unused:25 hash:31 -->| unused:1   age:4    biased_lock:1 lock:2 (normal object)
-//  JavaThread*:54 epoch:2 unused:1   age:4    biased_lock:1 lock:2 (biased object)
-//  PromotedObject*:61 --------------------->| promo_bits:3 ----->| (CMS promoted object)
-//  size:64 ----------------------------------------------------->| (CMS free block)
+//  `unused`:25 `hash`:31 -->
+ `unused`:1   `age`:4    `biased`_`lock`:1 `lock`:2 (`normal` `object`)
+//  `JavaThread`*:54 epoch:2 unused:1   age:4    biased_lock:1 lock:2 (biased object)
+//  PromotedObject*:61 --------------------->
+ promo_bits:3 ----->
+ (CMS promoted object)
+//  size:64 ----------------------------------------------------->
+ (CMS free block)
 //
-//  unused:25 hash:31 -->| cms_free:1 age:4    biased_lock:1 lock:2 (COOPs && normal object)
+//  unused:25 hash:31 -->
+ cms_free:1 age:4    biased_lock:1 lock:2 (COOPs && normal object)
 //  JavaThread*:54 epoch:2 cms_free:1 age:4    biased_lock:1 lock:2 (COOPs && biased object)
-//  narrowOop:32 unused:24 cms_free:1 unused:4 promo_bits:3 ----->| (COOPs && CMS promoted object)
-//  unused:21 size:35 -->| cms_free:1 unused:7 ------------------>| (COOPs && CMS free block)
+//  narrowOop:32 unused:24 cms_free:1 unused:4 promo_bits:3 ----->
+ (COOPs && CMS promoted object)
+//  unused:21 size:35 -->
+ cms_free:1 unused:7 ------------------>
+ (COOPs && CMS free block)
 ```
 
 
@@ -285,15 +299,15 @@ IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, Ba
 #ifdef ASSERT
   thread->last_frame().interpreter_frame_verify_monitor(elem);
 #endif
-  if (PrintBiasedLockingStatistics) {
-    Atomic::inc(BiasedLocking::slow_path_entry_count_addr());
+  `if` (`PrintBiasedLockingStatistics`) {
+    `Atomic`::`inc`(`BiasedLocking`::`slow`_`path`_`entry`_`count`_`addr`());
   }
-  Handle h_obj(thread, elem->obj());
-  assert(Universe::heap()->is_in_reserved_or_null(h_obj()),
-         "must be NULL or an object");
-  if (UseBiasedLocking) {
-    // Retry fast entry if bias is revoked to avoid unnecessary inflation
-    ObjectSynchronizer::fast_enter(h_obj, elem->lock(), true, CHECK);
+  `Handle` `h`_`obj`(`thread`, `elem-`>`obj`());
+  `assert`(`Universe`::`heap`()->`is`_`in`_`reserved`_`or`_`null`(`h`_`obj`()),
+         "`must` `be` `NULL` `or` `an` `object`");
+  `if` (`UseBiasedLocking`) {
+    // `Retry` `fast` `entry` `if` `bias` `is` `revoked` `to` `avoid` `unnecessary` `inflation`
+    `ObjectSynchronizer`::`fast`_`enter`(`h`_`obj`, `elem-`>`lock`(), `true`, CHECK);
   } else {
     ObjectSynchronizer::slow_enter(h_obj, elem->lock(), CHECK);
   }
@@ -358,9 +372,9 @@ void ObjectSynchronizer::slow_enter(Handle obj, BasicLock* lock, TRAPS) {
   }
 #endif
 
-  // The object header will never be displaced to this lock,
-  // so it does not matter what the value is, except that it
-  // must be non-zero to avoid looking like a re-entrant lock,
+  // `The` `object` `header` `will` `never` `be` `displaced` `to` `this` `lock`,
+  // `so` `it` `does` `not` `matter` `what` `the` `value` `is`, `except` `that` `it`
+  // `must` be non-zero to avoid looking like a re-entrant lock,
   // and must not look locked either.
   lock->set_displaced_header(markOopDesc::unused_mark());
   ObjectSynchronizer::inflate(THREAD, obj())->enter(THREAD);
@@ -385,15 +399,15 @@ inflate方法：膨胀为重量级锁
 
 **为什么有自旋锁还需要重量级锁？**
 
-> 自旋是消耗CPU资源的，如果锁的时间长，或者自旋线程多，CPU会被大量消耗
+> 自旋是消耗`CPU`资源的，如果锁的时间长，或者自旋线程多，`CPU`会被大量消耗
 >
-> 重量级锁有等待队列，所有拿不到锁的进入等待队列，不需要消耗CPU资源
+> 重量级锁有等待队列，所有拿不到锁的进入等待队列，不需要消耗`CPU`资源
 
 **偏向锁是否一定比自旋锁效率高？**
 
 > 不一定，在明确知道会有多线程竞争的情况下，偏向锁肯定会涉及锁撤销，这时候直接使用自旋锁
 >
-> JVM启动过程，会有很多线程竞争（明确），所以默认情况启动时不打开偏向锁，过一段儿时间再打开
+> `JVM`启动过程，会有很多线程竞争（明确），所以默认情况启动时不打开偏向锁，过一段儿时间再打开
 
 
 
@@ -415,7 +429,7 @@ synchronized优化的过程和markword息息相关
    01011001 00000000 00000000 00000000
    ```
 
-   little endian big endian 
+   `little` `endian` big endian 
 
    00000000 00000000 00000000 01011001 00110110 00110100 10101101 00000000
 
@@ -429,38 +443,38 @@ synchronized优化的过程和markword息息相关
    ```
 
 4. 如果设定上述参数
-   new Object () - > 101 偏向锁 ->线程ID为0 -> Anonymous BiasedLock 
-   打开偏向锁，new出来的对象，默认就是一个可偏向匿名对象101
+   `new` `Object` () - > 101 偏向锁 ->线程`ID`为0 -> `Anonymous` `BiasedLock` 
+   打开偏向锁，`new`出来的对象，默认就是一个可偏向匿名对象101
 
 5. 如果有线程上锁
-   上偏向锁，指的就是，把markword的线程ID改为自己线程ID的过程
+   上偏向锁，指的就是，把`markword`的线程`ID`改为自己线程`ID`的过程
    偏向锁不可重偏向 批量偏向 批量撤销
 
 6. 如果有线程竞争
    撤销偏向锁，升级轻量级锁
-   线程在自己的线程栈生成LockRecord ，用CAS操作将markword设置为指向自己这个线程的LR的指针，设置成功者得到锁
+   线程在自己的线程栈生成`LockRecord` ，用`CAS`操作将`markword`设置为指向自己这个线程的`LR`的指针，设置成功者得到锁
 
 7. 如果竞争加剧
-   竞争加剧：有线程超过10次自旋， -XX:PreBlockSpin， 或者自旋线程数超过CPU核数的一半， 1.6之后，加入自适应自旋 Adapative Self Spinning ， JVM自己控制
-   升级重量级锁：-> 向操作系统申请资源，linux mutex , CPU从3级-0级系统调用，线程挂起，进入等待队列，等待操作系统的调度，然后再映射回用户空间
+   竞争加剧：有线程超过10次自旋， -`XX`:`PreBlockSpin`， 或者自旋线程数超过`CPU`核数的一半， 1.6之后，加入自适应自旋 `Adapative` `Self` `Spinning` ， `JVM`自己控制
+   升级重量级锁：-> 向操作系统申请资源，`linux` `mutex` , `CPU`从3级-0级系统调用，线程挂起，进入等待队列，等待操作系统的调度，然后再映射回用户空间
 
-(以上实验环境是JDK11，打开就是偏向锁，而JDK8默认对象头是无锁)
+(以上实验环境是`JDK`11，打开就是偏向锁，而`JDK`8默认对象头是无锁)
 
 偏向锁默认是打开的，但是有一个时延，如果要观察到偏向锁，应该设定参数
 
-**如果计算过对象的hashCode，则对象无法进入偏向状态！**
+**如果计算过对象的`hashCode`，则对象无法进入偏向状态！**
 
-> 轻量级锁重量级锁的hashCode存在与什么地方？
+> 轻量级锁重量级锁的`hashCode`存在与什么地方？
 >
-> 答案：线程栈中，轻量级锁的LR中，或是代表重量级锁的ObjectMonitor的成员中
+> 答案：线程栈中，轻量级锁的`LR`中，或是代表重量级锁的`ObjectMonitor`的成员中
 
-关于epoch: (不重要)
+关于`epoch`: (不重要)
 
-> **批量重偏向与批量撤销**渊源：从偏向锁的加锁解锁过程中可看出，当只有一个线程反复进入同步块时，偏向锁带来的性能开销基本可以忽略，但是当有其他线程尝试获得锁时，就需要等到safe point时，再将偏向锁撤销为无锁状态或升级为轻量级，会消耗一定的性能，所以在多线程竞争频繁的情况下，偏向锁不仅不能提高性能，还会导致性能下降。于是，就有了批量重偏向与批量撤销的机制。
+> **批量重偏向与批量撤销**渊源：从偏向锁的加锁解锁过程中可看出，当只有一个线程反复进入同步块时，偏向锁带来的性能开销基本可以忽略，但是当有其他线程尝试获得锁时，就需要等到`safe` `point`时，再将偏向锁撤销为无锁状态或升级为轻量级，会消耗一定的性能，所以在多线程竞争频繁的情况下，偏向锁不仅不能提高性能，还会导致性能下降。于是，就有了批量重偏向与批量撤销的机制。
 >
-> **原理**以class为单位，为每个class维护**解决场景**批量重偏向（bulk rebias）机制是为了解决：一个线程创建了大量对象并执行了初始的同步操作，后来另一个线程也来将这些对象作为锁对象进行操作，这样会导致大量的偏向锁撤销操作。批量撤销（bulk revoke）机制是为了解决：在明显多线程竞争剧烈的场景下使用偏向锁是不合适的。
+> **原理**以`class`为单位，为每个`class`维护**解决场景**批量重偏向（`bulk` `rebias`）机制是为了解决：一个线程创建了大量对象并执行了初始的同步操作，后来另一个线程也来将这些对象作为锁对象进行操作，这样会导致大量的偏向锁撤销操作。批量撤销（`bulk` `revoke`）机制是为了解决：在明显多线程竞争剧烈的场景下使用偏向锁是不合适的。
 >
-> 一个偏向锁撤销计数器，每一次该class的对象发生偏向撤销操作时，该计数器+1，当这个值达到重偏向阈值（默认20）时，JVM就认为该class的偏向锁有问题，因此会进行批量重偏向。每个class对象会有一个对应的epoch字段，每个处于偏向锁状态对象的Mark Word中也有该字段，其初始值为创建该对象时class中的epoch的值。每次发生批量重偏向时，就将该值+1，同时遍历JVM中所有线程的栈，找到该class所有正处于加锁状态的偏向锁，将其epoch字段改为新值。下次获得锁时，发现当前对象的epoch值和class的epoch不相等，那就算当前已经偏向了其他线程，也不会执行撤销操作，而是直接通过CAS操作将其Mark Word的Thread Id 改成当前线程Id。当达到重偏向阈值后，假设该class计数器继续增长，当其达到批量撤销的阈值后（默认40），JVM就认为该class的使用场景存在多线程竞争，会标记该class为不可偏向，之后，对于该class的锁，直接走轻量级锁的逻辑。
+> 一个偏向锁撤销计数器，每一次该`class`的对象发生偏向撤销操作时，该计数器+1，当这个值达到重偏向阈值（默认20）时，`JVM`就认为该`class`的偏向锁有问题，因此会进行批量重偏向。每个`class`对象会有一个对应的`epoch`字段，每个处于偏向锁状态对象的`Mark` `Word`中也有该字段，其初始值为创建该对象时`class`中的`epoch`的值。每次发生批量重偏向时，就将该值+1，同时遍历`JVM`中所有线程的栈，找到该`class`所有正处于加锁状态的偏向锁，将其`epoch`字段改为新值。下次获得锁时，发现当前对象的`epoch`值和`class`的`epoch`不相等，那就算当前已经偏向了其他线程，也不会执行撤销操作，而是直接通过`CAS`操作将其`Mark` `Word`的`Thread` `Id` 改成当前线程`Id`。当达到重偏向阈值后，假设该`class`计数器继续增长，当其达到批量撤销的阈值后（默认40），`JVM`就认为该`class`的使用场景存在多线程竞争，会标记该`class`为不可偏向，之后，对于该`class`的锁，直接走轻量级锁的逻辑。
 
 
 
@@ -470,7 +484,7 @@ synchronized优化的过程和markword息息相关
 
 锁升级的过程
 
-JDK较早的版本 OS的资源 互斥量 用户态 -> 内核态的转换 重量级 效率比较低
+`JDK`较早的版本 `OS`的资源 互斥量 用户态 -> 内核态的转换 重量级 效率比较低
 
 现代版本进行了优化
 
@@ -478,9 +492,9 @@ JDK较早的版本 OS的资源 互斥量 用户态 -> 内核态的转换 重量�
 
 
 
-偏向锁 - markword 上记录当前线程指针，下次同一个线程加锁的时候，不需要争用，只需要判断线程指针是否同一个，所以，偏向锁，偏向加锁的第一个线程 。hashCode备份在线程栈上 线程销毁，锁降级为无锁
+偏向锁 - `markword` 上记录当前线程指针，下次同一个线程加锁的时候，不需要争用，只需要判断线程指针是否同一个，所以，偏向锁，偏向加锁的第一个线程 。`hashCode`备份在线程栈上 线程销毁，锁降级为无锁
 
-有争用 - 锁升级为轻量级锁 - 每个线程有自己的LockRecord在自己的线程栈上，用CAS去争用markword的LR的指针，指针指向哪个线程的LR，哪个线程就拥有锁
+有争用 - 锁升级为轻量级锁 - 每个线程有自己的`LockRecord`在自己的线程栈上，用`CAS`去争用`markword`的`LR`的指针，指针指向哪个线程的`LR`，哪个线程就拥有锁
 
 自旋超过10次，升级为重量级锁 - 如果太多线程自旋 CPU消耗过大，不如升级为重量级锁，进入等待队列（不消耗CPU）-XX:PreBlockSpin
 
@@ -899,8 +913,8 @@ inline void OrderAccess::fence() {
 ============================= C1-compiled nmethod ==============================
 ----------------------------------- Assembly -----------------------------------
 
-Compiled method (c1)      67    1       3       java.lang.Object::<init> (1 bytes)
- total in heap  [0x00007f81d4d33010,0x00007f81d4d33360] = 848
+`Compiled` `method` (`c`1)      67    1       3       `java`.`lang`.`Object`::<`init`> (1 `bytes`)
+ `total` `in` `heap`  [0`x`00007`f`81`d`4`d`33010,0`x`00007`f`81`d`4`d`33360] = 848
  relocation     [0x00007f81d4d33170,0x00007f81d4d33198] = 40
  main code      [0x00007f81d4d331a0,0x00007f81d4d33260] = 192
  stub code      [0x00007f81d4d33260,0x00007f81d4d332f0] = 144
@@ -916,62 +930,62 @@ Compiled method (c1)      67    1       3       java.lang.Object::<init> (1 byte
 
 [Entry Point]
   # {method} {0x00007f81d3cfe650} '<init>' '()V' in 'java/lang/Object'
-  #           [sp+0x40]  (sp of caller)
-  0x00007f81d4d331a0:   mov    0x8(%rsi),%r10d
-  0x00007f81d4d331a4:   shl    $0x3,%r10
-  0x00007f81d4d331a8:   cmp    %rax,%r10
-  0x00007f81d4d331ab:   jne    0x00007f81d47eed00           ;   {runtime_call ic_miss_stub}
-  0x00007f81d4d331b1:   data16 data16 nopw 0x0(%rax,%rax,1)
-  0x00007f81d4d331bc:   data16 data16 xchg %ax,%ax
-[Verified Entry Point]
-  0x00007f81d4d331c0:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d331c7:   push   %rbp
-  0x00007f81d4d331c8:   sub    $0x30,%rsp
-  0x00007f81d4d331cc:   movabs $0x7f81d3f33388,%rdi         ;   {metadata(method data for {method} {0x00007f81d3cfe650} '<init>' '()V' in 'java/lang/Object')}
-  0x00007f81d4d331d6:   mov    0x13c(%rdi),%ebx
-  0x00007f81d4d331dc:   add    $0x8,%ebx
-  0x00007f81d4d331df:   mov    %ebx,0x13c(%rdi)
-  0x00007f81d4d331e5:   and    $0x1ff8,%ebx
-  0x00007f81d4d331eb:   cmp    $0x0,%ebx
-  0x00007f81d4d331ee:   je     0x00007f81d4d33204           ;*return {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.Object::<init>@0 (line 50)
-  0x00007f81d4d331f4:   add    $0x30,%rsp
-  0x00007f81d4d331f8:   pop    %rbp
-  0x00007f81d4d331f9:   mov    0x108(%r15),%r10
-  0x00007f81d4d33200:   test   %eax,(%r10)                  ;   {poll_return}
-  0x00007f81d4d33203:   retq   
-  0x00007f81d4d33204:   movabs $0x7f81d3cfe650,%r10         ;   {metadata({method} {0x00007f81d3cfe650} '<init>' '()V' in 'java/lang/Object')}
-  0x00007f81d4d3320e:   mov    %r10,0x8(%rsp)
-  0x00007f81d4d33213:   movq   $0xffffffffffffffff,(%rsp)
-  0x00007f81d4d3321b:   callq  0x00007f81d489e000           ; ImmutableOopMap {rsi=Oop }
-                                                            ;*synchronization entry
-                                                            ; - java.lang.Object::<init>@-1 (line 50)
-                                                            ;   {runtime_call counter_overflow Runtime1 stub}
-  0x00007f81d4d33220:   jmp    0x00007f81d4d331f4
-  0x00007f81d4d33222:   nop
-  0x00007f81d4d33223:   nop
-  0x00007f81d4d33224:   mov    0x3f0(%r15),%rax
-  0x00007f81d4d3322b:   movabs $0x0,%r10
-  0x00007f81d4d33235:   mov    %r10,0x3f0(%r15)
-  0x00007f81d4d3323c:   movabs $0x0,%r10
-  0x00007f81d4d33246:   mov    %r10,0x3f8(%r15)
-  0x00007f81d4d3324d:   add    $0x30,%rsp
-  0x00007f81d4d33251:   pop    %rbp
-  0x00007f81d4d33252:   jmpq   0x00007f81d480be80           ;   {runtime_call unwind_exception Runtime1 stub}
-  0x00007f81d4d33257:   hlt    
-  0x00007f81d4d33258:   hlt    
-  0x00007f81d4d33259:   hlt    
-  0x00007f81d4d3325a:   hlt    
-  0x00007f81d4d3325b:   hlt    
-  0x00007f81d4d3325c:   hlt    
-  0x00007f81d4d3325d:   hlt    
-  0x00007f81d4d3325e:   hlt    
-  0x00007f81d4d3325f:   hlt    
-[Exception Handler]
-  0x00007f81d4d33260:   callq  0x00007f81d489ad00           ;   {no_reloc}
-  0x00007f81d4d33265:   mov    %rsp,-0x28(%rsp)
-  0x00007f81d4d3326a:   sub    $0x80,%rsp
-  0x00007f81d4d33271:   mov    %rax,0x78(%rsp)
+  #           [`sp`+0`x`40]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`331`a`0:   `mov`    0`x`8(%`rsi`),%`r`10`d`
+  0`x`00007`f`81`d`4`d`331`a`4:   `shl`    $0`x`3,%`r`10
+  0`x`00007`f`81`d`4`d`331`a`8:   `cmp`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`331`ab`:   `jne`    0`x`00007`f`81`d`47`eed`00           ;   {`runtime`_`call` `ic`_`miss`_`stub`}
+  0`x`00007`f`81`d`4`d`331`b`1:   `data`16 `data`16 `nopw` 0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`331`bc`:   `data`16 `data`16 `xchg` %`ax`,%`ax`
+[`Verified` `Entry` `Point`]
+  0`x`00007`f`81`d`4`d`331`c`0:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`331`c`7:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`331`c`8:   `sub`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`331`cc`:   `movabs` $0`x`7`f`81`d`3`f`33388,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`cfe`650} '<`init`>' '()`V'` `in` '`java`/`lang`/`Object'`)}
+  0`x`00007`f`81`d`4`d`331`d`6:   `mov`    0`x`13`c`(%`rdi`),%`ebx`
+  0`x`00007`f`81`d`4`d`331`dc`:   `add`    $0`x`8,%`ebx`
+  0`x`00007`f`81`d`4`d`331`df`:   `mov`    %`ebx`,0`x`13`c`(%`rdi`)
+  0`x`00007`f`81`d`4`d`331`e`5:   `and`    $0`x`1`ff`8,%`ebx`
+  0`x`00007`f`81`d`4`d`331`eb`:   `cmp`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`331`ee`:   `je`     0`x`00007`f`81`d`4`d`33204           ;*`return` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`Object`::<`init`>@0 (`line` 50)
+  0`x`00007`f`81`d`4`d`331`f`4:   `add`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`331`f`8:   `pop`    %`rbp`
+  0`x`00007`f`81`d`4`d`331`f`9:   `mov`    0`x`108(%`r`15),%`r`10
+  0`x`00007`f`81`d`4`d`33200:   `test`   %`eax`,(%`r`10)                  ;   {`poll`_`return`}
+  0`x`00007`f`81`d`4`d`33203:   `retq`   
+  0`x`00007`f`81`d`4`d`33204:   `movabs` $0`x`7`f`81`d`3`cfe`650,%`r`10         ;   {`metadata`({`method`} {0`x`00007`f`81`d`3`cfe`650} '<`init`>' '()`V'` `in` '`java`/`lang`/`Object'`)}
+  0`x`00007`f`81`d`4`d`3320`e`:   `mov`    %`r`10,0`x`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`33213:   `movq`   $0`xffffffffffffffff`,(%`rsp`)
+  0`x`00007`f`81`d`4`d`3321`b`:   `callq`  0`x`00007`f`81`d`489`e`000           ; `ImmutableOopMap` {`rsi`=`Oop` }
+                                                            ;*`synchronization` `entry`
+                                                            ; - `java`.`lang`.`Object`::<`init`>@-1 (`line` 50)
+                                                            ;   {`runtime`_`call` `counter`_`overflow` `Runtime`1 `stub`}
+  0`x`00007`f`81`d`4`d`33220:   `jmp`    0`x`00007`f`81`d`4`d`331`f`4
+  0`x`00007`f`81`d`4`d`33222:   `nop`
+  0`x`00007`f`81`d`4`d`33223:   `nop`
+  0`x`00007`f`81`d`4`d`33224:   `mov`    0`x`3`f`0(%`r`15),%`rax`
+  0`x`00007`f`81`d`4`d`3322`b`:   `movabs` $0`x`0,%`r`10
+  0`x`00007`f`81`d`4`d`33235:   `mov`    %`r`10,0`x`3`f`0(%`r`15)
+  0`x`00007`f`81`d`4`d`3323`c`:   `movabs` $0`x`0,%`r`10
+  0`x`00007`f`81`d`4`d`33246:   `mov`    %`r`10,0`x`3`f`8(%`r`15)
+  0`x`00007`f`81`d`4`d`3324`d`:   `add`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`33251:   `pop`    %`rbp`
+  0`x`00007`f`81`d`4`d`33252:   `jmpq`   0`x`00007`f`81`d`480`be`80           ;   {`runtime`_`call` `unwind`_`exception` `Runtime`1 `stub`}
+  0`x`00007`f`81`d`4`d`33257:   `hlt`    
+  0`x`00007`f`81`d`4`d`33258:   `hlt`    
+  0`x`00007`f`81`d`4`d`33259:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`a`:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`b`:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`c`:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`d`:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`e`:   `hlt`    
+  0`x`00007`f`81`d`4`d`3325`f`:   `hlt`    
+[`Exception` `Handler`]
+  0`x`00007`f`81`d`4`d`33260:   `callq`  0`x`00007`f`81`d`489`ad`00           ;   {`no`_`reloc`}
+  0`x`00007`f`81`d`4`d`33265:   `mov`    %`rsp`,-0`x`28(%`rsp`)
+  0`x`00007`f`81`d`4`d`3326`a`:   `sub`    $0`x`80,%`rsp`
+  0`x`00007`f`81`d`4`d`33271:   `mov`    %rax,0x78(%rsp)
   0x00007f81d4d33276:   mov    %rcx,0x70(%rsp)
   0x00007f81d4d3327b:   mov    %rdx,0x68(%rsp)
   0x00007f81d4d33280:   mov    %rbx,0x60(%rsp)
@@ -1023,84 +1037,84 @@ Compiled method (c1)      74    2       3       java.lang.StringLatin1::hashCode
 [Verified Entry Point]
   # {method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1'
   # parm0:    rsi:rsi   = '[B'
-  #           [sp+0x40]  (sp of caller)
-  0x00007f81d4d33540:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d33547:   push   %rbp
-  0x00007f81d4d33548:   sub    $0x30,%rsp
-  0x00007f81d4d3354c:   movabs $0x7f81d3f33980,%rax         ;   {metadata(method data for {method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d33556:   mov    0x13c(%rax),%edi
-  0x00007f81d4d3355c:   add    $0x8,%edi
-  0x00007f81d4d3355f:   mov    %edi,0x13c(%rax)
-  0x00007f81d4d33565:   and    $0x1ff8,%edi
-  0x00007f81d4d3356b:   cmp    $0x0,%edi
-  0x00007f81d4d3356e:   je     0x00007f81d4d3362f           ;*iconst_0 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@0 (line 195)
-  0x00007f81d4d33574:   mov    0xc(%rsi),%eax               ; implicit exception: dispatches to 0x00007f81d4d33650
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@5 (line 196)
-  0x00007f81d4d33577:   mov    $0x0,%edi
-  0x00007f81d4d3357c:   mov    $0x0,%ebx
-  0x00007f81d4d33581:   jmpq   0x00007f81d4d335e4           ;*iload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@10 (line 196)
-  0x00007f81d4d33586:   xchg   %ax,%ax
-  0x00007f81d4d33588:   movslq %edi,%rdx
-  0x00007f81d4d3358b:   movsbl 0x10(%rsi,%rdx,1),%edx       ;*baload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@19 (line 196)
-  0x00007f81d4d33590:   mov    %rbx,%rcx
-  0x00007f81d4d33593:   shl    $0x5,%ebx
-  0x00007f81d4d33596:   sub    %ecx,%ebx
-  0x00007f81d4d33598:   and    $0xff,%edx
-  0x00007f81d4d3359e:   add    %edx,%ebx
-  0x00007f81d4d335a0:   inc    %edi
-  0x00007f81d4d335a2:   movabs $0x7f81d3f33980,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d335ac:   mov    0x140(%rdx),%ecx
-  0x00007f81d4d335b2:   add    $0x8,%ecx
-  0x00007f81d4d335b5:   mov    %ecx,0x140(%rdx)
-  0x00007f81d4d335bb:   and    $0xfff8,%ecx
-  0x00007f81d4d335c1:   cmp    $0x0,%ecx
-  0x00007f81d4d335c4:   je     0x00007f81d4d33655           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@37 (line 196)
-  0x00007f81d4d335ca:   mov    0x108(%r15),%r10             ; ImmutableOopMap {rsi=Oop }
-                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
-                                                            ; - (reexecute) java.lang.StringLatin1::hashCode@37 (line 196)
-  0x00007f81d4d335d1:   test   %eax,(%r10)                  ;   {poll}
-  0x00007f81d4d335d4:   movabs $0x7f81d3f33980,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d335de:   incl   0x1a0(%rdx)                  ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@37 (line 196)
-  0x00007f81d4d335e4:   cmp    %eax,%edi
-  0x00007f81d4d335e6:   movabs $0x7f81d3f33980,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d335f0:   movabs $0x190,%rcx
-  0x00007f81d4d335fa:   jl     0x00007f81d4d3360a
-  0x00007f81d4d33600:   movabs $0x180,%rcx
-  0x00007f81d4d3360a:   mov    (%rdx,%rcx,1),%r8
-  0x00007f81d4d3360e:   lea    0x1(%r8),%r8
-  0x00007f81d4d33612:   mov    %r8,(%rdx,%rcx,1)
-  0x00007f81d4d33616:   jl     0x00007f81d4d33588           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@13 (line 196)
-  0x00007f81d4d3361c:   mov    %rbx,%rax
-  0x00007f81d4d3361f:   add    $0x30,%rsp
-  0x00007f81d4d33623:   pop    %rbp
-  0x00007f81d4d33624:   mov    0x108(%r15),%r10
-  0x00007f81d4d3362b:   test   %eax,(%r10)                  ;   {poll_return}
-  0x00007f81d4d3362e:   retq   
-  0x00007f81d4d3362f:   movabs $0x7f81d3e6ddd0,%r10         ;   {metadata({method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d33639:   mov    %r10,0x8(%rsp)
-  0x00007f81d4d3363e:   movq   $0xffffffffffffffff,(%rsp)
-  0x00007f81d4d33646:   callq  0x00007f81d489e000           ; ImmutableOopMap {rsi=Oop }
-                                                            ;*synchronization entry
-                                                            ; - java.lang.StringLatin1::hashCode@-1 (line 195)
-                                                            ;   {runtime_call counter_overflow Runtime1 stub}
-  0x00007f81d4d3364b:   jmpq   0x00007f81d4d33574
-  0x00007f81d4d33650:   callq  0x00007f81d480afa0           ; ImmutableOopMap {rsi=Oop }
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::hashCode@5 (line 196)
-                                                            ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
-  0x00007f81d4d33655:   movabs $0x7f81d3e6ddd0,%r10         ;   {metadata({method} {0x00007f81d3e6ddd0} 'hashCode' '([B)I' in 'java/lang/StringLatin1')}
-  0x00007f81d4d3365f:   mov    %r10,0x8(%rsp)
-  0x00007f81d4d33664:   movq   $0x25,(%rsp)
-  0x00007f81d4d3366c:   callq  0x00007f81d489e000           ; ImmutableOopMap {rsi=Oop }
-                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
-                                                            ; - (reexecute) java.lang.StringLatin1::hashCode@37 (line 196)
+  #           [`sp`+0`x`40]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`33540:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`33547:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`33548:   `sub`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`3354`c`:   `movabs` $0`x`7`f`81`d`3`f`33980,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`33556:   `mov`    0`x`13`c`(%`rax`),%`edi`
+  0`x`00007`f`81`d`4`d`3355`c`:   `add`    $0`x`8,%`edi`
+  0`x`00007`f`81`d`4`d`3355`f`:   `mov`    %`edi`,0`x`13`c`(%`rax`)
+  0`x`00007`f`81`d`4`d`33565:   `and`    $0`x`1`ff`8,%`edi`
+  0`x`00007`f`81`d`4`d`3356`b`:   `cmp`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`3356`e`:   `je`     0`x`00007`f`81`d`4`d`3362`f`           ;*`iconst`_0 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@0 (`line` 195)
+  0`x`00007`f`81`d`4`d`33574:   `mov`    0`xc`(%`rsi`),%`eax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33650
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@5 (`line` 196)
+  0`x`00007`f`81`d`4`d`33577:   `mov`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`3357`c`:   `mov`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`33581:   `jmpq`   0`x`00007`f`81`d`4`d`335`e`4           ;*`iload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@10 (`line` 196)
+  0`x`00007`f`81`d`4`d`33586:   `xchg`   %`ax`,%`ax`
+  0`x`00007`f`81`d`4`d`33588:   `movslq` %`edi`,%`rdx`
+  0`x`00007`f`81`d`4`d`3358`b`:   `movsbl` 0`x`10(%`rsi`,%`rdx`,1),%`edx`       ;*`baload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@19 (`line` 196)
+  0`x`00007`f`81`d`4`d`33590:   `mov`    %`rbx`,%`rcx`
+  0`x`00007`f`81`d`4`d`33593:   `shl`    $0`x`5,%`ebx`
+  0`x`00007`f`81`d`4`d`33596:   `sub`    %`ecx`,%`ebx`
+  0`x`00007`f`81`d`4`d`33598:   `and`    $0`xff`,%`edx`
+  0`x`00007`f`81`d`4`d`3359`e`:   `add`    %`edx`,%`ebx`
+  0`x`00007`f`81`d`4`d`335`a`0:   `inc`    %`edi`
+  0`x`00007`f`81`d`4`d`335`a`2:   `movabs` $0`x`7`f`81`d`3`f`33980,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`335`ac`:   `mov`    0`x`140(%`rdx`),%`ecx`
+  0`x`00007`f`81`d`4`d`335`b`2:   `add`    $0`x`8,%`ecx`
+  0`x`00007`f`81`d`4`d`335`b`5:   `mov`    %`ecx`,0`x`140(%`rdx`)
+  0`x`00007`f`81`d`4`d`335`bb`:   `and`    $0`xfff`8,%`ecx`
+  0`x`00007`f`81`d`4`d`335`c`1:   `cmp`    $0`x`0,%`ecx`
+  0`x`00007`f`81`d`4`d`335`c`4:   `je`     0`x`00007`f`81`d`4`d`33655           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@37 (`line` 196)
+  0`x`00007`f`81`d`4`d`335`ca`:   `mov`    0`x`108(%`r`15),%`r`10             ; `ImmutableOopMap` {`rsi`=`Oop` }
+                                                            ;*`goto` {`reexecute`=1 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - (`reexecute`) `java`.`lang`.`StringLatin`1::`hashCode`@37 (`line` 196)
+  0`x`00007`f`81`d`4`d`335`d`1:   `test`   %`eax`,(%`r`10)                  ;   {`poll`}
+  0`x`00007`f`81`d`4`d`335`d`4:   `movabs` $0`x`7`f`81`d`3`f`33980,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`335`de`:   `incl`   0`x`1`a`0(%`rdx`)                  ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@37 (`line` 196)
+  0`x`00007`f`81`d`4`d`335`e`4:   `cmp`    %`eax`,%`edi`
+  0`x`00007`f`81`d`4`d`335`e`6:   `movabs` $0`x`7`f`81`d`3`f`33980,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`335`f`0:   `movabs` $0`x`190,%`rcx`
+  0`x`00007`f`81`d`4`d`335`fa`:   `jl`     0`x`00007`f`81`d`4`d`3360`a`
+  0`x`00007`f`81`d`4`d`33600:   `movabs` $0`x`180,%`rcx`
+  0`x`00007`f`81`d`4`d`3360`a`:   `mov`    (%`rdx`,%`rcx`,1),%`r`8
+  0`x`00007`f`81`d`4`d`3360`e`:   `lea`    0`x`1(%`r`8),%`r`8
+  0`x`00007`f`81`d`4`d`33612:   `mov`    %`r`8,(%`rdx`,%`rcx`,1)
+  0`x`00007`f`81`d`4`d`33616:   `jl`     0`x`00007`f`81`d`4`d`33588           ;*`if`_`icmpge` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@13 (`line` 196)
+  0`x`00007`f`81`d`4`d`3361`c`:   `mov`    %`rbx`,%`rax`
+  0`x`00007`f`81`d`4`d`3361`f`:   `add`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`33623:   `pop`    %`rbp`
+  0`x`00007`f`81`d`4`d`33624:   `mov`    0`x`108(%`r`15),%`r`10
+  0`x`00007`f`81`d`4`d`3362`b`:   `test`   %`eax`,(%`r`10)                  ;   {`poll`_`return`}
+  0`x`00007`f`81`d`4`d`3362`e`:   `retq`   
+  0`x`00007`f`81`d`4`d`3362`f`:   `movabs` $0`x`7`f`81`d`3`e`6`ddd`0,%`r`10         ;   {`metadata`({`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`33639:   `mov`    %`r`10,0`x`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`3363`e`:   `movq`   $0`xffffffffffffffff`,(%`rsp`)
+  0`x`00007`f`81`d`4`d`33646:   `callq`  0`x`00007`f`81`d`489`e`000           ; `ImmutableOopMap` {`rsi`=`Oop` }
+                                                            ;*`synchronization` `entry`
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@-1 (`line` 195)
+                                                            ;   {`runtime`_`call` `counter`_`overflow` `Runtime`1 `stub`}
+  0`x`00007`f`81`d`4`d`3364`b`:   `jmpq`   0`x`00007`f`81`d`4`d`33574
+  0`x`00007`f`81`d`4`d`33650:   `callq`  0`x`00007`f`81`d`480`afa`0           ; `ImmutableOopMap` {`rsi`=`Oop` }
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`hashCode`@5 (`line` 196)
+                                                            ;   {`runtime`_`call` `throw`_`null`_`pointer`_`exception` `Runtime`1 `stub`}
+  0`x`00007`f`81`d`4`d`33655:   `movabs` $0`x`7`f`81`d`3`e`6`ddd`0,%`r`10         ;   {`metadata`({`method`} {0`x`00007`f`81`d`3`e`6`ddd`0} '`hashCode'` '([`B`)`I'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`3365`f`:   `mov`    %`r`10,0`x`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`33664:   `movq`   $0`x`25,(%`rsp`)
+  0`x`00007`f`81`d`4`d`3366`c`:   `callq`  0`x`00007`f`81`d`489`e`000           ; `ImmutableOopMap` {`rsi`=`Oop` }
+                                                            ;*`goto` {`reexecute`=1 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - (`reexecute`) `java`.`lang`.`StringLatin`1::`hashCode`@37 (`line` 196)
                                                             ;   {runtime_call counter_overflow Runtime1 stub}
   0x00007f81d4d33671:   jmpq   0x00007f81d4d335ca
   0x00007f81d4d33676:   nop
@@ -1244,227 +1258,227 @@ Compiled method (c1)      86    5       3       java.util.ImmutableCollections$S
   # {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN'
   # this:     rsi:rsi   = 'java/util/ImmutableCollections$SetN'
   # parm0:    rdx:rdx   = 'java/lang/Object'
-  #           [sp+0x60]  (sp of caller)
-  0x00007f81d4d33b00:   mov    0x8(%rsi),%r10d
-  0x00007f81d4d33b04:   shl    $0x3,%r10
-  0x00007f81d4d33b08:   cmp    %rax,%r10
-  0x00007f81d4d33b0b:   jne    0x00007f81d47eed00           ;   {runtime_call ic_miss_stub}
-  0x00007f81d4d33b11:   data16 data16 nopw 0x0(%rax,%rax,1)
-  0x00007f81d4d33b1c:   data16 data16 xchg %ax,%ax
-[Verified Entry Point]
-  0x00007f81d4d33b20:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d33b27:   push   %rbp
-  0x00007f81d4d33b28:   sub    $0x50,%rsp
-  0x00007f81d4d33b2c:   mov    %rsi,0x30(%rsp)
-  0x00007f81d4d33b31:   mov    %rdx,0x38(%rsp)
-  0x00007f81d4d33b36:   movabs $0x7f81d3f43b88,%rdi         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33b40:   mov    0x13c(%rdi),%ebx
-  0x00007f81d4d33b46:   add    $0x8,%ebx
-  0x00007f81d4d33b49:   mov    %ebx,0x13c(%rdi)
-  0x00007f81d4d33b4f:   and    $0x1ff8,%ebx
-  0x00007f81d4d33b55:   cmp    $0x0,%ebx
-  0x00007f81d4d33b58:   je     0x00007f81d4d33ee0           ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@0 (line 796)
-  0x00007f81d4d33b5e:   cmp    (%rdx),%rax                  ; implicit exception: dispatches to 0x00007f81d4d33f01
-  0x00007f81d4d33b61:   mov    %rdx,%rdi
-  0x00007f81d4d33b64:   movabs $0x7f81d3f43b88,%rbx         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33b6e:   mov    0x8(%rdi),%edi
-  0x00007f81d4d33b71:   shl    $0x3,%rdi
-  0x00007f81d4d33b75:   cmp    0x190(%rbx),%rdi
-  0x00007f81d4d33b7c:   jne    0x00007f81d4d33b8b
-  0x00007f81d4d33b7e:   addq   $0x1,0x198(%rbx)
-  0x00007f81d4d33b86:   jmpq   0x00007f81d4d33bf1
-  0x00007f81d4d33b8b:   cmp    0x1a0(%rbx),%rdi
-  0x00007f81d4d33b92:   jne    0x00007f81d4d33ba1
-  0x00007f81d4d33b94:   addq   $0x1,0x1a8(%rbx)
-  0x00007f81d4d33b9c:   jmpq   0x00007f81d4d33bf1
-  0x00007f81d4d33ba1:   cmpq   $0x0,0x190(%rbx)
-  0x00007f81d4d33bac:   jne    0x00007f81d4d33bc5
-  0x00007f81d4d33bae:   mov    %rdi,0x190(%rbx)
-  0x00007f81d4d33bb5:   movq   $0x1,0x198(%rbx)
-  0x00007f81d4d33bc0:   jmpq   0x00007f81d4d33bf1
-  0x00007f81d4d33bc5:   cmpq   $0x0,0x1a0(%rbx)
-  0x00007f81d4d33bd0:   jne    0x00007f81d4d33be9
-  0x00007f81d4d33bd2:   mov    %rdi,0x1a0(%rbx)
-  0x00007f81d4d33bd9:   movq   $0x1,0x1a8(%rbx)
-  0x00007f81d4d33be4:   jmpq   0x00007f81d4d33bf1
-  0x00007f81d4d33be9:   addq   $0x1,0x180(%rbx)
-  0x00007f81d4d33bf1:   mov    %rdx,%rsi                    ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@1 (line 796)
-  0x00007f81d4d33bf4:   nop
-  0x00007f81d4d33bf5:   movabs $0xffffffffffffffff,%rax
-  0x00007f81d4d33bff:   callq  0x00007f81d47ee700           ; ImmutableOopMap {[48]=Oop [56]=Oop }
-                                                            ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@1 (line 796)
-                                                            ;   {virtual_call}
-  0x00007f81d4d33c04:   mov    0x30(%rsp),%rsi
-  0x00007f81d4d33c09:   mov    0x10(%rsi),%edx              ;*getfield elements {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@5 (line 796)
-  0x00007f81d4d33c0c:   mov    0xc(%rdx),%edi               ; implicit exception: dispatches to 0x00007f81d4d33f06
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@8 (line 796)
-  0x00007f81d4d33c0f:   movabs $0x7f81d3f43b88,%rdx         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33c19:   addq   $0x1,0x1b8(%rdx)
-  0x00007f81d4d33c21:   movabs $0x7f81d3f439a0,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e376e8} 'floorMod' '(II)I' in 'java/lang/Math')}
-  0x00007f81d4d33c2b:   mov    0x13c(%rdx),%ebx
-  0x00007f81d4d33c31:   add    $0x8,%ebx
-  0x00007f81d4d33c34:   mov    %ebx,0x13c(%rdx)
-  0x00007f81d4d33c3a:   and    $0x7ffff8,%ebx
-  0x00007f81d4d33c40:   cmp    $0x0,%ebx
-  0x00007f81d4d33c43:   je     0x00007f81d4d33f0b
-  0x00007f81d4d33c49:   cmp    $0x80000000,%eax
-  0x00007f81d4d33c4f:   jne    0x00007f81d4d33c60
-  0x00007f81d4d33c55:   xor    %edx,%edx
-  0x00007f81d4d33c57:   cmp    $0xffffffff,%edi
-  0x00007f81d4d33c5a:   je     0x00007f81d4d33c63
-  0x00007f81d4d33c60:   cltd   
-  0x00007f81d4d33c61:   idiv   %edi                         ; implicit exception: dispatches to 0x00007f81d4d33f2c
-                                                            ;*irem {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.Math::floorMod@2 (line 1277)
-                                                            ; - java.util.ImmutableCollections$SetN::probe@9 (line 796)
-  0x00007f81d4d33c63:   mov    %rdx,%rbx
-  0x00007f81d4d33c66:   xor    %rdi,%rbx
-  0x00007f81d4d33c69:   cmp    $0x0,%ebx
-  0x00007f81d4d33c6c:   movabs $0x7f81d3f439a0,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e376e8} 'floorMod' '(II)I' in 'java/lang/Math')}
-  0x00007f81d4d33c76:   movabs $0x180,%rax
-  0x00007f81d4d33c80:   jge    0x00007f81d4d33c90
-  0x00007f81d4d33c86:   movabs $0x190,%rax
-  0x00007f81d4d33c90:   mov    (%rbx,%rax,1),%rcx
-  0x00007f81d4d33c94:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d33c98:   mov    %rcx,(%rbx,%rax,1)
-  0x00007f81d4d33c9c:   jge    0x00007f81d4d33ce0           ;*ifge {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.Math::floorMod@7 (line 1279)
-                                                            ; - java.util.ImmutableCollections$SetN::probe@9 (line 796)
-  0x00007f81d4d33ca2:   cmp    $0x0,%edx
-  0x00007f81d4d33ca5:   movabs $0x7f81d3f439a0,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e376e8} 'floorMod' '(II)I' in 'java/lang/Math')}
-  0x00007f81d4d33caf:   movabs $0x1a0,%rax
-  0x00007f81d4d33cb9:   je     0x00007f81d4d33cc9
-  0x00007f81d4d33cbf:   movabs $0x1b0,%rax
-  0x00007f81d4d33cc9:   mov    (%rbx,%rax,1),%rcx
-  0x00007f81d4d33ccd:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d33cd1:   mov    %rcx,(%rbx,%rax,1)
-  0x00007f81d4d33cd5:   je     0x00007f81d4d33ce0           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.Math::floorMod@11 (line 1279)
-                                                            ; - java.util.ImmutableCollections$SetN::probe@9 (line 796)
-  0x00007f81d4d33cdb:   add    %edi,%edx
-  0x00007f81d4d33cdd:   data16 xchg %ax,%ax
-  0x00007f81d4d33ce0:   mov    0x38(%rsp),%rdi
-  0x00007f81d4d33ce5:   mov    0x10(%rsi),%ebx              ;*getfield elements {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@14 (line 798)
-  0x00007f81d4d33ce8:   mov    0xc(%rbx),%eax               ; implicit exception: dispatches to 0x00007f81d4d33f31
-  0x00007f81d4d33ceb:   cmp    %edx,%eax
-  0x00007f81d4d33ced:   jbe    0x00007f81d4d33f36
-  0x00007f81d4d33cf3:   movslq %edx,%rax
-  0x00007f81d4d33cf6:   mov    0x10(%rbx,%rax,4),%ebx       ;*aaload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@18 (line 798)
-  0x00007f81d4d33cfa:   cmp    $0x0,%rbx
-  0x00007f81d4d33cfe:   movabs $0x7f81d3f43b88,%rax         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33d08:   movabs $0x1d8,%rcx
-  0x00007f81d4d33d12:   je     0x00007f81d4d33d22
-  0x00007f81d4d33d18:   movabs $0x1c8,%rcx
-  0x00007f81d4d33d22:   mov    (%rax,%rcx,1),%r8
-  0x00007f81d4d33d26:   lea    0x1(%r8),%r8
-  0x00007f81d4d33d2a:   mov    %r8,(%rax,%rcx,1)
-  0x00007f81d4d33d2e:   je     0x00007f81d4d33ec9           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@21 (line 799)
-  0x00007f81d4d33d34:   mov    %edx,0x40(%rsp)
-  0x00007f81d4d33d38:   mov    %rdi,%rax
-  0x00007f81d4d33d3b:   movabs $0x7f81d3f43b88,%rcx         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33d45:   mov    0x8(%rax),%eax
-  0x00007f81d4d33d48:   shl    $0x3,%rax
-  0x00007f81d4d33d4c:   cmp    0x1f8(%rcx),%rax
-  0x00007f81d4d33d53:   jne    0x00007f81d4d33d62
-  0x00007f81d4d33d55:   addq   $0x1,0x200(%rcx)
-  0x00007f81d4d33d5d:   jmpq   0x00007f81d4d33dc8
-  0x00007f81d4d33d62:   cmp    0x208(%rcx),%rax
-  0x00007f81d4d33d69:   jne    0x00007f81d4d33d78
-  0x00007f81d4d33d6b:   addq   $0x1,0x210(%rcx)
-  0x00007f81d4d33d73:   jmpq   0x00007f81d4d33dc8
-  0x00007f81d4d33d78:   cmpq   $0x0,0x1f8(%rcx)
-  0x00007f81d4d33d83:   jne    0x00007f81d4d33d9c
-  0x00007f81d4d33d85:   mov    %rax,0x1f8(%rcx)
-  0x00007f81d4d33d8c:   movq   $0x1,0x200(%rcx)
-  0x00007f81d4d33d97:   jmpq   0x00007f81d4d33dc8
-  0x00007f81d4d33d9c:   cmpq   $0x0,0x208(%rcx)
-  0x00007f81d4d33da7:   jne    0x00007f81d4d33dc0
-  0x00007f81d4d33da9:   mov    %rax,0x208(%rcx)
-  0x00007f81d4d33db0:   movq   $0x1,0x210(%rcx)
-  0x00007f81d4d33dbb:   jmpq   0x00007f81d4d33dc8
-  0x00007f81d4d33dc0:   addq   $0x1,0x1e8(%rcx)
-  0x00007f81d4d33dc8:   mov    %rbx,%rdx
-  0x00007f81d4d33dcb:   mov    %rdi,%rsi                    ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@31 (line 801)
-  0x00007f81d4d33dce:   nopl   0x0(%rax)
-  0x00007f81d4d33dd5:   movabs $0xffffffffffffffff,%rax
-  0x00007f81d4d33ddf:   callq  0x00007f81d47ee700           ; ImmutableOopMap {[48]=Oop [56]=Oop }
-                                                            ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@31 (line 801)
-                                                            ;   {virtual_call}
-  0x00007f81d4d33de4:   cmp    $0x0,%eax
-  0x00007f81d4d33de7:   movabs $0x7f81d3f43b88,%rax         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33df1:   movabs $0x230,%rsi
-  0x00007f81d4d33dfb:   jne    0x00007f81d4d33e0b
-  0x00007f81d4d33e01:   movabs $0x220,%rsi
-  0x00007f81d4d33e0b:   mov    (%rax,%rsi,1),%rdi
-  0x00007f81d4d33e0f:   lea    0x1(%rdi),%rdi
-  0x00007f81d4d33e13:   mov    %rdi,(%rax,%rsi,1)
-  0x00007f81d4d33e17:   jne    0x00007f81d4d33eb2           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@34 (line 801)
-  0x00007f81d4d33e1d:   mov    0x30(%rsp),%rsi
-  0x00007f81d4d33e22:   mov    0x40(%rsp),%edx
-  0x00007f81d4d33e26:   inc    %edx
-  0x00007f81d4d33e28:   mov    0x10(%rsi),%eax              ;*getfield elements {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@44 (line 803)
-  0x00007f81d4d33e2b:   mov    0xc(%rax),%eax               ; implicit exception: dispatches to 0x00007f81d4d33f44
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@47 (line 803)
-  0x00007f81d4d33e2e:   cmp    %eax,%edx
-  0x00007f81d4d33e30:   movabs $0x7f81d3f43b88,%rax         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33e3a:   movabs $0x240,%rdi
-  0x00007f81d4d33e44:   jne    0x00007f81d4d33e54
-  0x00007f81d4d33e4a:   movabs $0x250,%rdi
-  0x00007f81d4d33e54:   mov    (%rax,%rdi,1),%rbx
-  0x00007f81d4d33e58:   lea    0x1(%rbx),%rbx
-  0x00007f81d4d33e5c:   mov    %rbx,(%rax,%rdi,1)
-  0x00007f81d4d33e60:   jne    0x00007f81d4d33e6b           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@48 (line 803)
-  0x00007f81d4d33e66:   mov    $0x0,%edx
-  0x00007f81d4d33e6b:   movabs $0x7f81d3f43b88,%rax         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33e75:   mov    0x140(%rax),%edi
-  0x00007f81d4d33e7b:   add    $0x8,%edi
-  0x00007f81d4d33e7e:   mov    %edi,0x140(%rax)
-  0x00007f81d4d33e84:   and    $0xfff8,%edi
-  0x00007f81d4d33e8a:   cmp    $0x0,%edi
-  0x00007f81d4d33e8d:   je     0x00007f81d4d33f49           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@53 (line 806)
-  0x00007f81d4d33e93:   mov    0x108(%r15),%r10             ; ImmutableOopMap {[56]=Oop rsi=Oop [48]=Oop }
-                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
-                                                            ; - (reexecute) java.util.ImmutableCollections$SetN::probe@53 (line 806)
-  0x00007f81d4d33e9a:   test   %eax,(%r10)                  ;   {poll}
-  0x00007f81d4d33e9d:   movabs $0x7f81d3f43b88,%rax         ;   {metadata(method data for {method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33ea7:   incl   0x260(%rax)
-  0x00007f81d4d33ead:   jmpq   0x00007f81d4d33ce0           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@53 (line 806)
-  0x00007f81d4d33eb2:   mov    0x40(%rsp),%edx
-  0x00007f81d4d33eb6:   mov    %rdx,%rax
-  0x00007f81d4d33eb9:   add    $0x50,%rsp
-  0x00007f81d4d33ebd:   pop    %rbp
-  0x00007f81d4d33ebe:   mov    0x108(%r15),%r10
-  0x00007f81d4d33ec5:   test   %eax,(%r10)                  ;   {poll_return}
-  0x00007f81d4d33ec8:   retq                                ;*ireturn {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN::probe@38 (line 802)
-  0x00007f81d4d33ec9:   neg    %edx
-  0x00007f81d4d33ecb:   mov    %rdx,%rax
-  0x00007f81d4d33ece:   dec    %eax
-  0x00007f81d4d33ed0:   add    $0x50,%rsp
-  0x00007f81d4d33ed4:   pop    %rbp
-  0x00007f81d4d33ed5:   mov    0x108(%r15),%r10
-  0x00007f81d4d33edc:   test   %eax,(%r10)                  ;   {poll_return}
-  0x00007f81d4d33edf:   retq   
-  0x00007f81d4d33ee0:   movabs $0x7f81d3f11bb8,%r10         ;   {metadata({method} {0x00007f81d3f11bb8} 'probe' '(Ljava/lang/Object;)I' in 'java/util/ImmutableCollections$SetN')}
-  0x00007f81d4d33eea:   mov    %r10,0x8(%rsp)
-  0x00007f81d4d33eef:   movq   $0xffffffffffffffff,(%rsp)
-  0x00007f81d4d33ef7:   callq  0x00007f81d489e000           ; ImmutableOopMap {rsi=Oop [48]=Oop rdx=Oop [56]=Oop }
+  #           [`sp`+0`x`60]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`33`b`00:   `mov`    0`x`8(%`rsi`),%`r`10`d`
+  0`x`00007`f`81`d`4`d`33`b`04:   `shl`    $0`x`3,%`r`10
+  0`x`00007`f`81`d`4`d`33`b`08:   `cmp`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`33`b`0`b`:   `jne`    0`x`00007`f`81`d`47`eed`00           ;   {`runtime`_`call` `ic`_`miss`_`stub`}
+  0`x`00007`f`81`d`4`d`33`b`11:   `data`16 `data`16 `nopw` 0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`33`b`1`c`:   `data`16 `data`16 `xchg` %`ax`,%`ax`
+[`Verified` `Entry` `Point`]
+  0`x`00007`f`81`d`4`d`33`b`20:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`b`27:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`33`b`28:   `sub`    $0`x`50,%`rsp`
+  0`x`00007`f`81`d`4`d`33`b`2`c`:   `mov`    %`rsi`,0`x`30(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`b`31:   `mov`    %`rdx`,0`x`38(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`b`36:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`b`40:   `mov`    0`x`13`c`(%`rdi`),%`ebx`
+  0`x`00007`f`81`d`4`d`33`b`46:   `add`    $0`x`8,%`ebx`
+  0`x`00007`f`81`d`4`d`33`b`49:   `mov`    %`ebx`,0`x`13`c`(%`rdi`)
+  0`x`00007`f`81`d`4`d`33`b`4`f`:   `and`    $0`x`1`ff`8,%`ebx`
+  0`x`00007`f`81`d`4`d`33`b`55:   `cmp`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`33`b`58:   `je`     0`x`00007`f`81`d`4`d`33`ee`0           ;*`aload`_1 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@0 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`b`5`e`:   `cmp`    (%`rdx`),%`rax`                  ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33`f`01
+  0`x`00007`f`81`d`4`d`33`b`61:   `mov`    %`rdx`,%`rdi`
+  0`x`00007`f`81`d`4`d`33`b`64:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`b`6`e`:   `mov`    0`x`8(%`rdi`),%`edi`
+  0`x`00007`f`81`d`4`d`33`b`71:   `shl`    $0`x`3,%`rdi`
+  0`x`00007`f`81`d`4`d`33`b`75:   `cmp`    0`x`190(%`rbx`),%`rdi`
+  0`x`00007`f`81`d`4`d`33`b`7`c`:   `jne`    0`x`00007`f`81`d`4`d`33`b`8`b`
+  0`x`00007`f`81`d`4`d`33`b`7`e`:   `addq`   $0`x`1,0`x`198(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`b`86:   `jmpq`   0`x`00007`f`81`d`4`d`33`bf`1
+  0`x`00007`f`81`d`4`d`33`b`8`b`:   `cmp`    0`x`1`a`0(%`rbx`),%`rdi`
+  0`x`00007`f`81`d`4`d`33`b`92:   `jne`    0`x`00007`f`81`d`4`d`33`ba`1
+  0`x`00007`f`81`d`4`d`33`b`94:   `addq`   $0`x`1,0`x`1`a`8(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`b`9`c`:   `jmpq`   0`x`00007`f`81`d`4`d`33`bf`1
+  0`x`00007`f`81`d`4`d`33`ba`1:   `cmpq`   $0`x`0,0`x`190(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bac`:   `jne`    0`x`00007`f`81`d`4`d`33`bc`5
+  0`x`00007`f`81`d`4`d`33`bae`:   `mov`    %`rdi`,0`x`190(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bb`5:   `movq`   $0`x`1,0`x`198(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bc`0:   `jmpq`   0`x`00007`f`81`d`4`d`33`bf`1
+  0`x`00007`f`81`d`4`d`33`bc`5:   `cmpq`   $0`x`0,0`x`1`a`0(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bd`0:   `jne`    0`x`00007`f`81`d`4`d`33`be`9
+  0`x`00007`f`81`d`4`d`33`bd`2:   `mov`    %`rdi`,0`x`1`a`0(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bd`9:   `movq`   $0`x`1,0`x`1`a`8(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`be`4:   `jmpq`   0`x`00007`f`81`d`4`d`33`bf`1
+  0`x`00007`f`81`d`4`d`33`be`9:   `addq`   $0`x`1,0`x`180(%`rbx`)
+  0`x`00007`f`81`d`4`d`33`bf`1:   `mov`    %`rdx`,%`rsi`                    ;*`invokevirtual` `hashCode` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@1 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`bf`4:   `nop`
+  0`x`00007`f`81`d`4`d`33`bf`5:   `movabs` $0`xffffffffffffffff`,%`rax`
+  0`x`00007`f`81`d`4`d`33`bff`:   `callq`  0`x`00007`f`81`d`47`ee`700           ; `ImmutableOopMap` {[48]=`Oop` [56]=`Oop` }
+                                                            ;*`invokevirtual` `hashCode` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@1 (`line` 796)
+                                                            ;   {`virtual`_`call`}
+  0`x`00007`f`81`d`4`d`33`c`04:   `mov`    0`x`30(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`33`c`09:   `mov`    0`x`10(%`rsi`),%`edx`              ;*`getfield` `elements` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@5 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`c`0`c`:   `mov`    0`xc`(%`rdx`),%`edi`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33`f`06
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@8 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`c`0`f`:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`c`19:   `addq`   $0`x`1,0`x`1`b`8(%`rdx`)
+  0`x`00007`f`81`d`4`d`33`c`21:   `movabs` $0`x`7`f`81`d`3`f`439`a`0,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`376`e`8} '`floorMod'` '(`II`)`I'` `in` '`java`/`lang`/`Math'`)}
+  0`x`00007`f`81`d`4`d`33`c`2`b`:   `mov`    0`x`13`c`(%`rdx`),%`ebx`
+  0`x`00007`f`81`d`4`d`33`c`31:   `add`    $0`x`8,%`ebx`
+  0`x`00007`f`81`d`4`d`33`c`34:   `mov`    %`ebx`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`33`c`3`a`:   `and`    $0`x`7`ffff`8,%`ebx`
+  0`x`00007`f`81`d`4`d`33`c`40:   `cmp`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`33`c`43:   `je`     0`x`00007`f`81`d`4`d`33`f`0`b`
+  0`x`00007`f`81`d`4`d`33`c`49:   `cmp`    $0`x`80000000,%`eax`
+  0`x`00007`f`81`d`4`d`33`c`4`f`:   `jne`    0`x`00007`f`81`d`4`d`33`c`60
+  0`x`00007`f`81`d`4`d`33`c`55:   `xor`    %`edx`,%`edx`
+  0`x`00007`f`81`d`4`d`33`c`57:   `cmp`    $0`xffffffff`,%`edi`
+  0`x`00007`f`81`d`4`d`33`c`5`a`:   `je`     0`x`00007`f`81`d`4`d`33`c`63
+  0`x`00007`f`81`d`4`d`33`c`60:   `cltd`   
+  0`x`00007`f`81`d`4`d`33`c`61:   `idiv`   %`edi`                         ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33`f`2`c`
+                                                            ;*`irem` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`Math`::`floorMod`@2 (`line` 1277)
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@9 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`c`63:   `mov`    %`rdx`,%`rbx`
+  0`x`00007`f`81`d`4`d`33`c`66:   `xor`    %`rdi`,%`rbx`
+  0`x`00007`f`81`d`4`d`33`c`69:   `cmp`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`33`c`6`c`:   `movabs` $0`x`7`f`81`d`3`f`439`a`0,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`376`e`8} '`floorMod'` '(`II`)`I'` `in` '`java`/`lang`/`Math'`)}
+  0`x`00007`f`81`d`4`d`33`c`76:   `movabs` $0`x`180,%`rax`
+  0`x`00007`f`81`d`4`d`33`c`80:   `jge`    0`x`00007`f`81`d`4`d`33`c`90
+  0`x`00007`f`81`d`4`d`33`c`86:   `movabs` $0`x`190,%`rax`
+  0`x`00007`f`81`d`4`d`33`c`90:   `mov`    (%`rbx`,%`rax`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`33`c`94:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`33`c`98:   `mov`    %`rcx`,(%`rbx`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`33`c`9`c`:   `jge`    0`x`00007`f`81`d`4`d`33`ce`0           ;*`ifge` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`Math`::`floorMod`@7 (`line` 1279)
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@9 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`ca`2:   `cmp`    $0`x`0,%`edx`
+  0`x`00007`f`81`d`4`d`33`ca`5:   `movabs` $0`x`7`f`81`d`3`f`439`a`0,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`376`e`8} '`floorMod'` '(`II`)`I'` `in` '`java`/`lang`/`Math'`)}
+  0`x`00007`f`81`d`4`d`33`caf`:   `movabs` $0`x`1`a`0,%`rax`
+  0`x`00007`f`81`d`4`d`33`cb`9:   `je`     0`x`00007`f`81`d`4`d`33`cc`9
+  0`x`00007`f`81`d`4`d`33`cbf`:   `movabs` $0`x`1`b`0,%`rax`
+  0`x`00007`f`81`d`4`d`33`cc`9:   `mov`    (%`rbx`,%`rax`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`33`ccd`:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`33`cd`1:   `mov`    %`rcx`,(%`rbx`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`33`cd`5:   `je`     0`x`00007`f`81`d`4`d`33`ce`0           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`Math`::`floorMod`@11 (`line` 1279)
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@9 (`line` 796)
+  0`x`00007`f`81`d`4`d`33`cdb`:   `add`    %`edi`,%`edx`
+  0`x`00007`f`81`d`4`d`33`cdd`:   `data`16 `xchg` %`ax`,%`ax`
+  0`x`00007`f`81`d`4`d`33`ce`0:   `mov`    0`x`38(%`rsp`),%`rdi`
+  0`x`00007`f`81`d`4`d`33`ce`5:   `mov`    0`x`10(%`rsi`),%`ebx`              ;*`getfield` `elements` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@14 (`line` 798)
+  0`x`00007`f`81`d`4`d`33`ce`8:   `mov`    0`xc`(%`rbx`),%`eax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33`f`31
+  0`x`00007`f`81`d`4`d`33`ceb`:   `cmp`    %`edx`,%`eax`
+  0`x`00007`f`81`d`4`d`33`ced`:   `jbe`    0`x`00007`f`81`d`4`d`33`f`36
+  0`x`00007`f`81`d`4`d`33`cf`3:   `movslq` %`edx`,%`rax`
+  0`x`00007`f`81`d`4`d`33`cf`6:   `mov`    0`x`10(%`rbx`,%`rax`,4),%`ebx`       ;*`aaload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@18 (`line` 798)
+  0`x`00007`f`81`d`4`d`33`cfa`:   `cmp`    $0`x`0,%`rbx`
+  0`x`00007`f`81`d`4`d`33`cfe`:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`d`08:   `movabs` $0`x`1`d`8,%`rcx`
+  0`x`00007`f`81`d`4`d`33`d`12:   `je`     0`x`00007`f`81`d`4`d`33`d`22
+  0`x`00007`f`81`d`4`d`33`d`18:   `movabs` $0`x`1`c`8,%`rcx`
+  0`x`00007`f`81`d`4`d`33`d`22:   `mov`    (%`rax`,%`rcx`,1),%`r`8
+  0`x`00007`f`81`d`4`d`33`d`26:   `lea`    0`x`1(%`r`8),%`r`8
+  0`x`00007`f`81`d`4`d`33`d`2`a`:   `mov`    %`r`8,(%`rax`,%`rcx`,1)
+  0`x`00007`f`81`d`4`d`33`d`2`e`:   `je`     0`x`00007`f`81`d`4`d`33`ec`9           ;*`ifnonnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@21 (`line` 799)
+  0`x`00007`f`81`d`4`d`33`d`34:   `mov`    %`edx`,0`x`40(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`d`38:   `mov`    %`rdi`,%`rax`
+  0`x`00007`f`81`d`4`d`33`d`3`b`:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`d`45:   `mov`    0`x`8(%`rax`),%`eax`
+  0`x`00007`f`81`d`4`d`33`d`48:   `shl`    $0`x`3,%`rax`
+  0`x`00007`f`81`d`4`d`33`d`4`c`:   `cmp`    0`x`1`f`8(%`rcx`),%`rax`
+  0`x`00007`f`81`d`4`d`33`d`53:   `jne`    0`x`00007`f`81`d`4`d`33`d`62
+  0`x`00007`f`81`d`4`d`33`d`55:   `addq`   $0`x`1,0`x`200(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`d`5`d`:   `jmpq`   0`x`00007`f`81`d`4`d`33`dc`8
+  0`x`00007`f`81`d`4`d`33`d`62:   `cmp`    0`x`208(%`rcx`),%`rax`
+  0`x`00007`f`81`d`4`d`33`d`69:   `jne`    0`x`00007`f`81`d`4`d`33`d`78
+  0`x`00007`f`81`d`4`d`33`d`6`b`:   `addq`   $0`x`1,0`x`210(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`d`73:   `jmpq`   0`x`00007`f`81`d`4`d`33`dc`8
+  0`x`00007`f`81`d`4`d`33`d`78:   `cmpq`   $0`x`0,0`x`1`f`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`d`83:   `jne`    0`x`00007`f`81`d`4`d`33`d`9`c`
+  0`x`00007`f`81`d`4`d`33`d`85:   `mov`    %`rax`,0`x`1`f`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`d`8`c`:   `movq`   $0`x`1,0`x`200(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`d`97:   `jmpq`   0`x`00007`f`81`d`4`d`33`dc`8
+  0`x`00007`f`81`d`4`d`33`d`9`c`:   `cmpq`   $0`x`0,0`x`208(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`da`7:   `jne`    0`x`00007`f`81`d`4`d`33`dc`0
+  0`x`00007`f`81`d`4`d`33`da`9:   `mov`    %`rax`,0`x`208(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`db`0:   `movq`   $0`x`1,0`x`210(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`dbb`:   `jmpq`   0`x`00007`f`81`d`4`d`33`dc`8
+  0`x`00007`f`81`d`4`d`33`dc`0:   `addq`   $0`x`1,0`x`1`e`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`33`dc`8:   `mov`    %`rbx`,%`rdx`
+  0`x`00007`f`81`d`4`d`33`dcb`:   `mov`    %`rdi`,%`rsi`                    ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@31 (`line` 801)
+  0`x`00007`f`81`d`4`d`33`dce`:   `nopl`   0`x`0(%`rax`)
+  0`x`00007`f`81`d`4`d`33`dd`5:   `movabs` $0`xffffffffffffffff`,%`rax`
+  0`x`00007`f`81`d`4`d`33`ddf`:   `callq`  0`x`00007`f`81`d`47`ee`700           ; `ImmutableOopMap` {[48]=`Oop` [56]=`Oop` }
+                                                            ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@31 (`line` 801)
+                                                            ;   {`virtual`_`call`}
+  0`x`00007`f`81`d`4`d`33`de`4:   `cmp`    $0`x`0,%`eax`
+  0`x`00007`f`81`d`4`d`33`de`7:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`df`1:   `movabs` $0`x`230,%`rsi`
+  0`x`00007`f`81`d`4`d`33`dfb`:   `jne`    0`x`00007`f`81`d`4`d`33`e`0`b`
+  0`x`00007`f`81`d`4`d`33`e`01:   `movabs` $0`x`220,%`rsi`
+  0`x`00007`f`81`d`4`d`33`e`0`b`:   `mov`    (%`rax`,%`rsi`,1),%`rdi`
+  0`x`00007`f`81`d`4`d`33`e`0`f`:   `lea`    0`x`1(%`rdi`),%`rdi`
+  0`x`00007`f`81`d`4`d`33`e`13:   `mov`    %`rdi`,(%`rax`,%`rsi`,1)
+  0`x`00007`f`81`d`4`d`33`e`17:   `jne`    0`x`00007`f`81`d`4`d`33`eb`2           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@34 (`line` 801)
+  0`x`00007`f`81`d`4`d`33`e`1`d`:   `mov`    0`x`30(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`33`e`22:   `mov`    0`x`40(%`rsp`),%`edx`
+  0`x`00007`f`81`d`4`d`33`e`26:   `inc`    %`edx`
+  0`x`00007`f`81`d`4`d`33`e`28:   `mov`    0`x`10(%`rsi`),%`eax`              ;*`getfield` `elements` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@44 (`line` 803)
+  0`x`00007`f`81`d`4`d`33`e`2`b`:   `mov`    0`xc`(%`rax`),%`eax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`33`f`44
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@47 (`line` 803)
+  0`x`00007`f`81`d`4`d`33`e`2`e`:   `cmp`    %`eax`,%`edx`
+  0`x`00007`f`81`d`4`d`33`e`30:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`e`3`a`:   `movabs` $0`x`240,%`rdi`
+  0`x`00007`f`81`d`4`d`33`e`44:   `jne`    0`x`00007`f`81`d`4`d`33`e`54
+  0`x`00007`f`81`d`4`d`33`e`4`a`:   `movabs` $0`x`250,%`rdi`
+  0`x`00007`f`81`d`4`d`33`e`54:   `mov`    (%`rax`,%`rdi`,1),%`rbx`
+  0`x`00007`f`81`d`4`d`33`e`58:   `lea`    0`x`1(%`rbx`),%`rbx`
+  0`x`00007`f`81`d`4`d`33`e`5`c`:   `mov`    %`rbx`,(%`rax`,%`rdi`,1)
+  0`x`00007`f`81`d`4`d`33`e`60:   `jne`    0`x`00007`f`81`d`4`d`33`e`6`b`           ;*`if`_`icmpne` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@48 (`line` 803)
+  0`x`00007`f`81`d`4`d`33`e`66:   `mov`    $0`x`0,%`edx`
+  0`x`00007`f`81`d`4`d`33`e`6`b`:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`e`75:   `mov`    0`x`140(%`rax`),%`edi`
+  0`x`00007`f`81`d`4`d`33`e`7`b`:   `add`    $0`x`8,%`edi`
+  0`x`00007`f`81`d`4`d`33`e`7`e`:   `mov`    %`edi`,0`x`140(%`rax`)
+  0`x`00007`f`81`d`4`d`33`e`84:   `and`    $0`xfff`8,%`edi`
+  0`x`00007`f`81`d`4`d`33`e`8`a`:   `cmp`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`33`e`8`d`:   `je`     0`x`00007`f`81`d`4`d`33`f`49           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@53 (`line` 806)
+  0`x`00007`f`81`d`4`d`33`e`93:   `mov`    0`x`108(%`r`15),%`r`10             ; `ImmutableOopMap` {[56]=`Oop` `rsi`=`Oop` [48]=`Oop` }
+                                                            ;*`goto` {`reexecute`=1 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - (`reexecute`) `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@53 (`line` 806)
+  0`x`00007`f`81`d`4`d`33`e`9`a`:   `test`   %`eax`,(%`r`10)                  ;   {`poll`}
+  0`x`00007`f`81`d`4`d`33`e`9`d`:   `movabs` $0`x`7`f`81`d`3`f`43`b`88,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`ea`7:   `incl`   0`x`260(%`rax`)
+  0`x`00007`f`81`d`4`d`33`ead`:   `jmpq`   0`x`00007`f`81`d`4`d`33`ce`0           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@53 (`line` 806)
+  0`x`00007`f`81`d`4`d`33`eb`2:   `mov`    0`x`40(%`rsp`),%`edx`
+  0`x`00007`f`81`d`4`d`33`eb`6:   `mov`    %`rdx`,%`rax`
+  0`x`00007`f`81`d`4`d`33`eb`9:   `add`    $0`x`50,%`rsp`
+  0`x`00007`f`81`d`4`d`33`ebd`:   `pop`    %`rbp`
+  0`x`00007`f`81`d`4`d`33`ebe`:   `mov`    0`x`108(%`r`15),%`r`10
+  0`x`00007`f`81`d`4`d`33`ec`5:   `test`   %`eax`,(%`r`10)                  ;   {`poll`_`return`}
+  0`x`00007`f`81`d`4`d`33`ec`8:   `retq`                                ;*`ireturn` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`::`probe`@38 (`line` 802)
+  0`x`00007`f`81`d`4`d`33`ec`9:   `neg`    %`edx`
+  0`x`00007`f`81`d`4`d`33`ecb`:   `mov`    %`rdx`,%`rax`
+  0`x`00007`f`81`d`4`d`33`ece`:   `dec`    %`eax`
+  0`x`00007`f`81`d`4`d`33`ed`0:   `add`    $0`x`50,%`rsp`
+  0`x`00007`f`81`d`4`d`33`ed`4:   `pop`    %`rbp`
+  0`x`00007`f`81`d`4`d`33`ed`5:   `mov`    0`x`108(%`r`15),%`r`10
+  0`x`00007`f`81`d`4`d`33`edc`:   `test`   %`eax`,(%`r`10)                  ;   {`poll`_`return`}
+  0`x`00007`f`81`d`4`d`33`edf`:   `retq`   
+  0`x`00007`f`81`d`4`d`33`ee`0:   `movabs` $0`x`7`f`81`d`3`f`11`bb`8,%`r`10         ;   {`metadata`({`method`} {0`x`00007`f`81`d`3`f`11`bb`8} '`probe'` '(`Ljava`/`lang`/`Object`;)`I'` `in` '`java`/`util`/`ImmutableCollections`$`SetN'`)}
+  0`x`00007`f`81`d`4`d`33`eea`:   `mov`    %`r`10,0`x`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`eef`:   `movq`   $0`xffffffffffffffff`,(%`rsp`)
+  0`x`00007`f`81`d`4`d`33`ef`7:   `callq`  0`x`00007`f`81`d`489`e`000           ; `ImmutableOopMap` {`rsi`=`Oop` [48]=`Oop` `rdx`=`Oop` [56]=`Oop` }
                                                             ;*synchronization entry
                                                             ; - java.util.ImmutableCollections$SetN::probe@-1 (line 796)
                                                             ;   {runtime_call counter_overflow Runtime1 stub}
@@ -1720,94 +1734,94 @@ Compiled method (c1)     109   20       3       java.util.ImmutableCollections$S
 
 [Entry Point]
   # {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator'
-  #           [sp+0x50]  (sp of caller)
-  0x00007f81d4d345e0:   mov    0x8(%rsi),%r10d
-  0x00007f81d4d345e4:   shl    $0x3,%r10
-  0x00007f81d4d345e8:   cmp    %rax,%r10
-  0x00007f81d4d345eb:   jne    0x00007f81d47eed00           ;   {runtime_call ic_miss_stub}
-  0x00007f81d4d345f1:   data16 data16 nopw 0x0(%rax,%rax,1)
-  0x00007f81d4d345fc:   data16 data16 xchg %ax,%ax
-[Verified Entry Point]
-  0x00007f81d4d34600:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d34607:   push   %rbp
-  0x00007f81d4d34608:   sub    $0x40,%rsp
-  0x00007f81d4d3460c:   mov    %rsi,0x28(%rsp)
-  0x00007f81d4d34611:   movabs $0x7f81d3f95558,%rdi         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d3461b:   mov    0x13c(%rdi),%ebx
-  0x00007f81d4d34621:   add    $0x8,%ebx
-  0x00007f81d4d34624:   mov    %ebx,0x13c(%rdi)
-  0x00007f81d4d3462a:   and    $0x1ff8,%ebx
-  0x00007f81d4d34630:   cmp    $0x0,%ebx
-  0x00007f81d4d34633:   je     0x00007f81d4d347a6           ;*aload_0 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@0 (line 763)
-  0x00007f81d4d34639:   mov    0xc(%rsi),%edi               ;*getfield remaining {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@1 (line 763)
-  0x00007f81d4d3463c:   cmp    $0x0,%edi
-  0x00007f81d4d3463f:   movabs $0x7f81d3f95558,%rdi         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d34649:   movabs $0x180,%rbx
-  0x00007f81d4d34653:   jle    0x00007f81d4d34663
-  0x00007f81d4d34659:   movabs $0x190,%rbx
-  0x00007f81d4d34663:   mov    (%rdi,%rbx,1),%rax
-  0x00007f81d4d34667:   lea    0x1(%rax),%rax
-  0x00007f81d4d3466b:   mov    %rax,(%rdi,%rbx,1)
-  0x00007f81d4d3466f:   jle    0x00007f81d4d34762
-  0x00007f81d4d34675:   jmpq   0x00007f81d4d346c7           ;*ifle {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@4 (line 763)
-  0x00007f81d4d3467a:   nopw   0x0(%rax,%rax,1)
-  0x00007f81d4d34680:   movabs $0x7f81d3f95558,%rax         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d3468a:   mov    0x140(%rax),%edx
-  0x00007f81d4d34690:   add    $0x8,%edx
-  0x00007f81d4d34693:   mov    %edx,0x140(%rax)
-  0x00007f81d4d34699:   and    $0xfff8,%edx
-  0x00007f81d4d3469f:   cmp    $0x0,%edx
-  0x00007f81d4d346a2:   je     0x00007f81d4d347c7           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@24 (line 766)
-  0x00007f81d4d346a8:   mov    0x108(%r15),%r10             ; ImmutableOopMap {[40]=Oop }
-                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
-                                                            ; - (reexecute) java.util.ImmutableCollections$SetN$SetNIterator::next@24 (line 766)
-  0x00007f81d4d346af:   test   %eax,(%r10)                  ;   {poll}
-  0x00007f81d4d346b2:   movabs $0x7f81d3f95558,%rax         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d346bc:   incl   0x1f8(%rax)                  ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@24 (line 766)
-  0x00007f81d4d346c2:   mov    0x28(%rsp),%rsi
-  0x00007f81d4d346c7:   mov    0x14(%rsi),%edi              ;*getfield this$0 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@8 (line 766)
-  0x00007f81d4d346ca:   mov    0x10(%rdi),%edi              ; implicit exception: dispatches to 0x00007f81d4d347e8
-                                                            ;*getfield elements {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@11 (line 766)
-  0x00007f81d4d346cd:   mov    %rsi,%rbx
-  0x00007f81d4d346d0:   movabs $0x7f81d3f95558,%rax         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d346da:   addq   $0x1,0x1a0(%rax)
-  0x00007f81d4d346e2:   mov    %rsi,%rbx
-  0x00007f81d4d346e5:   mov    %rbx,%rsi                    ;*invokevirtual nextIndex {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@15 (line 766)
-  0x00007f81d4d346e8:   mov    %rdi,0x20(%rsp)
-  0x00007f81d4d346ed:   xchg   %ax,%ax
-  0x00007f81d4d346ef:   callq  0x00007f81d47eea00           ; ImmutableOopMap {[40]=Oop [32]=Oop }
-                                                            ;*invokevirtual nextIndex {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@15 (line 766)
-                                                            ;   {optimized virtual_call}
-  0x00007f81d4d346f4:   mov    0x20(%rsp),%rdi
-  0x00007f81d4d346f9:   mov    0xc(%rdi),%edx               ; implicit exception: dispatches to 0x00007f81d4d347ed
-  0x00007f81d4d346fc:   cmp    %eax,%edx
-  0x00007f81d4d346fe:   jbe    0x00007f81d4d347f2
-  0x00007f81d4d34704:   movslq %eax,%rax
-  0x00007f81d4d34707:   mov    0x10(%rdi,%rax,4),%eax       ;*aaload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@18 (line 766)
-  0x00007f81d4d3470b:   cmp    $0x0,%rax
-  0x00007f81d4d3470f:   movabs $0x7f81d3f95558,%rdx         ;   {metadata(method data for {method} {0x00007f81d3f883f8} 'next' '()Ljava/lang/Object;' in 'java/util/ImmutableCollections$SetN$SetNIterator')}
-  0x00007f81d4d34719:   movabs $0x1e8,%rsi
-  0x00007f81d4d34723:   je     0x00007f81d4d34733
-  0x00007f81d4d34729:   movabs $0x1d8,%rsi
-  0x00007f81d4d34733:   mov    (%rdx,%rsi,1),%rdi
-  0x00007f81d4d34737:   lea    0x1(%rdi),%rdi
-  0x00007f81d4d3473b:   mov    %rdi,(%rdx,%rsi,1)
-  0x00007f81d4d3473f:   je     0x00007f81d4d34680           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@21 (line 766)
-  0x00007f81d4d34745:   mov    0x28(%rsp),%rsi
-  0x00007f81d4d3474a:   mov    0xc(%rsi),%edx               ;*getfield remaining {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.ImmutableCollections$SetN$SetNIterator::next@29 (line 767)
-  0x00007f81d4d3474d:   dec    %edx
+  #           [`sp`+0`x`50]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`345`e`0:   `mov`    0`x`8(%`rsi`),%`r`10`d`
+  0`x`00007`f`81`d`4`d`345`e`4:   `shl`    $0`x`3,%`r`10
+  0`x`00007`f`81`d`4`d`345`e`8:   `cmp`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`345`eb`:   `jne`    0`x`00007`f`81`d`47`eed`00           ;   {`runtime`_`call` `ic`_`miss`_`stub`}
+  0`x`00007`f`81`d`4`d`345`f`1:   `data`16 `data`16 `nopw` 0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`345`fc`:   `data`16 `data`16 `xchg` %`ax`,%`ax`
+[`Verified` `Entry` `Point`]
+  0`x`00007`f`81`d`4`d`34600:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`34607:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`34608:   `sub`    $0`x`40,%`rsp`
+  0`x`00007`f`81`d`4`d`3460`c`:   `mov`    %`rsi`,0`x`28(%`rsp`)
+  0`x`00007`f`81`d`4`d`34611:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`3461`b`:   `mov`    0`x`13`c`(%`rdi`),%`ebx`
+  0`x`00007`f`81`d`4`d`34621:   `add`    $0`x`8,%`ebx`
+  0`x`00007`f`81`d`4`d`34624:   `mov`    %`ebx`,0`x`13`c`(%`rdi`)
+  0`x`00007`f`81`d`4`d`3462`a`:   `and`    $0`x`1`ff`8,%`ebx`
+  0`x`00007`f`81`d`4`d`34630:   `cmp`    $0`x`0,%`ebx`
+  0`x`00007`f`81`d`4`d`34633:   `je`     0`x`00007`f`81`d`4`d`347`a`6           ;*`aload`_0 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@0 (`line` 763)
+  0`x`00007`f`81`d`4`d`34639:   `mov`    0`xc`(%`rsi`),%`edi`               ;*`getfield` `remaining` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@1 (`line` 763)
+  0`x`00007`f`81`d`4`d`3463`c`:   `cmp`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`3463`f`:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`34649:   `movabs` $0`x`180,%`rbx`
+  0`x`00007`f`81`d`4`d`34653:   `jle`    0`x`00007`f`81`d`4`d`34663
+  0`x`00007`f`81`d`4`d`34659:   `movabs` $0`x`190,%`rbx`
+  0`x`00007`f`81`d`4`d`34663:   `mov`    (%`rdi`,%`rbx`,1),%`rax`
+  0`x`00007`f`81`d`4`d`34667:   `lea`    0`x`1(%`rax`),%`rax`
+  0`x`00007`f`81`d`4`d`3466`b`:   `mov`    %`rax`,(%`rdi`,%`rbx`,1)
+  0`x`00007`f`81`d`4`d`3466`f`:   `jle`    0`x`00007`f`81`d`4`d`34762
+  0`x`00007`f`81`d`4`d`34675:   `jmpq`   0`x`00007`f`81`d`4`d`346`c`7           ;*`ifle` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@4 (`line` 763)
+  0`x`00007`f`81`d`4`d`3467`a`:   `nopw`   0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`34680:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`3468`a`:   `mov`    0`x`140(%`rax`),%`edx`
+  0`x`00007`f`81`d`4`d`34690:   `add`    $0`x`8,%`edx`
+  0`x`00007`f`81`d`4`d`34693:   `mov`    %`edx`,0`x`140(%`rax`)
+  0`x`00007`f`81`d`4`d`34699:   `and`    $0`xfff`8,%`edx`
+  0`x`00007`f`81`d`4`d`3469`f`:   `cmp`    $0`x`0,%`edx`
+  0`x`00007`f`81`d`4`d`346`a`2:   `je`     0`x`00007`f`81`d`4`d`347`c`7           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@24 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`a`8:   `mov`    0`x`108(%`r`15),%`r`10             ; `ImmutableOopMap` {[40]=`Oop` }
+                                                            ;*`goto` {`reexecute`=1 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - (`reexecute`) `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@24 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`af`:   `test`   %`eax`,(%`r`10)                  ;   {`poll`}
+  0`x`00007`f`81`d`4`d`346`b`2:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`346`bc`:   `incl`   0`x`1`f`8(%`rax`)                  ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@24 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`c`2:   `mov`    0`x`28(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`346`c`7:   `mov`    0`x`14(%`rsi`),%`edi`              ;*`getfield` `this`$0 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@8 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`ca`:   `mov`    0`x`10(%`rdi`),%`edi`              ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`347`e`8
+                                                            ;*`getfield` `elements` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@11 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`cd`:   `mov`    %`rsi`,%`rbx`
+  0`x`00007`f`81`d`4`d`346`d`0:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`346`da`:   `addq`   $0`x`1,0`x`1`a`0(%`rax`)
+  0`x`00007`f`81`d`4`d`346`e`2:   `mov`    %`rsi`,%`rbx`
+  0`x`00007`f`81`d`4`d`346`e`5:   `mov`    %`rbx`,%`rsi`                    ;*`invokevirtual` `nextIndex` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@15 (`line` 766)
+  0`x`00007`f`81`d`4`d`346`e`8:   `mov`    %`rdi`,0`x`20(%`rsp`)
+  0`x`00007`f`81`d`4`d`346`ed`:   `xchg`   %`ax`,%`ax`
+  0`x`00007`f`81`d`4`d`346`ef`:   `callq`  0`x`00007`f`81`d`47`eea`00           ; `ImmutableOopMap` {[40]=`Oop` [32]=`Oop` }
+                                                            ;*`invokevirtual` `nextIndex` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@15 (`line` 766)
+                                                            ;   {`optimized` `virtual`_`call`}
+  0`x`00007`f`81`d`4`d`346`f`4:   `mov`    0`x`20(%`rsp`),%`rdi`
+  0`x`00007`f`81`d`4`d`346`f`9:   `mov`    0`xc`(%`rdi`),%`edx`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`347`ed`
+  0`x`00007`f`81`d`4`d`346`fc`:   `cmp`    %`eax`,%`edx`
+  0`x`00007`f`81`d`4`d`346`fe`:   `jbe`    0`x`00007`f`81`d`4`d`347`f`2
+  0`x`00007`f`81`d`4`d`34704:   `movslq` %`eax`,%`rax`
+  0`x`00007`f`81`d`4`d`34707:   `mov`    0`x`10(%`rdi`,%`rax`,4),%`eax`       ;*`aaload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@18 (`line` 766)
+  0`x`00007`f`81`d`4`d`3470`b`:   `cmp`    $0`x`0,%`rax`
+  0`x`00007`f`81`d`4`d`3470`f`:   `movabs` $0`x`7`f`81`d`3`f`95558,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`f`883`f`8} '`next'` '()`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`ImmutableCollections`$`SetN`$`SetNIterator'`)}
+  0`x`00007`f`81`d`4`d`34719:   `movabs` $0`x`1`e`8,%`rsi`
+  0`x`00007`f`81`d`4`d`34723:   `je`     0`x`00007`f`81`d`4`d`34733
+  0`x`00007`f`81`d`4`d`34729:   `movabs` $0`x`1`d`8,%`rsi`
+  0`x`00007`f`81`d`4`d`34733:   `mov`    (%`rdx`,%`rsi`,1),%`rdi`
+  0`x`00007`f`81`d`4`d`34737:   `lea`    0`x`1(%`rdi`),%`rdi`
+  0`x`00007`f`81`d`4`d`3473`b`:   `mov`    %`rdi`,(%`rdx`,%`rsi`,1)
+  0`x`00007`f`81`d`4`d`3473`f`:   `je`     0`x`00007`f`81`d`4`d`34680           ;*`ifnonnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@21 (`line` 766)
+  0`x`00007`f`81`d`4`d`34745:   `mov`    0`x`28(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`3474`a`:   `mov`    0`xc`(%`rsi`),%`edx`               ;*`getfield` `remaining` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`ImmutableCollections`$`SetN`$`SetNIterator`::`next`@29 (`line` 767)
+  0`x`00007`f`81`d`4d3474d:   dec    %edx
   0x00007f81d4d3474f:   mov    %edx,0xc(%rsi)               ;*putfield remaining {reexecute=0 rethrow=0 return_oop=0}
                                                             ; - java.util.ImmutableCollections$SetN$SetNIterator::next@34 (line 767)
   0x00007f81d4d34752:   add    $0x40,%rsp
@@ -1965,33 +1979,33 @@ Compiled method (c1)     119    8       3       java.lang.StringLatin1::equals (
   # {method} {0x00007f81d3e6d4a0} 'equals' '([B[B)Z' in 'java/lang/StringLatin1'
   # parm0:    rsi:rsi   = '[B'
   # parm1:    rdx:rdx   = '[B'
-  #           [sp+0x40]  (sp of caller)
-  0x00007f81d4d34dc0:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d34dc7:   push   %rbp
-  0x00007f81d4d34dc8:   sub    $0x30,%rsp
-  0x00007f81d4d34dcc:   movabs $0x7f81d3f45a40,%rax         ;   {metadata(method data for {method} {0x00007f81d3e6d4a0} 'equals' '([B[B)Z' in 'java/lang/StringLatin1')}
-  0x00007f81d4d34dd6:   mov    0x13c(%rax),%edi
-  0x00007f81d4d34ddc:   add    $0x8,%edi
-  0x00007f81d4d34ddf:   mov    %edi,0x13c(%rax)
-  0x00007f81d4d34de5:   and    $0x1ff8,%edi
-  0x00007f81d4d34deb:   cmp    $0x0,%edi
-  0x00007f81d4d34dee:   je     0x00007f81d4d34f51           ;*aload_0 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::equals@0 (line 95)
-  0x00007f81d4d34df4:   mov    0xc(%rsi),%eax               ; implicit exception: dispatches to 0x00007f81d4d34f72
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::equals@1 (line 95)
-  0x00007f81d4d34df7:   mov    0xc(%rdx),%edi               ; implicit exception: dispatches to 0x00007f81d4d34f77
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.lang.StringLatin1::equals@3 (line 95)
-  0x00007f81d4d34dfa:   cmp    %edi,%eax
-  0x00007f81d4d34dfc:   movabs $0x7f81d3f45a40,%rdi         ;   {metadata(method data for {method} {0x00007f81d3e6d4a0} 'equals' '([B[B)Z' in 'java/lang/StringLatin1')}
-  0x00007f81d4d34e06:   movabs $0x180,%rbx
-  0x00007f81d4d34e10:   jne    0x00007f81d4d34e20
-  0x00007f81d4d34e16:   movabs $0x190,%rbx
-  0x00007f81d4d34e20:   mov    (%rdi,%rbx,1),%rcx
-  0x00007f81d4d34e24:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d34e28:   mov    %rcx,(%rdi,%rbx,1)
-  0x00007f81d4d34e2c:   jne    0x00007f81d4d34f3c           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+  #           [`sp`+0`x`40]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`34`dc`0:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`34`dc`7:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`34`dc`8:   `sub`    $0`x`30,%`rsp`
+  0`x`00007`f`81`d`4`d`34`dcc`:   `movabs` $0`x`7`f`81`d`3`f`45`a`40,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`d`4`a`0} '`equals'` '([`B`[`B`)`Z'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`34`dd`6:   `mov`    0`x`13`c`(%`rax`),%`edi`
+  0`x`00007`f`81`d`4`d`34`ddc`:   `add`    $0`x`8,%`edi`
+  0`x`00007`f`81`d`4`d`34`ddf`:   `mov`    %`edi`,0`x`13`c`(%`rax`)
+  0`x`00007`f`81`d`4`d`34`de`5:   `and`    $0`x`1`ff`8,%`edi`
+  0`x`00007`f`81`d`4`d`34`deb`:   `cmp`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`34`dee`:   `je`     0`x`00007`f`81`d`4`d`34`f`51           ;*`aload`_0 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`equals`@0 (`line` 95)
+  0`x`00007`f`81`d`4`d`34`df`4:   `mov`    0`xc`(%`rsi`),%`eax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`34`f`72
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`equals`@1 (`line` 95)
+  0`x`00007`f`81`d`4`d`34`df`7:   `mov`    0`xc`(%`rdx`),%`edi`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`34`f`77
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`lang`.`StringLatin`1::`equals`@3 (`line` 95)
+  0`x`00007`f`81`d`4`d`34`dfa`:   `cmp`    %`edi`,%`eax`
+  0`x`00007`f`81`d`4`d`34`dfc`:   `movabs` $0`x`7`f`81`d`3`f`45`a`40,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`6`d`4`a`0} '`equals'` '([`B`[`B`)`Z'` `in` '`java`/`lang`/`StringLatin`1')}
+  0`x`00007`f`81`d`4`d`34`e`06:   `movabs` $0`x`180,%`rbx`
+  0`x`00007`f`81`d`4`d`34`e`10:   `jne`    0`x`00007`f`81`d`4`d`34`e`20
+  0`x`00007`f`81`d`4`d`34`e`16:   `movabs` $0`x`190,%`rbx`
+  0`x`00007`f`81`d`4`d`34`e`20:   `mov`    (%`rdi`,%`rbx`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`34`e`24:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`34`e`28:   `mov`    %`rcx`,(%`rdi`,%`rbx`,1)
+  0`x`00007`f`81`d`4`d`34`e`2`c`:   `jne`    0`x`00007`f`81d4d34f3c           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
                                                             ; - java.lang.StringLatin1::equals@4 (line 95)
   0x00007f81d4d34e32:   mov    $0x0,%edi
   0x00007f81d4d34e37:   jmpq   0x00007f81d4d34ed5           ;*iload_2 {reexecute=0 rethrow=0 return_oop=0}
@@ -2163,746 +2177,746 @@ Compiled method (c1)     127   33       3       java.util.HashMap::putVal (300 b
   # parm2:    r8:r8     = 'java/lang/Object'
   # parm3:    r9        = boolean
   # parm4:    rdi       = boolean
-  #           [sp+0xf0]  (sp of caller)
-  0x00007f81d4d35540:   mov    0x8(%rsi),%r10d
-  0x00007f81d4d35544:   shl    $0x3,%r10
-  0x00007f81d4d35548:   cmp    %rax,%r10
-  0x00007f81d4d3554b:   jne    0x00007f81d47eed00           ;   {runtime_call ic_miss_stub}
-  0x00007f81d4d35551:   data16 data16 nopw 0x0(%rax,%rax,1)
-  0x00007f81d4d3555c:   data16 data16 xchg %ax,%ax
-[Verified Entry Point]
-  0x00007f81d4d35560:   mov    %eax,-0x14000(%rsp)
-  0x00007f81d4d35567:   push   %rbp
-  0x00007f81d4d35568:   sub    $0xe0,%rsp
-  0x00007f81d4d3556f:   mov    %rsi,0xa0(%rsp)
-  0x00007f81d4d35577:   mov    %edx,0x98(%rsp)
-  0x00007f81d4d3557e:   mov    %rcx,0xa8(%rsp)
-  0x00007f81d4d35586:   mov    %r8,0xb0(%rsp)
-  0x00007f81d4d3558e:   mov    %edi,0xb8(%rsp)
-  0x00007f81d4d35595:   movabs $0x7f81d3f9df18,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3559f:   mov    0x13c(%rbx),%eax
-  0x00007f81d4d355a5:   add    $0x8,%eax
-  0x00007f81d4d355a8:   mov    %eax,0x13c(%rbx)
-  0x00007f81d4d355ae:   and    $0x1ff8,%eax
-  0x00007f81d4d355b4:   cmp    $0x0,%eax
-  0x00007f81d4d355b7:   je     0x00007f81d4d364bb           ;*aload_0 {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@0 (line 628)
-  0x00007f81d4d355bd:   mov    0x24(%rsi),%ebx              ;*getfield table {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@1 (line 628)
-  0x00007f81d4d355c0:   cmp    $0x0,%rbx
-  0x00007f81d4d355c4:   movabs $0x7f81d3f9df18,%rax         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d355ce:   movabs $0x180,%r11
-  0x00007f81d4d355d8:   je     0x00007f81d4d355e8
-  0x00007f81d4d355de:   movabs $0x190,%r11
-  0x00007f81d4d355e8:   mov    (%rax,%r11,1),%r13
-  0x00007f81d4d355ec:   lea    0x1(%r13),%r13
-  0x00007f81d4d355f0:   mov    %r13,(%rax,%r11,1)
-  0x00007f81d4d355f4:   je     0x00007f81d4d35643           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@7 (line 628)
-  0x00007f81d4d355fa:   mov    0xc(%rbx),%eax               ; implicit exception: dispatches to 0x00007f81d4d364dc
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@12 (line 628)
-  0x00007f81d4d355fd:   cmp    $0x0,%eax
-  0x00007f81d4d35600:   movabs $0x7f81d3f9df18,%r11         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3560a:   movabs $0x1b0,%r13
-  0x00007f81d4d35614:   je     0x00007f81d4d35624
-  0x00007f81d4d3561a:   movabs $0x1a0,%r13
-  0x00007f81d4d35624:   mov    (%r11,%r13,1),%r14
-  0x00007f81d4d35628:   lea    0x1(%r14),%r14
-  0x00007f81d4d3562c:   mov    %r14,(%r11,%r13,1)
-  0x00007f81d4d35630:   je     0x00007f81d4d35643           ;*ifne {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@16 (line 628)
-  0x00007f81d4d35636:   mov    %r9d,0x9c(%rsp)
-  0x00007f81d4d3563e:   jmpq   0x00007f81d4d35678           ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@29 (line 630)
-  0x00007f81d4d35643:   mov    %r9d,0x9c(%rsp)
-  0x00007f81d4d3564b:   mov    %rsi,%rbx
-  0x00007f81d4d3564e:   movabs $0x7f81d3f9df18,%rax         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35658:   addq   $0x1,0x1c0(%rax)
-  0x00007f81d4d35660:   mov    %rsi,%rbx
-  0x00007f81d4d35663:   mov    %rbx,%rsi                    ;*invokevirtual resize {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@20 (line 629)
-  0x00007f81d4d35666:   nop
-  0x00007f81d4d35667:   callq  0x00007f81d47eea00           ; ImmutableOopMap {[160]=Oop [176]=Oop [168]=Oop }
-                                                            ;*invokevirtual resize {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@20 (line 629)
-                                                            ;   {optimized virtual_call}
-  0x00007f81d4d3566c:   mov    %rax,%rdx                    ;*invokevirtual resize {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@20 (line 629)
-  0x00007f81d4d3566f:   mov    0xc(%rdx),%esi               ; implicit exception: dispatches to 0x00007f81d4d364e1
-                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@26 (line 629)
-  0x00007f81d4d35672:   mov    %rsi,%rax
-  0x00007f81d4d35675:   mov    %rdx,%rbx                    ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@29 (line 630)
-  0x00007f81d4d35678:   dec    %eax
-  0x00007f81d4d3567a:   mov    %rax,%r8
-  0x00007f81d4d3567d:   and    0x98(%rsp),%r8d
-  0x00007f81d4d35685:   cmp    0xc(%rbx),%r8d               ; implicit exception: dispatches to 0x00007f81d4d364e6
-  0x00007f81d4d35689:   jae    0x00007f81d4d364f0
-  0x00007f81d4d3568f:   movslq %r8d,%rdx
-  0x00007f81d4d35692:   mov    0x10(%rbx,%rdx,4),%edi       ;*aaload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@40 (line 630)
-  0x00007f81d4d35696:   cmp    $0x0,%rdi
-  0x00007f81d4d3569a:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d356a4:   movabs $0x1f8,%rsi
-  0x00007f81d4d356ae:   jne    0x00007f81d4d356be
-  0x00007f81d4d356b4:   movabs $0x208,%rsi
-  0x00007f81d4d356be:   mov    (%rdx,%rsi,1),%rax
-  0x00007f81d4d356c2:   lea    0x1(%rax),%rax
-  0x00007f81d4d356c6:   mov    %rax,(%rdx,%rsi,1)
-  0x00007f81d4d356ca:   mov    0xb0(%rsp),%r9
-  0x00007f81d4d356d2:   jne    0x00007f81d4d3595e           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@44 (line 630)
-  0x00007f81d4d356d8:   mov    0xa8(%rsp),%rcx
-  0x00007f81d4d356e0:   mov    0x98(%rsp),%edx
-  0x00007f81d4d356e7:   mov    0xa0(%rsp),%rsi
-  0x00007f81d4d356ef:   movabs $0x7f81d3f9df18,%rdi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d356f9:   addq   $0x1,0x230(%rdi)
-  0x00007f81d4d35701:   movabs $0x7f81d3f9ed80,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e43970} 'newNode' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)Ljava/util/HashMap$Node;' in 'java/util/HashMap')}
-  0x00007f81d4d3570b:   mov    0x13c(%rsi),%edi
-  0x00007f81d4d35711:   add    $0x8,%edi
-  0x00007f81d4d35714:   mov    %edi,0x13c(%rsi)
-  0x00007f81d4d3571a:   and    $0x7ffff8,%edi
-  0x00007f81d4d35720:   cmp    $0x0,%edi
-  0x00007f81d4d35723:   je     0x00007f81d4d364fe
-  0x00007f81d4d35729:   mov    %rdx,%r11
-  0x00007f81d4d3572c:   movabs $0x100020330,%rdx            ;   {metadata('java/util/HashMap$Node')}
-  0x00007f81d4d35736:   mov    %rcx,%r13
-  0x00007f81d4d35739:   mov    0x118(%r15),%rax
-  0x00007f81d4d35740:   lea    0x20(%rax),%rdi
-  0x00007f81d4d35744:   cmp    0x128(%r15),%rdi
-  0x00007f81d4d3574b:   ja     0x00007f81d4d3651f
-  0x00007f81d4d35751:   mov    %rdi,0x118(%r15)
-  0x00007f81d4d35758:   mov    0xb8(%rdx),%rcx
-  0x00007f81d4d3575f:   mov    %rcx,(%rax)
-  0x00007f81d4d35762:   mov    %rdx,%rcx
-  0x00007f81d4d35765:   shr    $0x3,%rcx
-  0x00007f81d4d35769:   mov    %ecx,0x8(%rax)
-  0x00007f81d4d3576c:   xor    %rcx,%rcx
-  0x00007f81d4d3576f:   mov    %ecx,0xc(%rax)
-  0x00007f81d4d35772:   xor    %rcx,%rcx
-  0x00007f81d4d35775:   mov    %rcx,0x10(%rax)
-  0x00007f81d4d35779:   mov    %rcx,0x18(%rax)              ;*new {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::newNode@0 (line 1799)
-                                                            ; - java.util.HashMap::putVal@56 (line 631)
-  0x00007f81d4d3577d:   mov    %rax,%rdx
-  0x00007f81d4d35780:   movabs $0x7f81d3f9ed80,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e43970} 'newNode' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)Ljava/util/HashMap$Node;' in 'java/util/HashMap')}
-  0x00007f81d4d3578a:   addq   $0x1,0x180(%rsi)
-  0x00007f81d4d35792:   movabs $0x7f81d3f9ef50,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e710e8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)V' in 'java/util/HashMap$Node')}
-  0x00007f81d4d3579c:   mov    0x13c(%rdx),%esi
-  0x00007f81d4d357a2:   add    $0x8,%esi
-  0x00007f81d4d357a5:   mov    %esi,0x13c(%rdx)
-  0x00007f81d4d357ab:   and    $0x7ffff8,%esi
-  0x00007f81d4d357b1:   cmp    $0x0,%esi
-  0x00007f81d4d357b4:   je     0x00007f81d4d3652c
-  0x00007f81d4d357ba:   mov    %rax,%rdx
-  0x00007f81d4d357bd:   movabs $0x7f81d3f9ef50,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e710e8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)V' in 'java/util/HashMap$Node')}
-  0x00007f81d4d357c7:   addq   $0x1,0x180(%rsi)
-  0x00007f81d4d357cf:   movabs $0x7f81d3f33388,%rdx         ;   {metadata(method data for {method} {0x00007f81d3cfe650} '<init>' '()V' in 'java/lang/Object')}
-  0x00007f81d4d357d9:   mov    0x13c(%rdx),%esi
-  0x00007f81d4d357df:   add    $0x8,%esi
-  0x00007f81d4d357e2:   mov    %esi,0x13c(%rdx)
-  0x00007f81d4d357e8:   and    $0x7ffff8,%esi
-  0x00007f81d4d357ee:   cmp    $0x0,%esi
-  0x00007f81d4d357f1:   je     0x00007f81d4d3654d
-  0x00007f81d4d357f7:   mov    %r11d,0xc(%rax)              ;*putfield hash {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@6 (line 286)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@56 (line 631)
-  0x00007f81d4d357fb:   mov    %r13,%r10
-  0x00007f81d4d357fe:   mov    %r10d,0x10(%rax)
-  0x00007f81d4d35802:   mov    %rax,%rdx
-  0x00007f81d4d35805:   shr    $0x9,%rdx
-  0x00007f81d4d35809:   movabs $0x7f81d3eb8000,%rsi
-  0x00007f81d4d35813:   movb   $0x0,(%rdx,%rsi,1)           ;*putfield key {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@11 (line 287)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@56 (line 631)
-  0x00007f81d4d35817:   mov    %r9,%r10
-  0x00007f81d4d3581a:   mov    %r10d,0x14(%rax)
-  0x00007f81d4d3581e:   mov    %rax,%rdx
-  0x00007f81d4d35821:   shr    $0x9,%rdx
-  0x00007f81d4d35825:   movb   $0x0,(%rdx,%rsi,1)           ;*putfield value {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@16 (line 288)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@56 (line 631)
-  0x00007f81d4d35829:   cmp    0xc(%rbx),%r8d
-  0x00007f81d4d3582d:   jae    0x00007f81d4d3656e
-  0x00007f81d4d35833:   cmp    $0x0,%rax
-  0x00007f81d4d35837:   jne    0x00007f81d4d3584f
-  0x00007f81d4d35839:   movabs $0x7f81d3f9df18,%rdi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35843:   orb    $0x1,0x249(%rdi)
-  0x00007f81d4d3584a:   jmpq   0x00007f81d4d35933
-  0x00007f81d4d3584f:   mov    0x8(%rbx),%edx               ; implicit exception: dispatches to 0x00007f81d4d3657c
-  0x00007f81d4d35852:   shl    $0x3,%rdx
-  0x00007f81d4d35856:   mov    0x8(%rax),%edi
-  0x00007f81d4d35859:   shl    $0x3,%rdi
-  0x00007f81d4d3585d:   mov    0xe8(%rdx),%rdx
-  0x00007f81d4d35864:   cmp    %rdx,%rdi
-  0x00007f81d4d35867:   je     0x00007f81d4d35895
-  0x00007f81d4d3586d:   mov    0x10(%rdx),%ecx
-  0x00007f81d4d35870:   cmp    (%rdi,%rcx,1),%rdx
-  0x00007f81d4d35874:   je     0x00007f81d4d35895
-  0x00007f81d4d3587a:   cmp    $0x20,%ecx
-  0x00007f81d4d3587d:   jne    0x00007f81d4d3591c
-  0x00007f81d4d35883:   push   %rdi
-  0x00007f81d4d35884:   push   %rdx
-  0x00007f81d4d35885:   callq  0x00007f81d489b900           ;   {runtime_call slow_subtype_check Runtime1 stub}
-  0x00007f81d4d3588a:   pop    %rdi
-  0x00007f81d4d3588b:   pop    %rdx
-  0x00007f81d4d3588c:   cmp    $0x0,%edx
-  0x00007f81d4d3588f:   je     0x00007f81d4d3591c
-  0x00007f81d4d35895:   movabs $0x7f81d3f9df18,%rdi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3589f:   mov    0x8(%rax),%edx
-  0x00007f81d4d358a2:   shl    $0x3,%rdx
-  0x00007f81d4d358a6:   cmp    0x260(%rdi),%rdx
-  0x00007f81d4d358ad:   jne    0x00007f81d4d358bc
-  0x00007f81d4d358af:   addq   $0x1,0x268(%rdi)
-  0x00007f81d4d358b7:   jmpq   0x00007f81d4d35933
-  0x00007f81d4d358bc:   cmp    0x270(%rdi),%rdx
-  0x00007f81d4d358c3:   jne    0x00007f81d4d358d2
-  0x00007f81d4d358c5:   addq   $0x1,0x278(%rdi)
-  0x00007f81d4d358cd:   jmpq   0x00007f81d4d35933
-  0x00007f81d4d358d2:   cmpq   $0x0,0x260(%rdi)
-  0x00007f81d4d358dd:   jne    0x00007f81d4d358f6
-  0x00007f81d4d358df:   mov    %rdx,0x260(%rdi)
-  0x00007f81d4d358e6:   movq   $0x1,0x268(%rdi)
-  0x00007f81d4d358f1:   jmpq   0x00007f81d4d35933
-  0x00007f81d4d358f6:   cmpq   $0x0,0x270(%rdi)
-  0x00007f81d4d35901:   jne    0x00007f81d4d3591a
-  0x00007f81d4d35903:   mov    %rdx,0x270(%rdi)
-  0x00007f81d4d3590a:   movq   $0x1,0x278(%rdi)
-  0x00007f81d4d35915:   jmpq   0x00007f81d4d35933
-  0x00007f81d4d3591a:   jmp    0x00007f81d4d35933
-  0x00007f81d4d3591c:   movabs $0x7f81d3f9df18,%rdi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35926:   subq   $0x1,0x250(%rdi)
-  0x00007f81d4d3592e:   jmpq   0x00007f81d4d36581
-  0x00007f81d4d35933:   movslq %r8d,%r8
-  0x00007f81d4d35936:   lea    0x10(%rbx,%r8,4),%rdx
-  0x00007f81d4d3593b:   mov    %rax,%r10
-  0x00007f81d4d3593e:   mov    %r10d,(%rdx)
-  0x00007f81d4d35941:   shr    $0x9,%rdx
-  0x00007f81d4d35945:   movb   $0x0,(%rdx,%rsi,1)           ;*aastore {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@59 (line 631)
-  0x00007f81d4d35949:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35953:   incl   0x288(%rdx)
-  0x00007f81d4d35959:   jmpq   0x00007f81d4d362e6           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@60 (line 631)
-  0x00007f81d4d3595e:   mov    0xa8(%rsp),%r13
-  0x00007f81d4d35966:   mov    0x98(%rsp),%r11d
-  0x00007f81d4d3596e:   mov    0xc(%rdi),%edx               ; implicit exception: dispatches to 0x00007f81d4d3658a
-                                                            ;*getfield hash {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@65 (line 634)
-  0x00007f81d4d35971:   cmp    %r11d,%edx
-  0x00007f81d4d35974:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3597e:   movabs $0x2b0,%rsi
-  0x00007f81d4d35988:   je     0x00007f81d4d35998
-  0x00007f81d4d3598e:   movabs $0x2a0,%rsi
-  0x00007f81d4d35998:   mov    (%rdx,%rsi,1),%rax
-  0x00007f81d4d3599c:   lea    0x1(%rax),%rax
-  0x00007f81d4d359a0:   mov    %rax,(%rdx,%rsi,1)
-  0x00007f81d4d359a4:   je     0x00007f81d4d359b7           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@69 (line 634)
-  0x00007f81d4d359aa:   mov    %rbx,0xc8(%rsp)
-  0x00007f81d4d359b2:   jmpq   0x00007f81d4d35b35           ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@104 (line 637)
-  0x00007f81d4d359b7:   mov    0x10(%rdi),%edx              ;*getfield key {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@74 (line 634)
-  0x00007f81d4d359ba:   cmp    %r13,%rdx
-  0x00007f81d4d359bd:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d359c7:   movabs $0x2c0,%rax
-  0x00007f81d4d359d1:   je     0x00007f81d4d359e1
-  0x00007f81d4d359d7:   movabs $0x2d0,%rax
-  0x00007f81d4d359e1:   mov    (%rsi,%rax,1),%rcx
-  0x00007f81d4d359e5:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d359e9:   mov    %rcx,(%rsi,%rax,1)
-  0x00007f81d4d359ed:   je     0x00007f81d4d36299           ;*if_acmpeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@81 (line 634)
-  0x00007f81d4d359f3:   cmp    $0x0,%r13
-  0x00007f81d4d359f7:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35a01:   movabs $0x2f0,%rax
-  0x00007f81d4d35a0b:   jne    0x00007f81d4d35a1b
-  0x00007f81d4d35a11:   movabs $0x2e0,%rax
-  0x00007f81d4d35a1b:   mov    (%rsi,%rax,1),%rcx
-  0x00007f81d4d35a1f:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d35a23:   mov    %rcx,(%rsi,%rax,1)
-  0x00007f81d4d35a27:   jne    0x00007f81d4d35a3a           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@85 (line 634)
-  0x00007f81d4d35a2d:   mov    %rbx,0xc8(%rsp)
-  0x00007f81d4d35a35:   jmpq   0x00007f81d4d35b35           ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@104 (line 637)
-  0x00007f81d4d35a3a:   mov    %rdi,0xc0(%rsp)
-  0x00007f81d4d35a42:   mov    %rbx,0xc8(%rsp)
-  0x00007f81d4d35a4a:   cmp    0x0(%r13),%rax               ; implicit exception: dispatches to 0x00007f81d4d3658f
-  0x00007f81d4d35a4e:   mov    %r13,%rcx
-  0x00007f81d4d35a51:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35a5b:   mov    0x8(%rcx),%ecx
-  0x00007f81d4d35a5e:   shl    $0x3,%rcx
-  0x00007f81d4d35a62:   cmp    0x310(%rsi),%rcx
-  0x00007f81d4d35a69:   jne    0x00007f81d4d35a78
-  0x00007f81d4d35a6b:   addq   $0x1,0x318(%rsi)
-  0x00007f81d4d35a73:   jmpq   0x00007f81d4d35ade
-  0x00007f81d4d35a78:   cmp    0x320(%rsi),%rcx
-  0x00007f81d4d35a7f:   jne    0x00007f81d4d35a8e
-  0x00007f81d4d35a81:   addq   $0x1,0x328(%rsi)
-  0x00007f81d4d35a89:   jmpq   0x00007f81d4d35ade
-  0x00007f81d4d35a8e:   cmpq   $0x0,0x310(%rsi)
-  0x00007f81d4d35a99:   jne    0x00007f81d4d35ab2
-  0x00007f81d4d35a9b:   mov    %rcx,0x310(%rsi)
-  0x00007f81d4d35aa2:   movq   $0x1,0x318(%rsi)
-  0x00007f81d4d35aad:   jmpq   0x00007f81d4d35ade
-  0x00007f81d4d35ab2:   cmpq   $0x0,0x320(%rsi)
-  0x00007f81d4d35abd:   jne    0x00007f81d4d35ad6
-  0x00007f81d4d35abf:   mov    %rcx,0x320(%rsi)
-  0x00007f81d4d35ac6:   movq   $0x1,0x328(%rsi)
-  0x00007f81d4d35ad1:   jmpq   0x00007f81d4d35ade
-  0x00007f81d4d35ad6:   addq   $0x1,0x300(%rsi)
-  0x00007f81d4d35ade:   mov    %r13,%rsi                    ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@91 (line 635)
-  0x00007f81d4d35ae1:   nopl   0x0(%rax)
-  0x00007f81d4d35ae5:   movabs $0xffffffffffffffff,%rax
-  0x00007f81d4d35aef:   callq  0x00007f81d47ee700           ; ImmutableOopMap {[160]=Oop [176]=Oop [200]=Oop [192]=Oop [168]=Oop }
-                                                            ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@91 (line 635)
-                                                            ;   {virtual_call}
-  0x00007f81d4d35af4:   cmp    $0x0,%eax
-  0x00007f81d4d35af7:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35b01:   movabs $0x348,%rcx
-  0x00007f81d4d35b0b:   jne    0x00007f81d4d35b1b
-  0x00007f81d4d35b11:   movabs $0x338,%rcx
-  0x00007f81d4d35b1b:   mov    (%rdx,%rcx,1),%r8
-  0x00007f81d4d35b1f:   lea    0x1(%r8),%r8
-  0x00007f81d4d35b23:   mov    %r8,(%rdx,%rcx,1)
-  0x00007f81d4d35b27:   mov    0xc0(%rsp),%rdi
-  0x00007f81d4d35b2f:   jne    0x00007f81d4d36299           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@94 (line 635)
-  0x00007f81d4d35b35:   cmp    $0x0,%rdi
-  0x00007f81d4d35b39:   jne    0x00007f81d4d35b52
-  0x00007f81d4d35b3b:   movabs $0x7f81d3f9df18,%r8          ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35b45:   orb    $0x1,0x369(%r8)
-  0x00007f81d4d35b4d:   jmpq   0x00007f81d4d35c13
-  0x00007f81d4d35b52:   movabs $0x1000209d0,%r9             ;   {metadata('java/util/HashMap$TreeNode')}
-  0x00007f81d4d35b5c:   mov    0x8(%rdi),%ecx
-  0x00007f81d4d35b5f:   shl    $0x3,%rcx
-  0x00007f81d4d35b63:   cmp    %rcx,%r9
-  0x00007f81d4d35b66:   jne    0x00007f81d4d35bf7
-  0x00007f81d4d35b6c:   movabs $0x7f81d3f9df18,%r8          ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35b76:   mov    0x8(%rdi),%r9d
-  0x00007f81d4d35b7a:   shl    $0x3,%r9
-  0x00007f81d4d35b7e:   cmp    0x380(%r8),%r9
-  0x00007f81d4d35b85:   jne    0x00007f81d4d35b94
-  0x00007f81d4d35b87:   addq   $0x1,0x388(%r8)
-  0x00007f81d4d35b8f:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35b94:   cmp    0x390(%r8),%r9
-  0x00007f81d4d35b9b:   jne    0x00007f81d4d35baa
-  0x00007f81d4d35b9d:   addq   $0x1,0x398(%r8)
-  0x00007f81d4d35ba5:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35baa:   cmpq   $0x0,0x380(%r8)
-  0x00007f81d4d35bb5:   jne    0x00007f81d4d35bce
-  0x00007f81d4d35bb7:   mov    %r9,0x380(%r8)
-  0x00007f81d4d35bbe:   movq   $0x1,0x388(%r8)
-  0x00007f81d4d35bc9:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35bce:   cmpq   $0x0,0x390(%r8)
-  0x00007f81d4d35bd9:   jne    0x00007f81d4d35bf2
-  0x00007f81d4d35bdb:   mov    %r9,0x390(%r8)
-  0x00007f81d4d35be2:   movq   $0x1,0x398(%r8)
-  0x00007f81d4d35bed:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35bf2:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35bf7:   movabs $0x7f81d3f9df18,%r8          ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35c01:   subq   $0x1,0x370(%r8)
-  0x00007f81d4d35c09:   jmpq   0x00007f81d4d35c13
-  0x00007f81d4d35c0e:   jmpq   0x00007f81d4d35c18
-  0x00007f81d4d35c13:   xor    %rdx,%rdx
-  0x00007f81d4d35c16:   jmp    0x00007f81d4d35c22
-  0x00007f81d4d35c18:   movabs $0x1,%rdx                    ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@106 (line 637)
-  0x00007f81d4d35c22:   cmp    $0x0,%edx
-  0x00007f81d4d35c25:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35c2f:   movabs $0x3a8,%rcx
-  0x00007f81d4d35c39:   je     0x00007f81d4d35c49
-  0x00007f81d4d35c3f:   movabs $0x3b8,%rcx
-  0x00007f81d4d35c49:   mov    (%rdx,%rcx,1),%r8
-  0x00007f81d4d35c4d:   lea    0x1(%r8),%r8
-  0x00007f81d4d35c51:   mov    %r8,(%rdx,%rcx,1)
-  0x00007f81d4d35c55:   je     0x00007f81d4d35e11           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@109 (line 637)
-  0x00007f81d4d35c5b:   cmp    $0x0,%rdi
-  0x00007f81d4d35c5f:   jne    0x00007f81d4d35c77
-  0x00007f81d4d35c61:   movabs $0x7f81d3f9df18,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35c6b:   orb    $0x1,0x3c1(%rcx)
-  0x00007f81d4d35c72:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35c77:   movabs $0x1000209d0,%r8             ;   {metadata('java/util/HashMap$TreeNode')}
-  0x00007f81d4d35c81:   mov    0x8(%rdi),%edx
-  0x00007f81d4d35c84:   shl    $0x3,%rdx
-  0x00007f81d4d35c88:   cmp    %rdx,%r8
-  0x00007f81d4d35c8b:   jne    0x00007f81d4d35d1c
-  0x00007f81d4d35c91:   movabs $0x7f81d3f9df18,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35c9b:   mov    0x8(%rdi),%r8d
-  0x00007f81d4d35c9f:   shl    $0x3,%r8
-  0x00007f81d4d35ca3:   cmp    0x3d8(%rcx),%r8
-  0x00007f81d4d35caa:   jne    0x00007f81d4d35cb9
-  0x00007f81d4d35cac:   addq   $0x1,0x3e0(%rcx)
-  0x00007f81d4d35cb4:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35cb9:   cmp    0x3e8(%rcx),%r8
-  0x00007f81d4d35cc0:   jne    0x00007f81d4d35ccf
-  0x00007f81d4d35cc2:   addq   $0x1,0x3f0(%rcx)
-  0x00007f81d4d35cca:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35ccf:   cmpq   $0x0,0x3d8(%rcx)
-  0x00007f81d4d35cda:   jne    0x00007f81d4d35cf3
-  0x00007f81d4d35cdc:   mov    %r8,0x3d8(%rcx)
-  0x00007f81d4d35ce3:   movq   $0x1,0x3e0(%rcx)
-  0x00007f81d4d35cee:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35cf3:   cmpq   $0x0,0x3e8(%rcx)
-  0x00007f81d4d35cfe:   jne    0x00007f81d4d35d17
-  0x00007f81d4d35d00:   mov    %r8,0x3e8(%rcx)
-  0x00007f81d4d35d07:   movq   $0x1,0x3f0(%rcx)
-  0x00007f81d4d35d12:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35d17:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35d1c:   movabs $0x7f81d3f9df18,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35d26:   subq   $0x1,0x3c8(%rcx)
-  0x00007f81d4d35d2e:   jmpq   0x00007f81d4d36594
-  0x00007f81d4d35d33:   jmpq   0x00007f81d4d35d38
-  0x00007f81d4d35d38:   mov    %rdi,%rsi                    ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@114 (line 638)
-  0x00007f81d4d35d3b:   cmp    (%rsi),%rax                  ; implicit exception: dispatches to 0x00007f81d4d3659d
-  0x00007f81d4d35d3e:   mov    %rsi,%rdx
-  0x00007f81d4d35d41:   movabs $0x7f81d3f9df18,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35d4b:   mov    0x8(%rdx),%edx
-  0x00007f81d4d35d4e:   shl    $0x3,%rdx
-  0x00007f81d4d35d52:   cmp    0x410(%rcx),%rdx
-  0x00007f81d4d35d59:   jne    0x00007f81d4d35d68
-  0x00007f81d4d35d5b:   addq   $0x1,0x418(%rcx)
-  0x00007f81d4d35d63:   jmpq   0x00007f81d4d35dce
-  0x00007f81d4d35d68:   cmp    0x420(%rcx),%rdx
-  0x00007f81d4d35d6f:   jne    0x00007f81d4d35d7e
-  0x00007f81d4d35d71:   addq   $0x1,0x428(%rcx)
-  0x00007f81d4d35d79:   jmpq   0x00007f81d4d35dce
-  0x00007f81d4d35d7e:   cmpq   $0x0,0x410(%rcx)
-  0x00007f81d4d35d89:   jne    0x00007f81d4d35da2
-  0x00007f81d4d35d8b:   mov    %rdx,0x410(%rcx)
-  0x00007f81d4d35d92:   movq   $0x1,0x418(%rcx)
-  0x00007f81d4d35d9d:   jmpq   0x00007f81d4d35dce
-  0x00007f81d4d35da2:   cmpq   $0x0,0x420(%rcx)
-  0x00007f81d4d35dad:   jne    0x00007f81d4d35dc6
-  0x00007f81d4d35daf:   mov    %rdx,0x420(%rcx)
-  0x00007f81d4d35db6:   movq   $0x1,0x428(%rcx)
-  0x00007f81d4d35dc1:   jmpq   0x00007f81d4d35dce
-  0x00007f81d4d35dc6:   addq   $0x1,0x400(%rcx)
-  0x00007f81d4d35dce:   mov    0xa0(%rsp),%rdx
-  0x00007f81d4d35dd6:   mov    0xc8(%rsp),%rcx
-  0x00007f81d4d35dde:   mov    0x98(%rsp),%r8d
-  0x00007f81d4d35de6:   mov    0xa8(%rsp),%r9
-  0x00007f81d4d35dee:   mov    0xb0(%rsp),%rdi              ;*invokevirtual putTreeVal {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@123 (line 638)
-  0x00007f81d4d35df6:   nop
-  0x00007f81d4d35df7:   callq  0x00007f81d47eea00           ; ImmutableOopMap {[160]=Oop [176]=Oop }
-                                                            ;*invokevirtual putTreeVal {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@123 (line 638)
-                                                            ;   {optimized virtual_call}
-  0x00007f81d4d35dfc:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35e06:   incl   0x438(%rdx)
-  0x00007f81d4d35e0c:   jmpq   0x00007f81d4d362ac           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@128 (line 638)
-  0x00007f81d4d35e11:   mov    %rdi,%rbx
-  0x00007f81d4d35e14:   mov    $0x0,%edi                    ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@134 (line 641)
-  0x00007f81d4d35e19:   mov    %edi,0xbc(%rsp)
-  0x00007f81d4d35e20:   mov    0xa8(%rsp),%rcx
-  0x00007f81d4d35e28:   mov    0x98(%rsp),%edx
-  0x00007f81d4d35e2f:   mov    0x18(%rbx),%eax              ; implicit exception: dispatches to 0x00007f81d4d365a2
-                                                            ;*getfield next {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@136 (line 641)
-  0x00007f81d4d35e32:   mov    %rax,0xd0(%rsp)
-  0x00007f81d4d35e3a:   cmp    $0x0,%rax
-  0x00007f81d4d35e3e:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35e48:   movabs $0x460,%r8
-  0x00007f81d4d35e52:   je     0x00007f81d4d35e62
-  0x00007f81d4d35e58:   movabs $0x450,%r8
-  0x00007f81d4d35e62:   mov    (%rsi,%r8,1),%r9
-  0x00007f81d4d35e66:   lea    0x1(%r9),%r9
-  0x00007f81d4d35e6a:   mov    %r9,(%rsi,%r8,1)
-  0x00007f81d4d35e6e:   je     0x00007f81d4d3609a           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@142 (line 641)
-  0x00007f81d4d35e74:   mov    0xc(%rax),%esi               ; implicit exception: dispatches to 0x00007f81d4d365a7
-                                                            ;*getfield hash {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@177 (line 647)
-  0x00007f81d4d35e77:   cmp    %edx,%esi
-  0x00007f81d4d35e79:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35e83:   movabs $0x518,%rbx
-  0x00007f81d4d35e8d:   jne    0x00007f81d4d35e9d
-  0x00007f81d4d35e93:   movabs $0x528,%rbx
-  0x00007f81d4d35e9d:   mov    (%rsi,%rbx,1),%r8
-  0x00007f81d4d35ea1:   lea    0x1(%r8),%r8
-  0x00007f81d4d35ea5:   mov    %r8,(%rsi,%rbx,1)
-  0x00007f81d4d35ea9:   jne    0x00007f81d4d3600d           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@181 (line 647)
-  0x00007f81d4d35eaf:   mov    0x10(%rax),%esi              ;*getfield key {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@186 (line 647)
-  0x00007f81d4d35eb2:   cmp    %rcx,%rsi
-  0x00007f81d4d35eb5:   movabs $0x7f81d3f9df18,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35ebf:   movabs $0x538,%r8
-  0x00007f81d4d35ec9:   je     0x00007f81d4d35ed9
-  0x00007f81d4d35ecf:   movabs $0x548,%r8
-  0x00007f81d4d35ed9:   mov    (%rbx,%r8,1),%r9
-  0x00007f81d4d35edd:   lea    0x1(%r9),%r9
-  0x00007f81d4d35ee1:   mov    %r9,(%rbx,%r8,1)
-  0x00007f81d4d35ee5:   je     0x00007f81d4d36070           ;*if_acmpeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@193 (line 647)
-  0x00007f81d4d35eeb:   cmp    $0x0,%rcx
-  0x00007f81d4d35eef:   movabs $0x7f81d3f9df18,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35ef9:   movabs $0x558,%r8
-  0x00007f81d4d35f03:   je     0x00007f81d4d35f13
-  0x00007f81d4d35f09:   movabs $0x568,%r8
-  0x00007f81d4d35f13:   mov    (%rbx,%r8,1),%r9
-  0x00007f81d4d35f17:   lea    0x1(%r9),%r9
-  0x00007f81d4d35f1b:   mov    %r9,(%rbx,%r8,1)
-  0x00007f81d4d35f1f:   je     0x00007f81d4d3600d           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@197 (line 647)
-  0x00007f81d4d35f25:   cmp    (%rcx),%rax                  ; implicit exception: dispatches to 0x00007f81d4d365ac
-  0x00007f81d4d35f28:   mov    %rcx,%rbx
-  0x00007f81d4d35f2b:   movabs $0x7f81d3f9df18,%r8          ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35f35:   mov    0x8(%rbx),%ebx
-  0x00007f81d4d35f38:   shl    $0x3,%rbx
-  0x00007f81d4d35f3c:   cmp    0x588(%r8),%rbx
-  0x00007f81d4d35f43:   jne    0x00007f81d4d35f52
-  0x00007f81d4d35f45:   addq   $0x1,0x590(%r8)
-  0x00007f81d4d35f4d:   jmpq   0x00007f81d4d35fb8
-  0x00007f81d4d35f52:   cmp    0x598(%r8),%rbx
-  0x00007f81d4d35f59:   jne    0x00007f81d4d35f68
-  0x00007f81d4d35f5b:   addq   $0x1,0x5a0(%r8)
-  0x00007f81d4d35f63:   jmpq   0x00007f81d4d35fb8
-  0x00007f81d4d35f68:   cmpq   $0x0,0x588(%r8)
-  0x00007f81d4d35f73:   jne    0x00007f81d4d35f8c
-  0x00007f81d4d35f75:   mov    %rbx,0x588(%r8)
-  0x00007f81d4d35f7c:   movq   $0x1,0x590(%r8)
-  0x00007f81d4d35f87:   jmpq   0x00007f81d4d35fb8
-  0x00007f81d4d35f8c:   cmpq   $0x0,0x598(%r8)
-  0x00007f81d4d35f97:   jne    0x00007f81d4d35fb0
-  0x00007f81d4d35f99:   mov    %rbx,0x598(%r8)
-  0x00007f81d4d35fa0:   movq   $0x1,0x5a0(%r8)
-  0x00007f81d4d35fab:   jmpq   0x00007f81d4d35fb8
-  0x00007f81d4d35fb0:   addq   $0x1,0x578(%r8)
-  0x00007f81d4d35fb8:   mov    %rsi,%rdx
-  0x00007f81d4d35fbb:   mov    %rcx,%rsi                    ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@203 (line 648)
-  0x00007f81d4d35fbe:   nopl   0x0(%rax)
-  0x00007f81d4d35fc5:   movabs $0xffffffffffffffff,%rax
-  0x00007f81d4d35fcf:   callq  0x00007f81d47ee700           ; ImmutableOopMap {[160]=Oop [176]=Oop [200]=Oop [208]=Oop [168]=Oop }
-                                                            ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@203 (line 648)
-                                                            ;   {virtual_call}
-  0x00007f81d4d35fd4:   cmp    $0x0,%eax
-  0x00007f81d4d35fd7:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d35fe1:   movabs $0x5c0,%rsi
-  0x00007f81d4d35feb:   jne    0x00007f81d4d35ffb
-  0x00007f81d4d35ff1:   movabs $0x5b0,%rsi
-  0x00007f81d4d35ffb:   mov    (%rdx,%rsi,1),%rdi
-  0x00007f81d4d35fff:   lea    0x1(%rdi),%rdi
-  0x00007f81d4d36003:   mov    %rdi,(%rdx,%rsi,1)
-  0x00007f81d4d36007:   jne    0x00007f81d4d3607d           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@206 (line 648)
-  0x00007f81d4d3600d:   mov    0xbc(%rsp),%edi
-  0x00007f81d4d36014:   inc    %edi
-  0x00007f81d4d36016:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36020:   mov    0x140(%rdx),%esi
-  0x00007f81d4d36026:   add    $0x8,%esi
-  0x00007f81d4d36029:   mov    %esi,0x140(%rdx)
-  0x00007f81d4d3602f:   and    $0xfff8,%esi
-  0x00007f81d4d36035:   cmp    $0x0,%esi
-  0x00007f81d4d36038:   je     0x00007f81d4d365b1           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@219 (line 640)
-  0x00007f81d4d3603e:   mov    0x108(%r15),%r10             ; ImmutableOopMap {[160]=Oop [176]=Oop [200]=Oop [208]=Oop [168]=Oop }
-                                                            ;*goto {reexecute=1 rethrow=0 return_oop=0}
-                                                            ; - (reexecute) java.util.HashMap::putVal@219 (line 640)
-  0x00007f81d4d36045:   test   %eax,(%r10)                  ;   {poll}
-  0x00007f81d4d36048:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36052:   incl   0x5e8(%rdx)
-  0x00007f81d4d36058:   mov    %rdi,%r8
-  0x00007f81d4d3605b:   mov    0xd0(%rsp),%rbx
-  0x00007f81d4d36063:   mov    %r8d,0xbc(%rsp)
-  0x00007f81d4d3606b:   jmpq   0x00007f81d4d35e20           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@219 (line 640)
-  0x00007f81d4d36070:   mov    0xd0(%rsp),%rax
-  0x00007f81d4d36078:   jmpq   0x00007f81d4d362ac           ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@222 (line 653)
-  0x00007f81d4d3607d:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36087:   incl   0x5d0(%rdx)
-  0x00007f81d4d3608d:   mov    0xd0(%rsp),%rax
-  0x00007f81d4d36095:   jmpq   0x00007f81d4d362ac           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@209 (line 649)
-  0x00007f81d4d3609a:   mov    0xbc(%rsp),%r8d
-  0x00007f81d4d360a2:   mov    0xb0(%rsp),%r13
-  0x00007f81d4d360aa:   mov    %rcx,%r11
-  0x00007f81d4d360ad:   mov    %rdx,%r9
-  0x00007f81d4d360b0:   mov    0xa0(%rsp),%rsi
-  0x00007f81d4d360b8:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d360c2:   addq   $0x1,0x488(%rdx)
-  0x00007f81d4d360ca:   movabs $0x7f81d3f9ed80,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e43970} 'newNode' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)Ljava/util/HashMap$Node;' in 'java/util/HashMap')}
-  0x00007f81d4d360d4:   mov    0x13c(%rdx),%esi
-  0x00007f81d4d360da:   add    $0x8,%esi
-  0x00007f81d4d360dd:   mov    %esi,0x13c(%rdx)
-  0x00007f81d4d360e3:   and    $0x7ffff8,%esi
-  0x00007f81d4d360e9:   cmp    $0x0,%esi
-  0x00007f81d4d360ec:   je     0x00007f81d4d365d2
-  0x00007f81d4d360f2:   movabs $0x100020330,%rdx            ;   {metadata('java/util/HashMap$Node')}
-  0x00007f81d4d360fc:   mov    0x118(%r15),%rax
-  0x00007f81d4d36103:   lea    0x20(%rax),%rdi
-  0x00007f81d4d36107:   cmp    0x128(%r15),%rdi
-  0x00007f81d4d3610e:   ja     0x00007f81d4d365f3
-  0x00007f81d4d36114:   mov    %rdi,0x118(%r15)
-  0x00007f81d4d3611b:   mov    0xb8(%rdx),%rcx
-  0x00007f81d4d36122:   mov    %rcx,(%rax)
-  0x00007f81d4d36125:   mov    %rdx,%rcx
-  0x00007f81d4d36128:   shr    $0x3,%rcx
-  0x00007f81d4d3612c:   mov    %ecx,0x8(%rax)
-  0x00007f81d4d3612f:   xor    %rcx,%rcx
-  0x00007f81d4d36132:   mov    %ecx,0xc(%rax)
-  0x00007f81d4d36135:   xor    %rcx,%rcx
-  0x00007f81d4d36138:   mov    %rcx,0x10(%rax)
-  0x00007f81d4d3613c:   mov    %rcx,0x18(%rax)              ;*new {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::newNode@0 (line 1799)
-                                                            ; - java.util.HashMap::putVal@152 (line 642)
-  0x00007f81d4d36140:   mov    %rax,%rdx
-  0x00007f81d4d36143:   movabs $0x7f81d3f9ed80,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e43970} 'newNode' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)Ljava/util/HashMap$Node;' in 'java/util/HashMap')}
-  0x00007f81d4d3614d:   addq   $0x1,0x180(%rcx)
-  0x00007f81d4d36155:   movabs $0x7f81d3f9ef50,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e710e8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)V' in 'java/util/HashMap$Node')}
-  0x00007f81d4d3615f:   mov    0x13c(%rdx),%ecx
-  0x00007f81d4d36165:   add    $0x8,%ecx
-  0x00007f81d4d36168:   mov    %ecx,0x13c(%rdx)
-  0x00007f81d4d3616e:   and    $0x7ffff8,%ecx
-  0x00007f81d4d36174:   cmp    $0x0,%ecx
-  0x00007f81d4d36177:   je     0x00007f81d4d36600
-  0x00007f81d4d3617d:   mov    %rax,%rdx
-  0x00007f81d4d36180:   movabs $0x7f81d3f9ef50,%rcx         ;   {metadata(method data for {method} {0x00007f81d3e710e8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;Ljava/util/HashMap$Node;)V' in 'java/util/HashMap$Node')}
-  0x00007f81d4d3618a:   addq   $0x1,0x180(%rcx)
-  0x00007f81d4d36192:   movabs $0x7f81d3f33388,%rdx         ;   {metadata(method data for {method} {0x00007f81d3cfe650} '<init>' '()V' in 'java/lang/Object')}
-  0x00007f81d4d3619c:   mov    0x13c(%rdx),%ecx
-  0x00007f81d4d361a2:   add    $0x8,%ecx
-  0x00007f81d4d361a5:   mov    %ecx,0x13c(%rdx)
-  0x00007f81d4d361ab:   and    $0x7ffff8,%ecx
-  0x00007f81d4d361b1:   cmp    $0x0,%ecx
-  0x00007f81d4d361b4:   je     0x00007f81d4d36621
-  0x00007f81d4d361ba:   mov    %r9d,0xc(%rax)               ;*putfield hash {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@6 (line 286)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@152 (line 642)
-  0x00007f81d4d361be:   mov    %r11,%r10
-  0x00007f81d4d361c1:   mov    %r10d,0x10(%rax)
-  0x00007f81d4d361c5:   mov    %rax,%rdx
-  0x00007f81d4d361c8:   shr    $0x9,%rdx
-  0x00007f81d4d361cc:   movabs $0x7f81d3eb8000,%rcx
-  0x00007f81d4d361d6:   movb   $0x0,(%rdx,%rcx,1)           ;*putfield key {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@11 (line 287)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@152 (line 642)
-  0x00007f81d4d361da:   mov    %r13,%r10
-  0x00007f81d4d361dd:   mov    %r10d,0x14(%rax)
-  0x00007f81d4d361e1:   mov    %rax,%rdx
-  0x00007f81d4d361e4:   shr    $0x9,%rdx
-  0x00007f81d4d361e8:   movb   $0x0,(%rdx,%rcx,1)           ;*putfield value {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap$Node::<init>@16 (line 288)
-                                                            ; - java.util.HashMap::newNode@9 (line 1799)
-                                                            ; - java.util.HashMap::putVal@152 (line 642)
-  0x00007f81d4d361ec:   mov    %rax,%r10
-  0x00007f81d4d361ef:   mov    %r10d,0x18(%rbx)
-  0x00007f81d4d361f3:   shr    $0x9,%rbx
-  0x00007f81d4d361f7:   movb   $0x0,(%rbx,%rcx,1)           ;*putfield next {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@155 (line 642)
-  0x00007f81d4d361fb:   cmp    $0x7,%r8d
-  0x00007f81d4d361ff:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36209:   movabs $0x4b8,%rcx
-  0x00007f81d4d36213:   jge    0x00007f81d4d36223
-  0x00007f81d4d36219:   movabs $0x4a8,%rcx
-  0x00007f81d4d36223:   mov    (%rdx,%rcx,1),%rsi
-  0x00007f81d4d36227:   lea    0x1(%rsi),%rsi
-  0x00007f81d4d3622b:   mov    %rsi,(%rdx,%rcx,1)
-  0x00007f81d4d3622f:   jge    0x00007f81d4d36242           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@162 (line 643)
-  0x00007f81d4d36235:   mov    0xd0(%rsp),%rax
-  0x00007f81d4d3623d:   jmpq   0x00007f81d4d362ac           ;*aload {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@222 (line 653)
-  0x00007f81d4d36242:   mov    0xc8(%rsp),%rbx
-  0x00007f81d4d3624a:   mov    0xa0(%rsp),%rsi
-  0x00007f81d4d36252:   movabs $0x7f81d3f9df18,%rdx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3625c:   addq   $0x1,0x4c8(%rdx)
-  0x00007f81d4d36264:   mov    %rbx,%rdx
-  0x00007f81d4d36267:   mov    %r9,%rcx
-  0x00007f81d4d3626a:   mov    0xa0(%rsp),%rsi              ;*invokevirtual treeifyBin {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@169 (line 644)
-  0x00007f81d4d36272:   nopl   0x0(%rax,%rax,1)
-  0x00007f81d4d36277:   callq  0x00007f81d47eea00           ; ImmutableOopMap {[160]=Oop [176]=Oop [208]=Oop }
-                                                            ;*invokevirtual treeifyBin {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@169 (line 644)
-                                                            ;   {optimized virtual_call}
-  0x00007f81d4d3627c:   movabs $0x7f81d3f9df18,%rax         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36286:   incl   0x500(%rax)
-  0x00007f81d4d3628c:   mov    0xd0(%rsp),%rax
-  0x00007f81d4d36294:   jmpq   0x00007f81d4d362ac           ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@172 (line 644)
-  0x00007f81d4d36299:   movabs $0x7f81d3f9df18,%rax         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d362a3:   incl   0x358(%rax)
-  0x00007f81d4d362a9:   mov    %rdi,%rax                    ;*goto {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@101 (line 636)
-  0x00007f81d4d362ac:   cmp    $0x0,%rax
-  0x00007f81d4d362b0:   movabs $0x7f81d3f9df18,%rsi         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d362ba:   movabs $0x610,%rdi
-  0x00007f81d4d362c4:   jne    0x00007f81d4d362d4
-  0x00007f81d4d362ca:   movabs $0x600,%rdi
-  0x00007f81d4d362d4:   mov    (%rsi,%rdi,1),%rbx
-  0x00007f81d4d362d8:   lea    0x1(%rbx),%rbx
-  0x00007f81d4d362dc:   mov    %rbx,(%rsi,%rdi,1)
-  0x00007f81d4d362e0:   jne    0x00007f81d4d3633e           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@224 (line 653)
-  0x00007f81d4d362e6:   mov    0xa0(%rsp),%rsi
-  0x00007f81d4d362ee:   mov    0x18(%rsi),%eax              ;*getfield modCount {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@261 (line 661)
-  0x00007f81d4d362f1:   inc    %eax
-  0x00007f81d4d362f3:   mov    %eax,0x18(%rsi)              ;*putfield modCount {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@266 (line 661)
-  0x00007f81d4d362f6:   mov    0x14(%rsi),%eax              ;*getfield size {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@271 (line 662)
-  0x00007f81d4d362f9:   inc    %eax
-  0x00007f81d4d362fb:   mov    %eax,0x14(%rsi)              ;*putfield size {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@277 (line 662)
-  0x00007f81d4d362fe:   mov    0x1c(%rsi),%edi              ;*getfield threshold {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@281 (line 662)
-  0x00007f81d4d36301:   cmp    %edi,%eax
-  0x00007f81d4d36303:   movabs $0x7f81d3f9df18,%rax         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3630d:   movabs $0x698,%rdi
-  0x00007f81d4d36317:   jle    0x00007f81d4d36327
-  0x00007f81d4d3631d:   movabs $0x6a8,%rdi
-  0x00007f81d4d36327:   mov    (%rax,%rdi,1),%rbx
-  0x00007f81d4d3632b:   lea    0x1(%rbx),%rbx
-  0x00007f81d4d3632f:   mov    %rbx,(%rax,%rdi,1)
-  0x00007f81d4d36333:   jle    0x00007f81d4d36464
-  0x00007f81d4d36339:   jmpq   0x00007f81d4d36436           ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@284 (line 662)
-  0x00007f81d4d3633e:   mov    0x9c(%rsp),%r9d
-  0x00007f81d4d36346:   mov    0xa0(%rsp),%rsi
-  0x00007f81d4d3634e:   mov    0x14(%rax),%edi              ; implicit exception: dispatches to 0x00007f81d4d36642
-                                                            ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@229 (line 654)
-  0x00007f81d4d36351:   cmp    $0x0,%r9d
-  0x00007f81d4d36355:   movabs $0x7f81d3f9df18,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d3635f:   movabs $0x620,%rdx
-  0x00007f81d4d36369:   je     0x00007f81d4d36379
-  0x00007f81d4d3636f:   movabs $0x630,%rdx
-  0x00007f81d4d36379:   mov    (%rbx,%rdx,1),%rcx
-  0x00007f81d4d3637d:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d36381:   mov    %rcx,(%rbx,%rdx,1)
-  0x00007f81d4d36385:   je     0x00007f81d4d363c5           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@236 (line 655)
-  0x00007f81d4d3638b:   cmp    $0x0,%rdi
-  0x00007f81d4d3638f:   movabs $0x7f81d3f9df18,%rbx         ;   {metadata(method data for {method} {0x00007f81d3e413e0} 'putVal' '(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object;' in 'java/util/HashMap')}
-  0x00007f81d4d36399:   movabs $0x640,%rdx
-  0x00007f81d4d363a3:   jne    0x00007f81d4d363b3
-  0x00007f81d4d363a9:   movabs $0x650,%rdx
-  0x00007f81d4d363b3:   mov    (%rbx,%rdx,1),%rcx
-  0x00007f81d4d363b7:   lea    0x1(%rcx),%rcx
-  0x00007f81d4d363bb:   mov    %rcx,(%rbx,%rdx,1)
-  0x00007f81d4d363bf:   jne    0x00007f81d4d363e6           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - java.util.HashMap::putVal@241 (line 655)
+  #           [`sp`+0`xf`0]  (`sp` `of` `caller`)
+  0`x`00007`f`81`d`4`d`35540:   `mov`    0`x`8(%`rsi`),%`r`10`d`
+  0`x`00007`f`81`d`4`d`35544:   `shl`    $0`x`3,%`r`10
+  0`x`00007`f`81`d`4`d`35548:   `cmp`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`3554`b`:   `jne`    0`x`00007`f`81`d`47`eed`00           ;   {`runtime`_`call` `ic`_`miss`_`stub`}
+  0`x`00007`f`81`d`4`d`35551:   `data`16 `data`16 `nopw` 0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`3555`c`:   `data`16 `data`16 `xchg` %`ax`,%`ax`
+[`Verified` `Entry` `Point`]
+  0`x`00007`f`81`d`4`d`35560:   `mov`    %`eax`,-0`x`14000(%`rsp`)
+  0`x`00007`f`81`d`4`d`35567:   `push`   %`rbp`
+  0`x`00007`f`81`d`4`d`35568:   `sub`    $0`xe`0,%`rsp`
+  0`x`00007`f`81`d`4`d`3556`f`:   `mov`    %`rsi`,0`xa`0(%`rsp`)
+  0`x`00007`f`81`d`4`d`35577:   `mov`    %`edx`,0`x`98(%`rsp`)
+  0`x`00007`f`81`d`4`d`3557`e`:   `mov`    %`rcx`,0`xa`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`35586:   `mov`    %`r`8,0`xb`0(%`rsp`)
+  0`x`00007`f`81`d`4`d`3558`e`:   `mov`    %`edi`,0`xb`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`35595:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3559`f`:   `mov`    0`x`13`c`(%`rbx`),%`eax`
+  0`x`00007`f`81`d`4`d`355`a`5:   `add`    $0`x`8,%`eax`
+  0`x`00007`f`81`d`4`d`355`a`8:   `mov`    %`eax`,0`x`13`c`(%`rbx`)
+  0`x`00007`f`81`d`4`d`355`ae`:   `and`    $0`x`1`ff`8,%`eax`
+  0`x`00007`f`81`d`4`d`355`b`4:   `cmp`    $0`x`0,%`eax`
+  0`x`00007`f`81`d`4`d`355`b`7:   `je`     0`x`00007`f`81`d`4`d`364`bb`           ;*`aload`_0 {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@0 (`line` 628)
+  0`x`00007`f`81`d`4`d`355`bd`:   `mov`    0`x`24(%`rsi`),%`ebx`              ;*`getfield` `table` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@1 (`line` 628)
+  0`x`00007`f`81`d`4`d`355`c`0:   `cmp`    $0`x`0,%`rbx`
+  0`x`00007`f`81`d`4`d`355`c`4:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`355`ce`:   `movabs` $0`x`180,%`r`11
+  0`x`00007`f`81`d`4`d`355`d`8:   `je`     0`x`00007`f`81`d`4`d`355`e`8
+  0`x`00007`f`81`d`4`d`355`de`:   `movabs` $0`x`190,%`r`11
+  0`x`00007`f`81`d`4`d`355`e`8:   `mov`    (%`rax`,%`r`11,1),%`r`13
+  0`x`00007`f`81`d`4`d`355`ec`:   `lea`    0`x`1(%`r`13),%`r`13
+  0`x`00007`f`81`d`4`d`355`f`0:   `mov`    %`r`13,(%`rax`,%`r`11,1)
+  0`x`00007`f`81`d`4`d`355`f`4:   `je`     0`x`00007`f`81`d`4`d`35643           ;*`ifnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@7 (`line` 628)
+  0`x`00007`f`81`d`4`d`355`fa`:   `mov`    0`xc`(%`rbx`),%`eax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`364`dc`
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@12 (`line` 628)
+  0`x`00007`f`81`d`4`d`355`fd`:   `cmp`    $0`x`0,%`eax`
+  0`x`00007`f`81`d`4`d`35600:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`r`11         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3560`a`:   `movabs` $0`x`1`b`0,%`r`13
+  0`x`00007`f`81`d`4`d`35614:   `je`     0`x`00007`f`81`d`4`d`35624
+  0`x`00007`f`81`d`4`d`3561`a`:   `movabs` $0`x`1`a`0,%`r`13
+  0`x`00007`f`81`d`4`d`35624:   `mov`    (%`r`11,%`r`13,1),%`r`14
+  0`x`00007`f`81`d`4`d`35628:   `lea`    0`x`1(%`r`14),%`r`14
+  0`x`00007`f`81`d`4`d`3562`c`:   `mov`    %`r`14,(%`r`11,%`r`13,1)
+  0`x`00007`f`81`d`4`d`35630:   `je`     0`x`00007`f`81`d`4`d`35643           ;*`ifne` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@16 (`line` 628)
+  0`x`00007`f`81`d`4`d`35636:   `mov`    %`r`9`d`,0`x`9`c`(%`rsp`)
+  0`x`00007`f`81`d`4`d`3563`e`:   `jmpq`   0`x`00007`f`81`d`4`d`35678           ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@29 (`line` 630)
+  0`x`00007`f`81`d`4`d`35643:   `mov`    %`r`9`d`,0`x`9`c`(%`rsp`)
+  0`x`00007`f`81`d`4`d`3564`b`:   `mov`    %`rsi`,%`rbx`
+  0`x`00007`f`81`d`4`d`3564`e`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35658:   `addq`   $0`x`1,0`x`1`c`0(%`rax`)
+  0`x`00007`f`81`d`4`d`35660:   `mov`    %`rsi`,%`rbx`
+  0`x`00007`f`81`d`4`d`35663:   `mov`    %`rbx`,%`rsi`                    ;*`invokevirtual` `resize` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@20 (`line` 629)
+  0`x`00007`f`81`d`4`d`35666:   `nop`
+  0`x`00007`f`81`d`4`d`35667:   `callq`  0`x`00007`f`81`d`47`eea`00           ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` [168]=`Oop` }
+                                                            ;*`invokevirtual` `resize` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@20 (`line` 629)
+                                                            ;   {`optimized` `virtual`_`call`}
+  0`x`00007`f`81`d`4`d`3566`c`:   `mov`    %`rax`,%`rdx`                    ;*`invokevirtual` `resize` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@20 (`line` 629)
+  0`x`00007`f`81`d`4`d`3566`f`:   `mov`    0`xc`(%`rdx`),%`esi`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`364`e`1
+                                                            ;*`arraylength` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@26 (`line` 629)
+  0`x`00007`f`81`d`4`d`35672:   `mov`    %`rsi`,%`rax`
+  0`x`00007`f`81`d`4`d`35675:   `mov`    %`rdx`,%`rbx`                    ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@29 (`line` 630)
+  0`x`00007`f`81`d`4`d`35678:   `dec`    %`eax`
+  0`x`00007`f`81`d`4`d`3567`a`:   `mov`    %`rax`,%`r`8
+  0`x`00007`f`81`d`4`d`3567`d`:   `and`    0`x`98(%`rsp`),%`r`8`d`
+  0`x`00007`f`81`d`4`d`35685:   `cmp`    0`xc`(%`rbx`),%`r`8`d`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`364`e`6
+  0`x`00007`f`81`d`4`d`35689:   `jae`    0`x`00007`f`81`d`4`d`364`f`0
+  0`x`00007`f`81`d`4`d`3568`f`:   `movslq` %`r`8`d`,%`rdx`
+  0`x`00007`f`81`d`4`d`35692:   `mov`    0`x`10(%`rbx`,%`rdx`,4),%`edi`       ;*`aaload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@40 (`line` 630)
+  0`x`00007`f`81`d`4`d`35696:   `cmp`    $0`x`0,%`rdi`
+  0`x`00007`f`81`d`4`d`3569`a`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`356`a`4:   `movabs` $0`x`1`f`8,%`rsi`
+  0`x`00007`f`81`d`4`d`356`ae`:   `jne`    0`x`00007`f`81`d`4`d`356`be`
+  0`x`00007`f`81`d`4`d`356`b`4:   `movabs` $0`x`208,%`rsi`
+  0`x`00007`f`81`d`4`d`356`be`:   `mov`    (%`rdx`,%`rsi`,1),%`rax`
+  0`x`00007`f`81`d`4`d`356`c`2:   `lea`    0`x`1(%`rax`),%`rax`
+  0`x`00007`f`81`d`4`d`356`c`6:   `mov`    %`rax`,(%`rdx`,%`rsi`,1)
+  0`x`00007`f`81`d`4`d`356`ca`:   `mov`    0`xb`0(%`rsp`),%`r`9
+  0`x`00007`f`81`d`4`d`356`d`2:   `jne`    0`x`00007`f`81`d`4`d`3595`e`           ;*`ifnonnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@44 (`line` 630)
+  0`x`00007`f`81`d`4`d`356`d`8:   `mov`    0`xa`8(%`rsp`),%`rcx`
+  0`x`00007`f`81`d`4`d`356`e`0:   `mov`    0`x`98(%`rsp`),%`edx`
+  0`x`00007`f`81`d`4`d`356`e`7:   `mov`    0`xa`0(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`356`ef`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`356`f`9:   `addq`   $0`x`1,0`x`230(%`rdi`)
+  0`x`00007`f`81`d`4`d`35701:   `movabs` $0`x`7`f`81`d`3`f`9`ed`80,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`43970} '`newNode'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`Ljava`/`util`/`HashMap`$`Node`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3570`b`:   `mov`    0`x`13`c`(%`rsi`),%`edi`
+  0`x`00007`f`81`d`4`d`35711:   `add`    $0`x`8,%`edi`
+  0`x`00007`f`81`d`4`d`35714:   `mov`    %`edi`,0`x`13`c`(%`rsi`)
+  0`x`00007`f`81`d`4`d`3571`a`:   `and`    $0`x`7`ffff`8,%`edi`
+  0`x`00007`f`81`d`4`d`35720:   `cmp`    $0`x`0,%`edi`
+  0`x`00007`f`81`d`4`d`35723:   `je`     0`x`00007`f`81`d`4`d`364`fe`
+  0`x`00007`f`81`d`4`d`35729:   `mov`    %`rdx`,%`r`11
+  0`x`00007`f`81`d`4`d`3572`c`:   `movabs` $0`x`100020330,%`rdx`            ;   {`metadata`('`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`35736:   `mov`    %`rcx`,%`r`13
+  0`x`00007`f`81`d`4`d`35739:   `mov`    0`x`118(%`r`15),%`rax`
+  0`x`00007`f`81`d`4`d`35740:   `lea`    0`x`20(%`rax`),%`rdi`
+  0`x`00007`f`81`d`4`d`35744:   `cmp`    0`x`128(%`r`15),%`rdi`
+  0`x`00007`f`81`d`4`d`3574`b`:   `ja`     0`x`00007`f`81`d`4`d`3651`f`
+  0`x`00007`f`81`d`4`d`35751:   `mov`    %`rdi`,0`x`118(%`r`15)
+  0`x`00007`f`81`d`4`d`35758:   `mov`    0`xb`8(%`rdx`),%`rcx`
+  0`x`00007`f`81`d`4`d`3575`f`:   `mov`    %`rcx`,(%`rax`)
+  0`x`00007`f`81`d`4`d`35762:   `mov`    %`rdx`,%`rcx`
+  0`x`00007`f`81`d`4`d`35765:   `shr`    $0`x`3,%`rcx`
+  0`x`00007`f`81`d`4`d`35769:   `mov`    %`ecx`,0`x`8(%`rax`)
+  0`x`00007`f`81`d`4`d`3576`c`:   `xor`    %`rcx`,%`rcx`
+  0`x`00007`f`81`d`4`d`3576`f`:   `mov`    %`ecx`,0`xc`(%`rax`)
+  0`x`00007`f`81`d`4`d`35772:   `xor`    %`rcx`,%`rcx`
+  0`x`00007`f`81`d`4`d`35775:   `mov`    %`rcx`,0`x`10(%`rax`)
+  0`x`00007`f`81`d`4`d`35779:   `mov`    %`rcx`,0`x`18(%`rax`)              ;*`new` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@0 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@56 (`line` 631)
+  0`x`00007`f`81`d`4`d`3577`d`:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`35780:   `movabs` $0`x`7`f`81`d`3`f`9`ed`80,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`43970} '`newNode'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`Ljava`/`util`/`HashMap`$`Node`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3578`a`:   `addq`   $0`x`1,0`x`180(%`rsi`)
+  0`x`00007`f`81`d`4`d`35792:   `movabs` $0`x`7`f`81`d`3`f`9`ef`50,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`710`e`8} '<`init`>' '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`V'` `in` '`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`3579`c`:   `mov`    0`x`13`c`(%`rdx`),%`esi`
+  0`x`00007`f`81`d`4`d`357`a`2:   `add`    $0`x`8,%`esi`
+  0`x`00007`f`81`d`4`d`357`a`5:   `mov`    %`esi`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`357`ab`:   `and`    $0`x`7`ffff`8,%`esi`
+  0`x`00007`f`81`d`4`d`357`b`1:   `cmp`    $0`x`0,%`esi`
+  0`x`00007`f`81`d`4`d`357`b`4:   `je`     0`x`00007`f`81`d`4`d`3652`c`
+  0`x`00007`f`81`d`4`d`357`ba`:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`357`bd`:   `movabs` $0`x`7`f`81`d`3`f`9`ef`50,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`710`e`8} '<`init`>' '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`V'` `in` '`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`357`c`7:   `addq`   $0`x`1,0`x`180(%`rsi`)
+  0`x`00007`f`81`d`4`d`357`cf`:   `movabs` $0`x`7`f`81`d`3`f`33388,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`cfe`650} '<`init`>' '()`V'` `in` '`java`/`lang`/`Object'`)}
+  0`x`00007`f`81`d`4`d`357`d`9:   `mov`    0`x`13`c`(%`rdx`),%`esi`
+  0`x`00007`f`81`d`4`d`357`df`:   `add`    $0`x`8,%`esi`
+  0`x`00007`f`81`d`4`d`357`e`2:   `mov`    %`esi`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`357`e`8:   `and`    $0`x`7`ffff`8,%`esi`
+  0`x`00007`f`81`d`4`d`357`ee`:   `cmp`    $0`x`0,%`esi`
+  0`x`00007`f`81`d`4`d`357`f`1:   `je`     0`x`00007`f`81`d`4`d`3654`d`
+  0`x`00007`f`81`d`4`d`357`f`7:   `mov`    %`r`11`d`,0`xc`(%`rax`)              ;*`putfield` `hash` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@6 (`line` 286)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@56 (`line` 631)
+  0`x`00007`f`81`d`4`d`357`fb`:   `mov`    %`r`13,%`r`10
+  0`x`00007`f`81`d`4`d`357`fe`:   `mov`    %`r`10`d`,0`x`10(%`rax`)
+  0`x`00007`f`81`d`4`d`35802:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`35805:   `shr`    $0`x`9,%`rdx`
+  0`x`00007`f`81`d`4`d`35809:   `movabs` $0`x`7`f`81`d`3`eb`8000,%`rsi`
+  0`x`00007`f`81`d`4`d`35813:   `movb`   $0`x`0,(%`rdx`,%`rsi`,1)           ;*`putfield` `key` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@11 (`line` 287)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@56 (`line` 631)
+  0`x`00007`f`81`d`4`d`35817:   `mov`    %`r`9,%`r`10
+  0`x`00007`f`81`d`4`d`3581`a`:   `mov`    %`r`10`d`,0`x`14(%`rax`)
+  0`x`00007`f`81`d`4`d`3581`e`:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`35821:   `shr`    $0`x`9,%`rdx`
+  0`x`00007`f`81`d`4`d`35825:   `movb`   $0`x`0,(%`rdx`,%`rsi`,1)           ;*`putfield` `value` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@16 (`line` 288)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@56 (`line` 631)
+  0`x`00007`f`81`d`4`d`35829:   `cmp`    0`xc`(%`rbx`),%`r`8`d`
+  0`x`00007`f`81`d`4`d`3582`d`:   `jae`    0`x`00007`f`81`d`4`d`3656`e`
+  0`x`00007`f`81`d`4`d`35833:   `cmp`    $0`x`0,%`rax`
+  0`x`00007`f`81`d`4`d`35837:   `jne`    0`x`00007`f`81`d`4`d`3584`f`
+  0`x`00007`f`81`d`4`d`35839:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35843:   `orb`    $0`x`1,0`x`249(%`rdi`)
+  0`x`00007`f`81`d`4`d`3584`a`:   `jmpq`   0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`3584`f`:   `mov`    0`x`8(%`rbx`),%`edx`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`3657`c`
+  0`x`00007`f`81`d`4`d`35852:   `shl`    $0`x`3,%`rdx`
+  0`x`00007`f`81`d`4`d`35856:   `mov`    0`x`8(%`rax`),%`edi`
+  0`x`00007`f`81`d`4`d`35859:   `shl`    $0`x`3,%`rdi`
+  0`x`00007`f`81`d`4`d`3585`d`:   `mov`    0`xe`8(%`rdx`),%`rdx`
+  0`x`00007`f`81`d`4`d`35864:   `cmp`    %`rdx`,%`rdi`
+  0`x`00007`f`81`d`4`d`35867:   `je`     0`x`00007`f`81`d`4`d`35895
+  0`x`00007`f`81`d`4`d`3586`d`:   `mov`    0`x`10(%`rdx`),%`ecx`
+  0`x`00007`f`81`d`4`d`35870:   `cmp`    (%`rdi`,%`rcx`,1),%`rdx`
+  0`x`00007`f`81`d`4`d`35874:   `je`     0`x`00007`f`81`d`4`d`35895
+  0`x`00007`f`81`d`4`d`3587`a`:   `cmp`    $0`x`20,%`ecx`
+  0`x`00007`f`81`d`4`d`3587`d`:   `jne`    0`x`00007`f`81`d`4`d`3591`c`
+  0`x`00007`f`81`d`4`d`35883:   `push`   %`rdi`
+  0`x`00007`f`81`d`4`d`35884:   `push`   %`rdx`
+  0`x`00007`f`81`d`4`d`35885:   `callq`  0`x`00007`f`81`d`489`b`900           ;   {`runtime`_`call` `slow`_`subtype`_`check` `Runtime`1 `stub`}
+  0`x`00007`f`81`d`4`d`3588`a`:   `pop`    %`rdi`
+  0`x`00007`f`81`d`4`d`3588`b`:   `pop`    %`rdx`
+  0`x`00007`f`81`d`4`d`3588`c`:   `cmp`    $0`x`0,%`edx`
+  0`x`00007`f`81`d`4`d`3588`f`:   `je`     0`x`00007`f`81`d`4`d`3591`c`
+  0`x`00007`f`81`d`4`d`35895:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3589`f`:   `mov`    0`x`8(%`rax`),%`edx`
+  0`x`00007`f`81`d`4`d`358`a`2:   `shl`    $0`x`3,%`rdx`
+  0`x`00007`f`81`d`4`d`358`a`6:   `cmp`    0`x`260(%`rdi`),%`rdx`
+  0`x`00007`f`81`d`4`d`358`ad`:   `jne`    0`x`00007`f`81`d`4`d`358`bc`
+  0`x`00007`f`81`d`4`d`358`af`:   `addq`   $0`x`1,0`x`268(%`rdi`)
+  0`x`00007`f`81`d`4`d`358`b`7:   `jmpq`   0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`358`bc`:   `cmp`    0`x`270(%`rdi`),%`rdx`
+  0`x`00007`f`81`d`4`d`358`c`3:   `jne`    0`x`00007`f`81`d`4`d`358`d`2
+  0`x`00007`f`81`d`4`d`358`c`5:   `addq`   $0`x`1,0`x`278(%`rdi`)
+  0`x`00007`f`81`d`4`d`358`cd`:   `jmpq`   0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`358`d`2:   `cmpq`   $0`x`0,0`x`260(%`rdi`)
+  0`x`00007`f`81`d`4`d`358`dd`:   `jne`    0`x`00007`f`81`d`4`d`358`f`6
+  0`x`00007`f`81`d`4`d`358`df`:   `mov`    %`rdx`,0`x`260(%`rdi`)
+  0`x`00007`f`81`d`4`d`358`e`6:   `movq`   $0`x`1,0`x`268(%`rdi`)
+  0`x`00007`f`81`d`4`d`358`f`1:   `jmpq`   0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`358`f`6:   `cmpq`   $0`x`0,0`x`270(%`rdi`)
+  0`x`00007`f`81`d`4`d`35901:   `jne`    0`x`00007`f`81`d`4`d`3591`a`
+  0`x`00007`f`81`d`4`d`35903:   `mov`    %`rdx`,0`x`270(%`rdi`)
+  0`x`00007`f`81`d`4`d`3590`a`:   `movq`   $0`x`1,0`x`278(%`rdi`)
+  0`x`00007`f`81`d`4`d`35915:   `jmpq`   0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`3591`a`:   `jmp`    0`x`00007`f`81`d`4`d`35933
+  0`x`00007`f`81`d`4`d`3591`c`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35926:   `subq`   $0`x`1,0`x`250(%`rdi`)
+  0`x`00007`f`81`d`4`d`3592`e`:   `jmpq`   0`x`00007`f`81`d`4`d`36581
+  0`x`00007`f`81`d`4`d`35933:   `movslq` %`r`8`d`,%`r`8
+  0`x`00007`f`81`d`4`d`35936:   `lea`    0`x`10(%`rbx`,%`r`8,4),%`rdx`
+  0`x`00007`f`81`d`4`d`3593`b`:   `mov`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`3593`e`:   `mov`    %`r`10`d`,(%`rdx`)
+  0`x`00007`f`81`d`4`d`35941:   `shr`    $0`x`9,%`rdx`
+  0`x`00007`f`81`d`4`d`35945:   `movb`   $0`x`0,(%`rdx`,%`rsi`,1)           ;*`aastore` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@59 (`line` 631)
+  0`x`00007`f`81`d`4`d`35949:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35953:   `incl`   0`x`288(%`rdx`)
+  0`x`00007`f`81`d`4`d`35959:   `jmpq`   0`x`00007`f`81`d`4`d`362`e`6           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@60 (`line` 631)
+  0`x`00007`f`81`d`4`d`3595`e`:   `mov`    0`xa`8(%`rsp`),%`r`13
+  0`x`00007`f`81`d`4`d`35966:   `mov`    0`x`98(%`rsp`),%`r`11`d`
+  0`x`00007`f`81`d`4`d`3596`e`:   `mov`    0`xc`(%`rdi`),%`edx`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`3658`a`
+                                                            ;*`getfield` `hash` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@65 (`line` 634)
+  0`x`00007`f`81`d`4`d`35971:   `cmp`    %`r`11`d`,%`edx`
+  0`x`00007`f`81`d`4`d`35974:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3597`e`:   `movabs` $0`x`2`b`0,%`rsi`
+  0`x`00007`f`81`d`4`d`35988:   `je`     0`x`00007`f`81`d`4`d`35998
+  0`x`00007`f`81`d`4`d`3598`e`:   `movabs` $0`x`2`a`0,%`rsi`
+  0`x`00007`f`81`d`4`d`35998:   `mov`    (%`rdx`,%`rsi`,1),%`rax`
+  0`x`00007`f`81`d`4`d`3599`c`:   `lea`    0`x`1(%`rax`),%`rax`
+  0`x`00007`f`81`d`4`d`359`a`0:   `mov`    %`rax`,(%`rdx`,%`rsi`,1)
+  0`x`00007`f`81`d`4`d`359`a`4:   `je`     0`x`00007`f`81`d`4`d`359`b`7           ;*`if`_`icmpne` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@69 (`line` 634)
+  0`x`00007`f`81`d`4`d`359`aa`:   `mov`    %`rbx`,0`xc`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`359`b`2:   `jmpq`   0`x`00007`f`81`d`4`d`35`b`35           ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@104 (`line` 637)
+  0`x`00007`f`81`d`4`d`359`b`7:   `mov`    0`x`10(%`rdi`),%`edx`              ;*`getfield` `key` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@74 (`line` 634)
+  0`x`00007`f`81`d`4`d`359`ba`:   `cmp`    %`r`13,%`rdx`
+  0`x`00007`f`81`d`4`d`359`bd`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`359`c`7:   `movabs` $0`x`2`c`0,%`rax`
+  0`x`00007`f`81`d`4`d`359`d`1:   `je`     0`x`00007`f`81`d`4`d`359`e`1
+  0`x`00007`f`81`d`4`d`359`d`7:   `movabs` $0`x`2`d`0,%`rax`
+  0`x`00007`f`81`d`4`d`359`e`1:   `mov`    (%`rsi`,%`rax`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`359`e`5:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`359`e`9:   `mov`    %`rcx`,(%`rsi`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`359`ed`:   `je`     0`x`00007`f`81`d`4`d`36299           ;*`if`_`acmpeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@81 (`line` 634)
+  0`x`00007`f`81`d`4`d`359`f`3:   `cmp`    $0`x`0,%`r`13
+  0`x`00007`f`81`d`4`d`359`f`7:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`a`01:   `movabs` $0`x`2`f`0,%`rax`
+  0`x`00007`f`81`d`4`d`35`a`0`b`:   `jne`    0`x`00007`f`81`d`4`d`35`a`1`b`
+  0`x`00007`f`81`d`4`d`35`a`11:   `movabs` $0`x`2`e`0,%`rax`
+  0`x`00007`f`81`d`4`d`35`a`1`b`:   `mov`    (%`rsi`,%`rax`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`1`f`:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`23:   `mov`    %`rcx`,(%`rsi`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`35`a`27:   `jne`    0`x`00007`f`81`d`4`d`35`a`3`a`           ;*`ifnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@85 (`line` 634)
+  0`x`00007`f`81`d`4`d`35`a`2`d`:   `mov`    %`rbx`,0`xc`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`35`a`35:   `jmpq`   0`x`00007`f`81`d`4`d`35`b`35           ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@104 (`line` 637)
+  0`x`00007`f`81`d`4`d`35`a`3`a`:   `mov`    %`rdi`,0`xc`0(%`rsp`)
+  0`x`00007`f`81`d`4`d`35`a`42:   `mov`    %`rbx`,0`xc`8(%`rsp`)
+  0`x`00007`f`81`d`4`d`35`a`4`a`:   `cmp`    0`x`0(%`r`13),%`rax`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`3658`f`
+  0`x`00007`f`81`d`4`d`35`a`4`e`:   `mov`    %`r`13,%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`51:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`a`5`b`:   `mov`    0`x`8(%`rcx`),%`ecx`
+  0`x`00007`f`81`d`4`d`35`a`5`e`:   `shl`    $0`x`3,%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`62:   `cmp`    0`x`310(%`rsi`),%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`69:   `jne`    0`x`00007`f`81`d`4`d`35`a`78
+  0`x`00007`f`81`d`4`d`35`a`6`b`:   `addq`   $0`x`1,0`x`318(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`a`73:   `jmpq`   0`x`00007`f`81`d`4`d`35`ade`
+  0`x`00007`f`81`d`4`d`35`a`78:   `cmp`    0`x`320(%`rsi`),%`rcx`
+  0`x`00007`f`81`d`4`d`35`a`7`f`:   `jne`    0`x`00007`f`81`d`4`d`35`a`8`e`
+  0`x`00007`f`81`d`4`d`35`a`81:   `addq`   $0`x`1,0`x`328(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`a`89:   `jmpq`   0`x`00007`f`81`d`4`d`35`ade`
+  0`x`00007`f`81`d`4`d`35`a`8`e`:   `cmpq`   $0`x`0,0`x`310(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`a`99:   `jne`    0`x`00007`f`81`d`4`d`35`ab`2
+  0`x`00007`f`81`d`4`d`35`a`9`b`:   `mov`    %`rcx`,0`x`310(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`aa`2:   `movq`   $0`x`1,0`x`318(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`aad`:   `jmpq`   0`x`00007`f`81`d`4`d`35`ade`
+  0`x`00007`f`81`d`4`d`35`ab`2:   `cmpq`   $0`x`0,0`x`320(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`abd`:   `jne`    0`x`00007`f`81`d`4`d`35`ad`6
+  0`x`00007`f`81`d`4`d`35`abf`:   `mov`    %`rcx`,0`x`320(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`ac`6:   `movq`   $0`x`1,0`x`328(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`ad`1:   `jmpq`   0`x`00007`f`81`d`4`d`35`ade`
+  0`x`00007`f`81`d`4`d`35`ad`6:   `addq`   $0`x`1,0`x`300(%`rsi`)
+  0`x`00007`f`81`d`4`d`35`ade`:   `mov`    %`r`13,%`rsi`                    ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@91 (`line` 635)
+  0`x`00007`f`81`d`4`d`35`ae`1:   `nopl`   0`x`0(%`rax`)
+  0`x`00007`f`81`d`4`d`35`ae`5:   `movabs` $0`xffffffffffffffff`,%`rax`
+  0`x`00007`f`81`d`4`d`35`aef`:   `callq`  0`x`00007`f`81`d`47`ee`700           ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` [200]=`Oop` [192]=`Oop` [168]=`Oop` }
+                                                            ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@91 (`line` 635)
+                                                            ;   {`virtual`_`call`}
+  0`x`00007`f`81`d`4`d`35`af`4:   `cmp`    $0`x`0,%`eax`
+  0`x`00007`f`81`d`4`d`35`af`7:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`b`01:   `movabs` $0`x`348,%`rcx`
+  0`x`00007`f`81`d`4`d`35`b`0`b`:   `jne`    0`x`00007`f`81`d`4`d`35`b`1`b`
+  0`x`00007`f`81`d`4`d`35`b`11:   `movabs` $0`x`338,%`rcx`
+  0`x`00007`f`81`d`4`d`35`b`1`b`:   `mov`    (%`rdx`,%`rcx`,1),%`r`8
+  0`x`00007`f`81`d`4`d`35`b`1`f`:   `lea`    0`x`1(%`r`8),%`r`8
+  0`x`00007`f`81`d`4`d`35`b`23:   `mov`    %`r`8,(%`rdx`,%`rcx`,1)
+  0`x`00007`f`81`d`4`d`35`b`27:   `mov`    0`xc`0(%`rsp`),%`rdi`
+  0`x`00007`f`81`d`4`d`35`b`2`f`:   `jne`    0`x`00007`f`81`d`4`d`36299           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@94 (`line` 635)
+  0`x`00007`f`81`d`4`d`35`b`35:   `cmp`    $0`x`0,%`rdi`
+  0`x`00007`f`81`d`4`d`35`b`39:   `jne`    0`x`00007`f`81`d`4`d`35`b`52
+  0`x`00007`f`81`d`4`d`35`b`3`b`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`r`8          ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`b`45:   `orb`    $0`x`1,0`x`369(%`r`8)
+  0`x`00007`f`81`d`4`d`35`b`4`d`:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`13
+  0`x`00007`f`81`d`4`d`35`b`52:   `movabs` $0`x`1000209`d`0,%`r`9             ;   {`metadata`('`java`/`util`/`HashMap`$`TreeNode'`)}
+  0`x`00007`f`81`d`4`d`35`b`5`c`:   `mov`    0`x`8(%`rdi`),%`ecx`
+  0`x`00007`f`81`d`4`d`35`b`5`f`:   `shl`    $0`x`3,%`rcx`
+  0`x`00007`f`81`d`4`d`35`b`63:   `cmp`    %`rcx`,%`r`9
+  0`x`00007`f`81`d`4`d`35`b`66:   `jne`    0`x`00007`f`81`d`4`d`35`bf`7
+  0`x`00007`f`81`d`4`d`35`b`6`c`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`r`8          ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`b`76:   `mov`    0`x`8(%`rdi`),%`r`9`d`
+  0`x`00007`f`81`d`4`d`35`b`7`a`:   `shl`    $0`x`3,%`r`9
+  0`x`00007`f`81`d`4`d`35`b`7`e`:   `cmp`    0`x`380(%`r`8),%`r`9
+  0`x`00007`f`81`d`4`d`35`b`85:   `jne`    0`x`00007`f`81`d`4`d`35`b`94
+  0`x`00007`f`81`d`4`d`35`b`87:   `addq`   $0`x`1,0`x`388(%`r`8)
+  0`x`00007`f`81`d`4`d`35`b`8`f`:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`b`94:   `cmp`    0`x`390(%`r`8),%`r`9
+  0`x`00007`f`81`d`4`d`35`b`9`b`:   `jne`    0`x`00007`f`81`d`4`d`35`baa`
+  0`x`00007`f`81`d`4`d`35`b`9`d`:   `addq`   $0`x`1,0`x`398(%`r`8)
+  0`x`00007`f`81`d`4`d`35`ba`5:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`baa`:   `cmpq`   $0`x`0,0`x`380(%`r`8)
+  0`x`00007`f`81`d`4`d`35`bb`5:   `jne`    0`x`00007`f`81`d`4`d`35`bce`
+  0`x`00007`f`81`d`4`d`35`bb`7:   `mov`    %`r`9,0`x`380(%`r`8)
+  0`x`00007`f`81`d`4`d`35`bbe`:   `movq`   $0`x`1,0`x`388(%`r`8)
+  0`x`00007`f`81`d`4`d`35`bc`9:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`bce`:   `cmpq`   $0`x`0,0`x`390(%`r`8)
+  0`x`00007`f`81`d`4`d`35`bd`9:   `jne`    0`x`00007`f`81`d`4`d`35`bf`2
+  0`x`00007`f`81`d`4`d`35`bdb`:   `mov`    %`r`9,0`x`390(%`r`8)
+  0`x`00007`f`81`d`4`d`35`be`2:   `movq`   $0`x`1,0`x`398(%`r`8)
+  0`x`00007`f`81`d`4`d`35`bed`:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`bf`2:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`bf`7:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`r`8          ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`c`01:   `subq`   $0`x`1,0`x`370(%`r`8)
+  0`x`00007`f`81`d`4`d`35`c`09:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`13
+  0`x`00007`f`81`d`4`d`35`c`0`e`:   `jmpq`   0`x`00007`f`81`d`4`d`35`c`18
+  0`x`00007`f`81`d`4`d`35`c`13:   `xor`    %`rdx`,%`rdx`
+  0`x`00007`f`81`d`4`d`35`c`16:   `jmp`    0`x`00007`f`81`d`4`d`35`c`22
+  0`x`00007`f`81`d`4`d`35`c`18:   `movabs` $0`x`1,%`rdx`                    ;*`instanceof` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@106 (`line` 637)
+  0`x`00007`f`81`d`4`d`35`c`22:   `cmp`    $0`x`0,%`edx`
+  0`x`00007`f`81`d`4`d`35`c`25:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`c`2`f`:   `movabs` $0`x`3`a`8,%`rcx`
+  0`x`00007`f`81`d`4`d`35`c`39:   `je`     0`x`00007`f`81`d`4`d`35`c`49
+  0`x`00007`f`81`d`4`d`35`c`3`f`:   `movabs` $0`x`3`b`8,%`rcx`
+  0`x`00007`f`81`d`4`d`35`c`49:   `mov`    (%`rdx`,%`rcx`,1),%`r`8
+  0`x`00007`f`81`d`4`d`35`c`4`d`:   `lea`    0`x`1(%`r`8),%`r`8
+  0`x`00007`f`81`d`4`d`35`c`51:   `mov`    %`r`8,(%`rdx`,%`rcx`,1)
+  0`x`00007`f`81`d`4`d`35`c`55:   `je`     0`x`00007`f`81`d`4`d`35`e`11           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@109 (`line` 637)
+  0`x`00007`f`81`d`4`d`35`c`5`b`:   `cmp`    $0`x`0,%`rdi`
+  0`x`00007`f`81`d`4`d`35`c`5`f`:   `jne`    0`x`00007`f`81`d`4`d`35`c`77
+  0`x`00007`f`81`d`4`d`35`c`61:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`c`6`b`:   `orb`    $0`x`1,0`x`3`c`1(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`c`72:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`c`77:   `movabs` $0`x`1000209`d`0,%`r`8             ;   {`metadata`('`java`/`util`/`HashMap`$`TreeNode'`)}
+  0`x`00007`f`81`d`4`d`35`c`81:   `mov`    0`x`8(%`rdi`),%`edx`
+  0`x`00007`f`81`d`4`d`35`c`84:   `shl`    $0`x`3,%`rdx`
+  0`x`00007`f`81`d`4`d`35`c`88:   `cmp`    %`rdx`,%`r`8
+  0`x`00007`f`81`d`4`d`35`c`8`b`:   `jne`    0`x`00007`f`81`d`4`d`35`d`1`c`
+  0`x`00007`f`81`d`4`d`35`c`91:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`c`9`b`:   `mov`    0`x`8(%`rdi`),%`r`8`d`
+  0`x`00007`f`81`d`4`d`35`c`9`f`:   `shl`    $0`x`3,%`r`8
+  0`x`00007`f`81`d`4`d`35`ca`3:   `cmp`    0`x`3`d`8(%`rcx`),%`r`8
+  0`x`00007`f`81`d`4`d`35`caa`:   `jne`    0`x`00007`f`81`d`4`d`35`cb`9
+  0`x`00007`f`81`d`4`d`35`cac`:   `addq`   $0`x`1,0`x`3`e`0(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`cb`4:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`cb`9:   `cmp`    0`x`3`e`8(%`rcx`),%`r`8
+  0`x`00007`f`81`d`4`d`35`cc`0:   `jne`    0`x`00007`f`81`d`4`d`35`ccf`
+  0`x`00007`f`81`d`4`d`35`cc`2:   `addq`   $0`x`1,0`x`3`f`0(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`cca`:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`ccf`:   `cmpq`   $0`x`0,0`x`3`d`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`cda`:   `jne`    0`x`00007`f`81`d`4`d`35`cf`3
+  0`x`00007`f`81`d`4`d`35`cdc`:   `mov`    %`r`8,0`x`3`d`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`ce`3:   `movq`   $0`x`1,0`x`3`e`0(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`cee`:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`cf`3:   `cmpq`   $0`x`0,0`x`3`e`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`cfe`:   `jne`    0`x`00007`f`81`d`4`d`35`d`17
+  0`x`00007`f`81`d`4`d`35`d`00:   `mov`    %`r`8,0`x`3`e`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`07:   `movq`   $0`x`1,0`x`3`f`0(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`12:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`d`17:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`d`1`c`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`d`26:   `subq`   $0`x`1,0`x`3`c`8(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`2`e`:   `jmpq`   0`x`00007`f`81`d`4`d`36594
+  0`x`00007`f`81`d`4`d`35`d`33:   `jmpq`   0`x`00007`f`81`d`4`d`35`d`38
+  0`x`00007`f`81`d`4`d`35`d`38:   `mov`    %`rdi`,%`rsi`                    ;*`checkcast` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@114 (`line` 638)
+  0`x`00007`f`81`d`4`d`35`d`3`b`:   `cmp`    (%`rsi`),%`rax`                  ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`3659`d`
+  0`x`00007`f`81`d`4`d`35`d`3`e`:   `mov`    %`rsi`,%`rdx`
+  0`x`00007`f`81`d`4`d`35`d`41:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`d`4`b`:   `mov`    0`x`8(%`rdx`),%`edx`
+  0`x`00007`f`81`d`4`d`35`d`4`e`:   `shl`    $0`x`3,%`rdx`
+  0`x`00007`f`81`d`4`d`35`d`52:   `cmp`    0`x`410(%`rcx`),%`rdx`
+  0`x`00007`f`81`d`4`d`35`d`59:   `jne`    0`x`00007`f`81`d`4`d`35`d`68
+  0`x`00007`f`81`d`4`d`35`d`5`b`:   `addq`   $0`x`1,0`x`418(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`63:   `jmpq`   0`x`00007`f`81`d`4`d`35`dce`
+  0`x`00007`f`81`d`4`d`35`d`68:   `cmp`    0`x`420(%`rcx`),%`rdx`
+  0`x`00007`f`81`d`4`d`35`d`6`f`:   `jne`    0`x`00007`f`81`d`4`d`35`d`7`e`
+  0`x`00007`f`81`d`4`d`35`d`71:   `addq`   $0`x`1,0`x`428(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`79:   `jmpq`   0`x`00007`f`81`d`4`d`35`dce`
+  0`x`00007`f`81`d`4`d`35`d`7`e`:   `cmpq`   $0`x`0,0`x`410(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`89:   `jne`    0`x`00007`f`81`d`4`d`35`da`2
+  0`x`00007`f`81`d`4`d`35`d`8`b`:   `mov`    %`rdx`,0`x`410(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`92:   `movq`   $0`x`1,0`x`418(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`d`9`d`:   `jmpq`   0`x`00007`f`81`d`4`d`35`dce`
+  0`x`00007`f`81`d`4`d`35`da`2:   `cmpq`   $0`x`0,0`x`420(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`dad`:   `jne`    0`x`00007`f`81`d`4`d`35`dc`6
+  0`x`00007`f`81`d`4`d`35`daf`:   `mov`    %`rdx`,0`x`420(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`db`6:   `movq`   $0`x`1,0`x`428(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`dc`1:   `jmpq`   0`x`00007`f`81`d`4`d`35`dce`
+  0`x`00007`f`81`d`4`d`35`dc`6:   `addq`   $0`x`1,0`x`400(%`rcx`)
+  0`x`00007`f`81`d`4`d`35`dce`:   `mov`    0`xa`0(%`rsp`),%`rdx`
+  0`x`00007`f`81`d`4`d`35`dd`6:   `mov`    0`xc`8(%`rsp`),%`rcx`
+  0`x`00007`f`81`d`4`d`35`dde`:   `mov`    0`x`98(%`rsp`),%`r`8`d`
+  0`x`00007`f`81`d`4`d`35`de`6:   `mov`    0`xa`8(%`rsp`),%`r`9
+  0`x`00007`f`81`d`4`d`35`dee`:   `mov`    0`xb`0(%`rsp`),%`rdi`              ;*`invokevirtual` `putTreeVal` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@123 (`line` 638)
+  0`x`00007`f`81`d`4`d`35`df`6:   `nop`
+  0`x`00007`f`81`d`4`d`35`df`7:   `callq`  0`x`00007`f`81`d`47`eea`00           ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` }
+                                                            ;*`invokevirtual` `putTreeVal` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@123 (`line` 638)
+                                                            ;   {`optimized` `virtual`_`call`}
+  0`x`00007`f`81`d`4`d`35`dfc`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`e`06:   `incl`   0`x`438(%`rdx`)
+  0`x`00007`f`81`d`4`d`35`e`0`c`:   `jmpq`   0`x`00007`f`81`d`4`d`362`ac`           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@128 (`line` 638)
+  0`x`00007`f`81`d`4`d`35`e`11:   `mov`    %`rdi`,%`rbx`
+  0`x`00007`f`81`d`4`d`35`e`14:   `mov`    $0`x`0,%`edi`                    ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@134 (`line` 641)
+  0`x`00007`f`81`d`4`d`35`e`19:   `mov`    %`edi`,0`xbc`(%`rsp`)
+  0`x`00007`f`81`d`4`d`35`e`20:   `mov`    0`xa`8(%`rsp`),%`rcx`
+  0`x`00007`f`81`d`4`d`35`e`28:   `mov`    0`x`98(%`rsp`),%`edx`
+  0`x`00007`f`81`d`4`d`35`e`2`f`:   `mov`    0`x`18(%`rbx`),%`eax`              ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`365`a`2
+                                                            ;*`getfield` `next` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@136 (`line` 641)
+  0`x`00007`f`81`d`4`d`35`e`32:   `mov`    %`rax`,0`xd`0(%`rsp`)
+  0`x`00007`f`81`d`4`d`35`e`3`a`:   `cmp`    $0`x`0,%`rax`
+  0`x`00007`f`81`d`4`d`35`e`3`e`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`e`48:   `movabs` $0`x`460,%`r`8
+  0`x`00007`f`81`d`4`d`35`e`52:   `je`     0`x`00007`f`81`d`4`d`35`e`62
+  0`x`00007`f`81`d`4`d`35`e`58:   `movabs` $0`x`450,%`r`8
+  0`x`00007`f`81`d`4`d`35`e`62:   `mov`    (%`rsi`,%`r`8,1),%`r`9
+  0`x`00007`f`81`d`4`d`35`e`66:   `lea`    0`x`1(%`r`9),%`r`9
+  0`x`00007`f`81`d`4`d`35`e`6`a`:   `mov`    %`r`9,(%`rsi`,%`r`8,1)
+  0`x`00007`f`81`d`4`d`35`e`6`e`:   `je`     0`x`00007`f`81`d`4`d`3609`a`           ;*`ifnonnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@142 (`line` 641)
+  0`x`00007`f`81`d`4`d`35`e`74:   `mov`    0`xc`(%`rax`),%`esi`               ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`365`a`7
+                                                            ;*`getfield` `hash` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@177 (`line` 647)
+  0`x`00007`f`81`d`4`d`35`e`77:   `cmp`    %`edx`,%`esi`
+  0`x`00007`f`81`d`4`d`35`e`79:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`e`83:   `movabs` $0`x`518,%`rbx`
+  0`x`00007`f`81`d`4`d`35`e`8`d`:   `jne`    0`x`00007`f`81`d`4`d`35`e`9`d`
+  0`x`00007`f`81`d`4`d`35`e`93:   `movabs` $0`x`528,%`rbx`
+  0`x`00007`f`81`d`4`d`35`e`9`d`:   `mov`    (%`rsi`,%`rbx`,1),%`r`8
+  0`x`00007`f`81`d`4`d`35`ea`1:   `lea`    0`x`1(%`r`8),%`r`8
+  0`x`00007`f`81`d`4`d`35`ea`5:   `mov`    %`r`8,(%`rsi`,%`rbx`,1)
+  0`x`00007`f`81`d`4`d`35`ea`9:   `jne`    0`x`00007`f`81`d`4`d`3600`d`           ;*`if`_`icmpne` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@181 (`line` 647)
+  0`x`00007`f`81`d`4`d`35`eaf`:   `mov`    0`x`10(%`rax`),%`esi`              ;*`getfield` `key` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@186 (`line` 647)
+  0`x`00007`f`81`d`4`d`35`eb`2:   `cmp`    %`rcx`,%`rsi`
+  0`x`00007`f`81`d`4`d`35`eb`5:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`ebf`:   `movabs` $0`x`538,%`r`8
+  0`x`00007`f`81`d`4`d`35`ec`9:   `je`     0`x`00007`f`81`d`4`d`35`ed`9
+  0`x`00007`f`81`d`4`d`35`ecf`:   `movabs` $0`x`548,%`r`8
+  0`x`00007`f`81`d`4`d`35`ed`9:   `mov`    (%`rbx`,%`r`8,1),%`r`9
+  0`x`00007`f`81`d`4`d`35`edd`:   `lea`    0`x`1(%`r`9),%`r`9
+  0`x`00007`f`81`d`4`d`35`ee`1:   `mov`    %`r`9,(%`rbx`,%`r`8,1)
+  0`x`00007`f`81`d`4`d`35`ee`5:   `je`     0`x`00007`f`81`d`4`d`36070           ;*`if`_`acmpeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@193 (`line` 647)
+  0`x`00007`f`81`d`4`d`35`eeb`:   `cmp`    $0`x`0,%`rcx`
+  0`x`00007`f`81`d`4`d`35`eef`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`ef`9:   `movabs` $0`x`558,%`r`8
+  0`x`00007`f`81`d`4`d`35`f`03:   `je`     0`x`00007`f`81`d`4`d`35`f`13
+  0`x`00007`f`81`d`4`d`35`f`09:   `movabs` $0`x`568,%`r`8
+  0`x`00007`f`81`d`4`d`35`f`13:   `mov`    (%`rbx`,%`r`8,1),%`r`9
+  0`x`00007`f`81`d`4`d`35`f`17:   `lea`    0`x`1(%`r`9),%`r`9
+  0`x`00007`f`81`d`4`d`35`f`1`b`:   `mov`    %`r`9,(%`rbx`,%`r`8,1)
+  0`x`00007`f`81`d`4`d`35`f`1`f`:   `je`     0`x`00007`f`81`d`4`d`3600`d`           ;*`ifnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@197 (`line` 647)
+  0`x`00007`f`81`d`4`d`35`f`25:   `cmp`    (%`rcx`),%`rax`                  ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`365`ac`
+  0`x`00007`f`81`d`4`d`35`f`28:   `mov`    %`rcx`,%`rbx`
+  0`x`00007`f`81`d`4`d`35`f`2`b`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`r`8          ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`f`35:   `mov`    0`x`8(%`rbx`),%`ebx`
+  0`x`00007`f`81`d`4`d`35`f`38:   `shl`    $0`x`3,%`rbx`
+  0`x`00007`f`81`d`4`d`35`f`3`c`:   `cmp`    0`x`588(%`r`8),%`rbx`
+  0`x`00007`f`81`d`4`d`35`f`43:   `jne`    0`x`00007`f`81`d`4`d`35`f`52
+  0`x`00007`f`81`d`4`d`35`f`45:   `addq`   $0`x`1,0`x`590(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`4`d`:   `jmpq`   0`x`00007`f`81`d`4`d`35`fb`8
+  0`x`00007`f`81`d`4`d`35`f`52:   `cmp`    0`x`598(%`r`8),%`rbx`
+  0`x`00007`f`81`d`4`d`35`f`59:   `jne`    0`x`00007`f`81`d`4`d`35`f`68
+  0`x`00007`f`81`d`4`d`35`f`5`b`:   `addq`   $0`x`1,0`x`5`a`0(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`63:   `jmpq`   0`x`00007`f`81`d`4`d`35`fb`8
+  0`x`00007`f`81`d`4`d`35`f`68:   `cmpq`   $0`x`0,0`x`588(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`73:   `jne`    0`x`00007`f`81`d`4`d`35`f`8`c`
+  0`x`00007`f`81`d`4`d`35`f`75:   `mov`    %`rbx`,0`x`588(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`7`c`:   `movq`   $0`x`1,0`x`590(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`87:   `jmpq`   0`x`00007`f`81`d`4`d`35`fb`8
+  0`x`00007`f`81`d`4`d`35`f`8`c`:   `cmpq`   $0`x`0,0`x`598(%`r`8)
+  0`x`00007`f`81`d`4`d`35`f`97:   `jne`    0`x`00007`f`81`d`4`d`35`fb`0
+  0`x`00007`f`81`d`4`d`35`f`99:   `mov`    %`rbx`,0`x`598(%`r`8)
+  0`x`00007`f`81`d`4`d`35`fa`0:   `movq`   $0`x`1,0`x`5`a`0(%`r`8)
+  0`x`00007`f`81`d`4`d`35`fab`:   `jmpq`   0`x`00007`f`81`d`4`d`35`fb`8
+  0`x`00007`f`81`d`4`d`35`fb`0:   `addq`   $0`x`1,0`x`578(%`r`8)
+  0`x`00007`f`81`d`4`d`35`fb`8:   `mov`    %`rsi`,%`rdx`
+  0`x`00007`f`81`d`4`d`35`fbb`:   `mov`    %`rcx`,%`rsi`                    ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@203 (`line` 648)
+  0`x`00007`f`81`d`4`d`35`fbe`:   `nopl`   0`x`0(%`rax`)
+  0`x`00007`f`81`d`4`d`35`fc`5:   `movabs` $0`xffffffffffffffff`,%`rax`
+  0`x`00007`f`81`d`4`d`35`fcf`:   `callq`  0`x`00007`f`81`d`47`ee`700           ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` [200]=`Oop` [208]=`Oop` [168]=`Oop` }
+                                                            ;*`invokevirtual` `equals` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@203 (`line` 648)
+                                                            ;   {`virtual`_`call`}
+  0`x`00007`f`81`d`4`d`35`fd`4:   `cmp`    $0`x`0,%`eax`
+  0`x`00007`f`81`d`4`d`35`fd`7:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`35`fe`1:   `movabs` $0`x`5`c`0,%`rsi`
+  0`x`00007`f`81`d`4`d`35`feb`:   `jne`    0`x`00007`f`81`d`4`d`35`ffb`
+  0`x`00007`f`81`d`4`d`35`ff`1:   `movabs` $0`x`5`b`0,%`rsi`
+  0`x`00007`f`81`d`4`d`35`ffb`:   `mov`    (%`rdx`,%`rsi`,1),%`rdi`
+  0`x`00007`f`81`d`4`d`35`fff`:   `lea`    0`x`1(%`rdi`),%`rdi`
+  0`x`00007`f`81`d`4`d`36003:   `mov`    %`rdi`,(%`rdx`,%`rsi`,1)
+  0`x`00007`f`81`d`4`d`36007:   `jne`    0`x`00007`f`81`d`4`d`3607`d`           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@206 (`line` 648)
+  0`x`00007`f`81`d`4`d`3600`d`:   `mov`    0`xbc`(%`rsp`),%`edi`
+  0`x`00007`f`81`d`4`d`36014:   `inc`    %`edi`
+  0`x`00007`f`81`d`4`d`36016:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36020:   `mov`    0`x`140(%`rdx`),%`esi`
+  0`x`00007`f`81`d`4`d`36026:   `add`    $0`x`8,%`esi`
+  0`x`00007`f`81`d`4`d`36029:   `mov`    %`esi`,0`x`140(%`rdx`)
+  0`x`00007`f`81`d`4`d`3602`f`:   `and`    $0`xfff`8,%`esi`
+  0`x`00007`f`81`d`4`d`36035:   `cmp`    $0`x`0,%`esi`
+  0`x`00007`f`81`d`4`d`36038:   `je`     0`x`00007`f`81`d`4`d`365`b`1           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@219 (`line` 640)
+  0`x`00007`f`81`d`4`d`3603`e`:   `mov`    0`x`108(%`r`15),%`r`10             ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` [200]=`Oop` [208]=`Oop` [168]=`Oop` }
+                                                            ;*`goto` {`reexecute`=1 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - (`reexecute`) `java`.`util`.`HashMap`::`putVal`@219 (`line` 640)
+  0`x`00007`f`81`d`4`d`36045:   `test`   %`eax`,(%`r`10)                  ;   {`poll`}
+  0`x`00007`f`81`d`4`d`36048:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36052:   `incl`   0`x`5`e`8(%`rdx`)
+  0`x`00007`f`81`d`4`d`36058:   `mov`    %`rdi`,%`r`8
+  0`x`00007`f`81`d`4`d`3605`b`:   `mov`    0`xd`0(%`rsp`),%`rbx`
+  0`x`00007`f`81`d`4`d`36063:   `mov`    %`r`8`d`,0`xbc`(%`rsp`)
+  0`x`00007`f`81`d`4`d`3606`b`:   `jmpq`   0`x`00007`f`81`d`4`d`35`e`20           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@219 (`line` 640)
+  0`x`00007`f`81`d`4`d`36070:   `mov`    0`xd`0(%`rsp`),%`rax`
+  0`x`00007`f`81`d`4`d`36078:   `jmpq`   0`x`00007`f`81`d`4`d`362`ac`           ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@222 (`line` 653)
+  0`x`00007`f`81`d`4`d`3607`d`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36087:   `incl`   0`x`5`d`0(%`rdx`)
+  0`x`00007`f`81`d`4`d`3608`d`:   `mov`    0`xd`0(%`rsp`),%`rax`
+  0`x`00007`f`81`d`4`d`36095:   `jmpq`   0`x`00007`f`81`d`4`d`362`ac`           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@209 (`line` 649)
+  0`x`00007`f`81`d`4`d`3609`a`:   `mov`    0`xbc`(%`rsp`),%`r`8`d`
+  0`x`00007`f`81`d`4`d`360`a`2:   `mov`    0`xb`0(%`rsp`),%`r`13
+  0`x`00007`f`81`d`4`d`360`aa`:   `mov`    %`rcx`,%`r`11
+  0`x`00007`f`81`d`4`d`360`ad`:   `mov`    %`rdx`,%`r`9
+  0`x`00007`f`81`d`4`d`360`b`0:   `mov`    0`xa`0(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`360`b`8:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`360`c`2:   `addq`   $0`x`1,0`x`488(%`rdx`)
+  0`x`00007`f`81`d`4`d`360`ca`:   `movabs` $0`x`7`f`81`d`3`f`9`ed`80,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`43970} '`newNode'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`Ljava`/`util`/`HashMap`$`Node`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`360`d`4:   `mov`    0`x`13`c`(%`rdx`),%`esi`
+  0`x`00007`f`81`d`4`d`360`da`:   `add`    $0`x`8,%`esi`
+  0`x`00007`f`81`d`4`d`360`dd`:   `mov`    %`esi`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`360`e`3:   `and`    $0`x`7`ffff`8,%`esi`
+  0`x`00007`f`81`d`4`d`360`e`9:   `cmp`    $0`x`0,%`esi`
+  0`x`00007`f`81`d`4`d`360`ec`:   `je`     0`x`00007`f`81`d`4`d`365`d`2
+  0`x`00007`f`81`d`4`d`360`f`2:   `movabs` $0`x`100020330,%`rdx`            ;   {`metadata`('`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`360`fc`:   `mov`    0`x`118(%`r`15),%`rax`
+  0`x`00007`f`81`d`4`d`36103:   `lea`    0`x`20(%`rax`),%`rdi`
+  0`x`00007`f`81`d`4`d`36107:   `cmp`    0`x`128(%`r`15),%`rdi`
+  0`x`00007`f`81`d`4`d`3610`e`:   `ja`     0`x`00007`f`81`d`4`d`365`f`3
+  0`x`00007`f`81`d`4`d`36114:   `mov`    %`rdi`,0`x`118(%`r`15)
+  0`x`00007`f`81`d`4`d`3611`b`:   `mov`    0`xb`8(%`rdx`),%`rcx`
+  0`x`00007`f`81`d`4`d`36122:   `mov`    %`rcx`,(%`rax`)
+  0`x`00007`f`81`d`4`d`36125:   `mov`    %`rdx`,%`rcx`
+  0`x`00007`f`81`d`4`d`36128:   `shr`    $0`x`3,%`rcx`
+  0`x`00007`f`81`d`4`d`3612`c`:   `mov`    %`ecx`,0`x`8(%`rax`)
+  0`x`00007`f`81`d`4`d`3612`f`:   `xor`    %`rcx`,%`rcx`
+  0`x`00007`f`81`d`4`d`36132:   `mov`    %`ecx`,0`xc`(%`rax`)
+  0`x`00007`f`81`d`4`d`36135:   `xor`    %`rcx`,%`rcx`
+  0`x`00007`f`81`d`4`d`36138:   `mov`    %`rcx`,0`x`10(%`rax`)
+  0`x`00007`f`81`d`4`d`3613`c`:   `mov`    %`rcx`,0`x`18(%`rax`)              ;*`new` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@0 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@152 (`line` 642)
+  0`x`00007`f`81`d`4`d`36140:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`36143:   `movabs` $0`x`7`f`81`d`3`f`9`ed`80,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`43970} '`newNode'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`Ljava`/`util`/`HashMap`$`Node`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3614`d`:   `addq`   $0`x`1,0`x`180(%`rcx`)
+  0`x`00007`f`81`d`4`d`36155:   `movabs` $0`x`7`f`81`d`3`f`9`ef`50,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`710`e`8} '<`init`>' '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`V'` `in` '`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`3615`f`:   `mov`    0`x`13`c`(%`rdx`),%`ecx`
+  0`x`00007`f`81`d`4`d`36165:   `add`    $0`x`8,%`ecx`
+  0`x`00007`f`81`d`4`d`36168:   `mov`    %`ecx`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`3616`e`:   `and`    $0`x`7`ffff`8,%`ecx`
+  0`x`00007`f`81`d`4`d`36174:   `cmp`    $0`x`0,%`ecx`
+  0`x`00007`f`81`d`4`d`36177:   `je`     0`x`00007`f`81`d`4`d`36600
+  0`x`00007`f`81`d`4`d`3617`d`:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`36180:   `movabs` $0`x`7`f`81`d`3`f`9`ef`50,%`rcx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`710`e`8} '<`init`>' '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`Ljava`/`util`/`HashMap`$`Node`;)`V'` `in` '`java`/`util`/`HashMap`$`Node'`)}
+  0`x`00007`f`81`d`4`d`3618`a`:   `addq`   $0`x`1,0`x`180(%`rcx`)
+  0`x`00007`f`81`d`4`d`36192:   `movabs` $0`x`7`f`81`d`3`f`33388,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`cfe`650} '<`init`>' '()`V'` `in` '`java`/`lang`/`Object'`)}
+  0`x`00007`f`81`d`4`d`3619`c`:   `mov`    0`x`13`c`(%`rdx`),%`ecx`
+  0`x`00007`f`81`d`4`d`361`a`2:   `add`    $0`x`8,%`ecx`
+  0`x`00007`f`81`d`4`d`361`a`5:   `mov`    %`ecx`,0`x`13`c`(%`rdx`)
+  0`x`00007`f`81`d`4`d`361`ab`:   `and`    $0`x`7`ffff`8,%`ecx`
+  0`x`00007`f`81`d`4`d`361`b`1:   `cmp`    $0`x`0,%`ecx`
+  0`x`00007`f`81`d`4`d`361`b`4:   `je`     0`x`00007`f`81`d`4`d`36621
+  0`x`00007`f`81`d`4`d`361`ba`:   `mov`    %`r`9`d`,0`xc`(%`rax`)               ;*`putfield` `hash` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@6 (`line` 286)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@152 (`line` 642)
+  0`x`00007`f`81`d`4`d`361`be`:   `mov`    %`r`11,%`r`10
+  0`x`00007`f`81`d`4`d`361`c`1:   `mov`    %`r`10`d`,0`x`10(%`rax`)
+  0`x`00007`f`81`d`4`d`361`c`5:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`361`c`8:   `shr`    $0`x`9,%`rdx`
+  0`x`00007`f`81`d`4`d`361`cc`:   `movabs` $0`x`7`f`81`d`3`eb`8000,%`rcx`
+  0`x`00007`f`81`d`4`d`361`d`6:   `movb`   $0`x`0,(%`rdx`,%`rcx`,1)           ;*`putfield` `key` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@11 (`line` 287)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@152 (`line` 642)
+  0`x`00007`f`81`d`4`d`361`da`:   `mov`    %`r`13,%`r`10
+  0`x`00007`f`81`d`4`d`361`dd`:   `mov`    %`r`10`d`,0`x`14(%`rax`)
+  0`x`00007`f`81`d`4`d`361`e`1:   `mov`    %`rax`,%`rdx`
+  0`x`00007`f`81`d`4`d`361`e`4:   `shr`    $0`x`9,%`rdx`
+  0`x`00007`f`81`d`4`d`361`e`8:   `movb`   $0`x`0,(%`rdx`,%`rcx`,1)           ;*`putfield` `value` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`$`Node`::<`init`>@16 (`line` 288)
+                                                            ; - `java`.`util`.`HashMap`::`newNode`@9 (`line` 1799)
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@152 (`line` 642)
+  0`x`00007`f`81`d`4`d`361`ec`:   `mov`    %`rax`,%`r`10
+  0`x`00007`f`81`d`4`d`361`ef`:   `mov`    %`r`10`d`,0`x`18(%`rbx`)
+  0`x`00007`f`81`d`4`d`361`f`3:   `shr`    $0`x`9,%`rbx`
+  0`x`00007`f`81`d`4`d`361`f`7:   `movb`   $0`x`0,(%`rbx`,%`rcx`,1)           ;*`putfield` `next` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@155 (`line` 642)
+  0`x`00007`f`81`d`4`d`361`fb`:   `cmp`    $0`x`7,%`r`8`d`
+  0`x`00007`f`81`d`4`d`361`ff`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36209:   `movabs` $0`x`4`b`8,%`rcx`
+  0`x`00007`f`81`d`4`d`36213:   `jge`    0`x`00007`f`81`d`4`d`36223
+  0`x`00007`f`81`d`4`d`36219:   `movabs` $0`x`4`a`8,%`rcx`
+  0`x`00007`f`81`d`4`d`36223:   `mov`    (%`rdx`,%`rcx`,1),%`rsi`
+  0`x`00007`f`81`d`4`d`36227:   `lea`    0`x`1(%`rsi`),%`rsi`
+  0`x`00007`f`81`d`4`d`3622`b`:   `mov`    %`rsi`,(%`rdx`,%`rcx`,1)
+  0`x`00007`f`81`d`4`d`3622`f`:   `jge`    0`x`00007`f`81`d`4`d`36242           ;*`if`_`icmplt` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@162 (`line` 643)
+  0`x`00007`f`81`d`4`d`36235:   `mov`    0`xd`0(%`rsp`),%`rax`
+  0`x`00007`f`81`d`4`d`3623`d`:   `jmpq`   0`x`00007`f`81`d`4`d`362`ac`           ;*`aload` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@222 (`line` 653)
+  0`x`00007`f`81`d`4`d`36242:   `mov`    0`xc`8(%`rsp`),%`rbx`
+  0`x`00007`f`81`d`4`d`3624`a`:   `mov`    0`xa`0(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`36252:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rdx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3625`c`:   `addq`   $0`x`1,0`x`4`c`8(%`rdx`)
+  0`x`00007`f`81`d`4`d`36264:   `mov`    %`rbx`,%`rdx`
+  0`x`00007`f`81`d`4`d`36267:   `mov`    %`r`9,%`rcx`
+  0`x`00007`f`81`d`4`d`3626`a`:   `mov`    0`xa`0(%`rsp`),%`rsi`              ;*`invokevirtual` `treeifyBin` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@169 (`line` 644)
+  0`x`00007`f`81`d`4`d`36272:   `nopl`   0`x`0(%`rax`,%`rax`,1)
+  0`x`00007`f`81`d`4`d`36277:   `callq`  0`x`00007`f`81`d`47`eea`00           ; `ImmutableOopMap` {[160]=`Oop` [176]=`Oop` [208]=`Oop` }
+                                                            ;*`invokevirtual` `treeifyBin` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@169 (`line` 644)
+                                                            ;   {`optimized` `virtual`_`call`}
+  0`x`00007`f`81`d`4`d`3627`c`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36286:   `incl`   0`x`500(%`rax`)
+  0`x`00007`f`81`d`4`d`3628`c`:   `mov`    0`xd`0(%`rsp`),%`rax`
+  0`x`00007`f`81`d`4`d`36294:   `jmpq`   0`x`00007`f`81`d`4`d`362`ac`           ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@172 (`line` 644)
+  0`x`00007`f`81`d`4`d`36299:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`362`a`3:   `incl`   0`x`358(%`rax`)
+  0`x`00007`f`81`d`4`d`362`a`9:   `mov`    %`rdi`,%`rax`                    ;*`goto` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@101 (`line` 636)
+  0`x`00007`f`81`d`4`d`362`ac`:   `cmp`    $0`x`0,%`rax`
+  0`x`00007`f`81`d`4`d`362`b`0:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rsi`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`362`ba`:   `movabs` $0`x`610,%`rdi`
+  0`x`00007`f`81`d`4`d`362`c`4:   `jne`    0`x`00007`f`81`d`4`d`362`d`4
+  0`x`00007`f`81`d`4`d`362`ca`:   `movabs` $0`x`600,%`rdi`
+  0`x`00007`f`81`d`4`d`362`d`4:   `mov`    (%`rsi`,%`rdi`,1),%`rbx`
+  0`x`00007`f`81`d`4`d`362`d`8:   `lea`    0`x`1(%`rbx`),%`rbx`
+  0`x`00007`f`81`d`4`d`362`dc`:   `mov`    %`rbx`,(%`rsi`,%`rdi`,1)
+  0`x`00007`f`81`d`4`d`362`e`0:   `jne`    0`x`00007`f`81`d`4`d`3633`e`           ;*`ifnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@224 (`line` 653)
+  0`x`00007`f`81`d`4`d`362`e`6:   `mov`    0`xa`0(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`362`ee`:   `mov`    0`x`18(%`rsi`),%`eax`              ;*`getfield` `modCount` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@261 (`line` 661)
+  0`x`00007`f`81`d`4`d`362`f`1:   `inc`    %`eax`
+  0`x`00007`f`81`d`4`d`362`f`3:   `mov`    %`eax`,0`x`18(%`rsi`)              ;*`putfield` `modCount` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@266 (`line` 661)
+  0`x`00007`f`81`d`4`d`362`f`6:   `mov`    0`x`14(%`rsi`),%`eax`              ;*`getfield` `size` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@271 (`line` 662)
+  0`x`00007`f`81`d`4`d`362`f`9:   `inc`    %`eax`
+  0`x`00007`f`81`d`4`d`362`fb`:   `mov`    %`eax`,0`x`14(%`rsi`)              ;*`putfield` `size` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@277 (`line` 662)
+  0`x`00007`f`81`d`4`d`362`fe`:   `mov`    0`x`1`c`(%`rsi`),%`edi`              ;*`getfield` `threshold` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@281 (`line` 662)
+  0`x`00007`f`81`d`4`d`36301:   `cmp`    %`edi`,%`eax`
+  0`x`00007`f`81`d`4`d`36303:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rax`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3630`d`:   `movabs` $0`x`698,%`rdi`
+  0`x`00007`f`81`d`4`d`36317:   `jle`    0`x`00007`f`81`d`4`d`36327
+  0`x`00007`f`81`d`4`d`3631`d`:   `movabs` $0`x`6`a`8,%`rdi`
+  0`x`00007`f`81`d`4`d`36327:   `mov`    (%`rax`,%`rdi`,1),%`rbx`
+  0`x`00007`f`81`d`4`d`3632`b`:   `lea`    0`x`1(%`rbx`),%`rbx`
+  0`x`00007`f`81`d`4`d`3632`f`:   `mov`    %`rbx`,(%`rax`,%`rdi`,1)
+  0`x`00007`f`81`d`4`d`36333:   `jle`    0`x`00007`f`81`d`4`d`36464
+  0`x`00007`f`81`d`4`d`36339:   `jmpq`   0`x`00007`f`81`d`4`d`36436           ;*`if`_`icmple` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@284 (`line` 662)
+  0`x`00007`f`81`d`4`d`3633`e`:   `mov`    0`x`9`c`(%`rsp`),%`r`9`d`
+  0`x`00007`f`81`d`4`d`36346:   `mov`    0`xa`0(%`rsp`),%`rsi`
+  0`x`00007`f`81`d`4`d`3634`e`:   `mov`    0`x`14(%`rax`),%`edi`              ; `implicit` `exception`: `dispatches` `to` 0`x`00007`f`81`d`4`d`36642
+                                                            ;*`getfield` `value` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@229 (`line` 654)
+  0`x`00007`f`81`d`4`d`36351:   `cmp`    $0`x`0,%`r`9`d`
+  0`x`00007`f`81`d`4`d`36355:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`3635`f`:   `movabs` $0`x`620,%`rdx`
+  0`x`00007`f`81`d`4`d`36369:   `je`     0`x`00007`f`81`d`4`d`36379
+  0`x`00007`f`81`d`4`d`3636`f`:   `movabs` $0`x`630,%`rdx`
+  0`x`00007`f`81`d`4`d`36379:   `mov`    (%`rbx`,%`rdx`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`3637`d`:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`36381:   `mov`    %`rcx`,(%`rbx`,%`rdx`,1)
+  0`x`00007`f`81`d`4`d`36385:   `je`     0`x`00007`f`81`d`4`d`363`c`5           ;*`ifeq` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@236 (`line` 655)
+  0`x`00007`f`81`d`4`d`3638`b`:   `cmp`    $0`x`0,%`rdi`
+  0`x`00007`f`81`d`4`d`3638`f`:   `movabs` $0`x`7`f`81`d`3`f`9`df`18,%`rbx`         ;   {`metadata`(`method` `data` `for` {`method`} {0`x`00007`f`81`d`3`e`413`e`0} '`putVal'` '(`ILjava`/`lang`/`Object`;`Ljava`/`lang`/`Object`;`ZZ`)`Ljava`/`lang`/`Object`;' `in` '`java`/`util`/`HashMap'`)}
+  0`x`00007`f`81`d`4`d`36399:   `movabs` $0`x`640,%`rdx`
+  0`x`00007`f`81`d`4`d`363`a`3:   `jne`    0`x`00007`f`81`d`4`d`363`b`3
+  0`x`00007`f`81`d`4`d`363`a`9:   `movabs` $0`x`650,%`rdx`
+  0`x`00007`f`81`d`4`d`363`b`3:   `mov`    (%`rbx`,%`rdx`,1),%`rcx`
+  0`x`00007`f`81`d`4`d`363`b`7:   `lea`    0`x`1(%`rcx`),%`rcx`
+  0`x`00007`f`81`d`4`d`363`bb`:   `mov`    %`rcx`,(%`rbx`,%`rdx`,1)
+  0`x`00007`f`81`d`4`d`363`bf`:   `jne`    0`x`00007`f`81`d`4`d`363`e`6           ;*`ifnonnull` {`reexecute`=0 `rethrow`=0 `return`_`oop`=0}
+                                                            ; - `java`.`util`.`HashMap`::`putVal`@241 (line 655)
   0x00007f81d4d363c5:   mov    0xb0(%rsp),%r8
   0x00007f81d4d363cd:   mov    %r8,%r10
   0x00007f81d4d363d0:   mov    %r10d,0x14(%rax)
@@ -5224,4 +5238,3 @@ Compiled method (c1)     243    7       3       java.lang.String::equals (50 byt
   0x00007f81d4d3a527:   hlt    
 --------------------------------------------------------------------------------
 ```
-
